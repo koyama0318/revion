@@ -7,8 +7,8 @@ on:
     branches: ["main"]
 
 jobs:
-  eslint:
-    name: Run eslint scanning
+  common-setup:
+    name: Common Setup
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,3 +28,6 @@ jobs:
 
       - name: Run ESLint
         run: bun run lint
+
+      - name: Run Bun Test
+        run: bun test
