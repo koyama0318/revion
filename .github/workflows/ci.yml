@@ -2,30 +2,29 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   pull_request:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
-  build:
+  eslint:
+    name: Run eslint scanning
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
-      
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Run tests
-      run: npm test
-      
-    - name: Build project
-      run: npm run build
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Packages
+        run: bun install
+
+      - name: Run ESLint
+        run: bun run lint
