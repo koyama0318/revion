@@ -1,2 +1,2 @@
-npm run test
-npm run lint
+bun test
+bun run lint
