@@ -3,7 +3,7 @@ import { Handler } from '../src/handler'
 import { counter } from './mock/counter'
 import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
-describe('Handler', () => {
+describe('handler test', () => {
   let store: EventStoreInMemory
   let handler: Handler
 
