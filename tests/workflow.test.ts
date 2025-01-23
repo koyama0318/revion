@@ -4,7 +4,7 @@ import { Workflow } from '../src/workflow'
 import { counter } from './mock/counter'
 import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
-describe('Workflow', () => {
+describe('workflow test', () => {
   const store = new EventStoreInMemory()
   let workflow: Workflow
   let aggregate: Aggregate
