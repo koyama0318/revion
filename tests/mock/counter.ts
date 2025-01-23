@@ -1,5 +1,5 @@
-import type { Emitter, Reducer } from '../../src/types/reducer'
 import type { AggregateId } from '../../src/types/aggregate'
+import type { CaseEmitters, CaseReducers } from '../../src/types/caseReducer'
 import { makeAggregate } from '../../src/aggregate'
 
 type CounterState =
@@ -16,38 +16,30 @@ type CounterEvent =
   | { type: 'added'; payload: { value: number } }
   | { type: 'subtracted'; payload: { value: number } }
 
-const initialState: CounterState = { type: 'initial', value: 0 }
-
-const emitter: Emitter<CounterState, CounterCommand, CounterEvent> = (
-  state,
-  command
-) => {
-  switch (command.type) {
-    case 'create':
-      if (state.type === 'initial') {
-        return { type: 'created', payload: { value: state.value } }
-      }
-      break
-    case 'increment':
-      return { type: 'added', payload: { value: 1 } }
-    case 'decrement':
-      return { type: 'subtracted', payload: { value: 1 } }
-  }
-  throw new Error('Invalid command')
+const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
+  create: state => ({
+    type: 'created',
+    payload: { value: state.value }
+  }),
+  increment: () => ({ type: 'added', payload: { value: 1 } }),
+  decrement: () => ({ type: 'subtracted', payload: { value: 1 } })
 }
 
-const reducer: Reducer<CounterState, CounterEvent> = (state, event) => {
-  switch (event.type) {
-    case 'created':
-      return { type: 'updated', value: 0 }
-    case 'added':
-      return { type: 'updated', value: state.value + event.payload.value }
-    case 'subtracted':
-      return { type: 'updated', value: state.value - event.payload.value }
+const reducer: CaseReducers<CounterState, CounterEvent> = {
+  created: state => {
+    state.type = 'updated'
+    state.value = 0
+  },
+  added: (state, event) => {
+    state.value += event.payload.value
+  },
+  subtracted: (state, event) => {
+    state.value -= event.payload.value
   }
 }
 
+export const initialState: CounterState = { type: 'initial', value: 0 }
 export const counter = makeAggregate('counter', initialState, emitter, reducer)
 
-export { initialState, emitter, reducer }
 export type { CounterState, CounterCommand, CounterEvent }
+export { emitter, reducer }
