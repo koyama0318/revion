@@ -1,5 +1,6 @@
-import type { Emitter, Reducer } from '../../src/types/reducer'
+import type { Emitter } from '../../src/types/reducer'
 import type { AggregateId } from '../../src/types/aggregate'
+import type { CaseReducers } from '../../src/types/caseReducer'
 import { makeAggregate } from '../../src/aggregate'
 
 type CounterState =
@@ -24,26 +25,25 @@ const emitter: Emitter<CounterState, CounterCommand, CounterEvent> = (
 ) => {
   switch (command.type) {
     case 'create':
-      if (state.type === 'initial') {
-        return { type: 'created', payload: { value: state.value } }
-      }
-      break
+      return { type: 'created', payload: { value: state.value } }
     case 'increment':
       return { type: 'added', payload: { value: 1 } }
     case 'decrement':
       return { type: 'subtracted', payload: { value: 1 } }
   }
-  throw new Error('Invalid command')
 }
 
-const reducer: Reducer<CounterState, CounterEvent> = (state, event) => {
-  switch (event.type) {
-    case 'created':
-      return { type: 'updated', value: 0 }
-    case 'added':
-      return { type: 'updated', value: state.value + event.payload.value }
-    case 'subtracted':
-      return { type: 'updated', value: state.value - event.payload.value }
+const reducer: CaseReducers<CounterState, CounterEvent> = {
+  created: state => {
+    if (state.type === 'initial') {
+      state = { type: 'updated', value: 0 }
+    }
+  },
+  added: (state, event) => {
+    state.value += event.payload.value
+  },
+  subtracted: (state, event) => {
+    state.value -= event.payload.value
   }
 }
 

@@ -7,6 +7,7 @@ import type {
   Reducer
 } from './types/reducer'
 import { extendState, extendEmitter, extendReducer } from './extendReducer'
+import type { CaseReducers } from './types/caseReducer'
 
 export class AggregateImpl implements Aggregate {
   type: string
@@ -64,7 +65,7 @@ export class AggregateImpl implements Aggregate {
   }
 }
 
-export function makeAggregate<
+export function baseMakeAggregate<
   S extends ReducerState,
   C extends ReducerCommand,
   E extends ReducerEvent
@@ -82,4 +83,30 @@ export function makeAggregate<
     ),
     extendReducer(reducer as unknown as Reducer<ReducerState, ReducerEvent>)
   )
+}
+
+function mergeReducer<S extends ReducerState, E extends ReducerEvent>(
+  reducer: CaseReducers<S, E>
+): (state: S, event: E) => S {
+  return (state: S, event: E): S => {
+    const fn = reducer[event.type as keyof typeof reducer]
+    if (fn) {
+      fn(state, event as Extract<E, { type: E['type'] }>)
+    }
+    return state
+  }
+}
+
+export function makeAggregate<
+  S extends ReducerState,
+  C extends ReducerCommand,
+  E extends ReducerEvent
+>(
+  type: string,
+  initialState: S,
+  emitter: Emitter<S, C, E>,
+  reducer: CaseReducers<S, E>
+): Aggregate {
+  const mergedReducer = mergeReducer(reducer)
+  return baseMakeAggregate(type, initialState, emitter, mergedReducer)
 }
