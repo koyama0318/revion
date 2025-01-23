@@ -7,7 +7,7 @@ import type {
   Reducer
 } from './types/reducer'
 import { extendState, extendEmitter, extendReducer } from './extendReducer'
-import type { CaseReducers } from './types/caseReducer'
+import type { CaseEmitters, CaseReducers } from './types/caseReducer'
 
 export class AggregateImpl implements Aggregate {
   type: string
@@ -65,6 +65,33 @@ export class AggregateImpl implements Aggregate {
   }
 }
 
+function mergeEmitter<
+  S extends ReducerState,
+  C extends ReducerCommand,
+  E extends ReducerEvent
+>(emitter: CaseEmitters<S, C, E>): (state: S, command: C) => E {
+  return (state: S, command: C): E => {
+    const fn = emitter[command.type as keyof typeof emitter]
+    if (fn) {
+      return fn(state, command as Extract<C, { type: C['type'] }>)
+    }
+    throw new Error(`No emitter found for command type: ${command.type}`)
+  }
+}
+
+function mergeReducer<S extends ReducerState, E extends ReducerEvent>(
+  reducer: CaseReducers<S, E>
+): (state: S, event: E) => S {
+  return (state: S, event: E): S => {
+    const newState = { ...state }
+    const fn = reducer[event.type as keyof typeof reducer]
+    if (fn) {
+      fn(newState, event as Extract<E, { type: E['type'] }>)
+    }
+    return newState
+  }
+}
+
 export function baseMakeAggregate<
   S extends ReducerState,
   C extends ReducerCommand,
@@ -85,18 +112,6 @@ export function baseMakeAggregate<
   )
 }
 
-function mergeReducer<S extends ReducerState, E extends ReducerEvent>(
-  reducer: CaseReducers<S, E>
-): (state: S, event: E) => S {
-  return (state: S, event: E): S => {
-    const fn = reducer[event.type as keyof typeof reducer]
-    if (fn) {
-      fn(state, event as Extract<E, { type: E['type'] }>)
-    }
-    return state
-  }
-}
-
 export function makeAggregate<
   S extends ReducerState,
   C extends ReducerCommand,
@@ -104,9 +119,10 @@ export function makeAggregate<
 >(
   type: string,
   initialState: S,
-  emitter: Emitter<S, C, E>,
+  emitter: CaseEmitters<S, C, E>,
   reducer: CaseReducers<S, E>
 ): Aggregate {
+  const mergedEmitter = mergeEmitter(emitter)
   const mergedReducer = mergeReducer(reducer)
-  return baseMakeAggregate(type, initialState, emitter, mergedReducer)
+  return baseMakeAggregate(type, initialState, mergedEmitter, mergedReducer)
 }
