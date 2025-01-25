@@ -5,7 +5,8 @@ import type {
   ReducerState
 } from './types/reducer'
 import type { Aggregate } from './types/aggregate'
-import type { TestCase } from './types/testCase'
+import type { TestCase, TestCaseEvent } from './types/testCase'
+import type { EventListener } from './types/eventListener'
 
 export function testAggregate<
   S extends ReducerState,
@@ -32,6 +33,18 @@ export function testAggregate<
       expect(lastEvent.payload).toEqual(expectedEvent.payload)
 
       aggregate.commitEvents()
+    })
+  })
+}
+
+export function testListener<E extends ReducerEvent>(
+  listener: EventListener,
+  cases: TestCaseEvent<E>[]
+) {
+  cases.forEach(({ label, event, expectedCommand }, index) => {
+    test(`${listener.type}#${index + 1}: ${label}`, () => {
+      const command = listener.policy(event)
+      expect(command).toEqual(expectedCommand)
     })
   })
 }

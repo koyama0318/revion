@@ -106,7 +106,7 @@ describe('aggregate test', () => {
       {
         type: 'added',
         id: { type: 'counter', id: '123' },
-        payload: { value: 1 },
+        payload: { value: 1, isMax: false },
         version: 2,
         timestamp: new Date()
       }
@@ -119,7 +119,7 @@ describe('aggregate test', () => {
     const expectedEvent = {
       type: 'added',
       id: { type: 'counter', id: '123' },
-      payload: { value: 1 },
+      payload: { value: 1, isMax: false },
       version: 3,
       timestamp: expect.any(Date)
     }

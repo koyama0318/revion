@@ -10,19 +10,25 @@ type CounterCommand =
   | { type: 'create'; id: AggregateId; payload: object }
   | { type: 'increment'; id: AggregateId; payload: object }
   | { type: 'decrement'; id: AggregateId; payload: object }
+  | { type: 'reset'; id: AggregateId; payload: object }
 
 type CounterEvent =
   | { type: 'created'; payload: { value: number } }
-  | { type: 'added'; payload: { value: number } }
+  | { type: 'added'; payload: { value: number; isMax: boolean } }
   | { type: 'subtracted'; payload: { value: number } }
+  | { type: 'reseted'; payload: object }
 
 const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
   create: state => ({
     type: 'created',
     payload: { value: state.value }
   }),
-  increment: () => ({ type: 'added', payload: { value: 1 } }),
-  decrement: () => ({ type: 'subtracted', payload: { value: 1 } })
+  increment: state => ({
+    type: 'added',
+    payload: { value: 1, isMax: state.value + 1 > 10 }
+  }),
+  decrement: () => ({ type: 'subtracted', payload: { value: 1 } }),
+  reset: () => ({ type: 'reseted', payload: {} })
 }
 
 const reducer: CaseReducers<CounterState, CounterEvent> = {
@@ -35,6 +41,9 @@ const reducer: CaseReducers<CounterState, CounterEvent> = {
   },
   subtracted: (state, event) => {
     state.value -= event.payload.value
+  },
+  reseted: state => {
+    state.value = 0
   }
 }
 
