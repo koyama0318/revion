@@ -1,11 +1,11 @@
-import type { ReducerCommand } from './types/reducer'
+import { extendCommand } from './extendReducer'
 import type { Aggregate, Event } from './types/aggregate'
+import type { CommandDispatcher } from './types/commandDispatcher'
+import type { EventListener } from './types/eventListener'
 import type { EventStore } from './types/eventStore'
+import type { ReducerCommand } from './types/reducer'
 import type { ICommandWorkflow, IEventListenerWorkflow } from './types/workflow'
 import { CommandWorkflow, EventListenerWorkflow } from './workflow'
-import { extendCommand } from './extendReducer'
-import type { EventListener } from './types/eventListener'
-import type { CommandDispatcher } from './types/commandDispatcher'
 
 export class CommandHandler {
   private readonly workflow: ICommandWorkflow

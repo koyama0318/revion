@@ -1,6 +1,10 @@
-import type { AggregateId } from '../../src/types/aggregate'
-import type { CaseEmitters, CaseReducers } from '../../src/types/caseReducer'
 import { makeAggregate } from '../../src/aggregate'
+import type { AggregateId } from '../../src/types/aggregate'
+import type {
+  CaseEmitters,
+  CasePolicies,
+  CaseReducers
+} from '../../src/types/reducer'
 
 type CounterState =
   | { type: 'initial'; value: number }
@@ -47,8 +51,26 @@ const reducer: CaseReducers<CounterState, CounterEvent> = {
   }
 }
 
+const policy: CasePolicies<CounterEvent> = {
+  created: event => ({
+    type: 'increment',
+    id: event.id,
+    payload: {}
+  }),
+  added: event =>
+    event.payload.isMax
+      ? {
+          type: 'reset',
+          id: event.id,
+          payload: {}
+        }
+      : undefined,
+  subtracted: () => undefined,
+  reseted: () => undefined
+}
+
 export const initialState: CounterState = { type: 'initial', value: 0 }
 export const counter = makeAggregate('counter', initialState, emitter, reducer)
 
-export type { CounterState, CounterCommand, CounterEvent }
-export { emitter, reducer }
+export { emitter, policy, reducer }
+export type { CounterCommand, CounterEvent, CounterState }

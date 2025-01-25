@@ -1,9 +1,10 @@
 import { describe } from 'bun:test'
-import type { CounterEvent } from './counter'
-import { policy, projection } from './counter.listener'
 import { makeEventListener } from '../../src/eventListener'
-import type { TestCaseEvent } from '../../src/types/testCase'
 import { testListener } from '../../src/test'
+import type { TestCaseEvent } from '../../src/types/testCase'
+import type { CounterEvent } from './counter'
+import { policy } from './counter'
+import { projection } from './counter.listener'
 
 describe('counter listener test with test library', () => {
   const listener = makeEventListener('counter', policy, projection)

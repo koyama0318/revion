@@ -1,7 +1,7 @@
-import type { Command, Event, Aggregate } from './aggregate'
-import type { EventStore } from './eventStore'
-import type { EventListener } from './eventListener'
+import type { Aggregate, Command, Event } from './aggregate'
 import type { CommandDispatcher } from './commandDispatcher'
+import type { EventListener } from './eventListener'
+import type { EventStore } from './eventStore'
 
 export interface ICommandWorkflow {
   eventStore: EventStore

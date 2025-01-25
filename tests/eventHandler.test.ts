@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect } from 'bun:test'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { CommandHandler } from '../src/handler'
 import { counter } from './mock/counter'
 import { EventStoreInMemory } from './mock/eventStoreInMemory'

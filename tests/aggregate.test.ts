@@ -1,7 +1,7 @@
-import { describe, it, beforeEach, expect } from 'bun:test'
-import { counter } from './mock/counter'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { NewAggregateId } from '../src/aggregateId'
 import type { State } from '../src/types/aggregate'
+import { counter } from './mock/counter'
 
 interface ExtendedState extends State {
   value: number

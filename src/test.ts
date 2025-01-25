@@ -1,12 +1,12 @@
-import { test, expect } from 'bun:test'
+import { expect, test } from 'bun:test'
+import type { Aggregate } from './types/aggregate'
+import type { EventListener } from './types/eventListener'
 import type {
   ReducerCommand,
   ReducerEvent,
   ReducerState
 } from './types/reducer'
-import type { Aggregate } from './types/aggregate'
 import type { TestCase, TestCaseEvent } from './types/testCase'
-import type { EventListener } from './types/eventListener'
 
 export function testAggregate<
   S extends ReducerState,

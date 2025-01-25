@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach, expect } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { Aggregate } from '../src/types/aggregate'
 import { CommandWorkflow } from '../src/workflow'
 import { counter } from './mock/counter'

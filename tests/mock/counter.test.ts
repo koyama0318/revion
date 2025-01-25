@@ -1,8 +1,8 @@
 import { describe } from 'bun:test'
-import type { CounterState, CounterCommand, CounterEvent } from './counter'
-import { counter } from './counter'
-import type { TestCase } from '../../src/types/testCase'
 import { testAggregate } from '../../src/test'
+import type { TestCase } from '../../src/types/testCase'
+import type { CounterCommand, CounterEvent, CounterState } from './counter'
+import { counter } from './counter'
 
 describe('counter aggregate test with test library', () => {
   const cases: TestCase<CounterCommand, CounterState, CounterEvent>[] = [

@@ -1,4 +1,4 @@
-import type { Command, State, Event } from './types/aggregate'
+import type { Command, Event, State } from './types/aggregate'
 import type {
   Emitter,
   Reducer,
