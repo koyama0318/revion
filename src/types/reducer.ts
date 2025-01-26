@@ -1,4 +1,4 @@
-import type { AggregateId, Command, Event } from './aggregate'
+import type { AggregateId } from './aggregate'
 
 export interface ReducerState {
   type: string
@@ -34,19 +34,6 @@ export type Reducer<S extends ReducerState, E extends ReducerEvent> = (
   event: E
 ) => S
 
-export type CaseReducer<S extends ReducerState, E extends ReducerEvent> = (
-  state: S,
-  event: E
-) => void
-
 export type CaseReducers<S extends ReducerState, E extends ReducerEvent> = {
-  [K in E['type']]: CaseReducer<S, Extract<E, { type: K }>>
-}
-
-export type Policy<E extends ReducerEvent> = (
-  event: E & Event
-) => Command | undefined
-
-export type CasePolicies<E extends ReducerEvent> = {
-  [K in E['type']]: Policy<Extract<E, { type: K }>>
+  [K in E['type']]: Reducer<S, Extract<E, { type: K }>>
 }

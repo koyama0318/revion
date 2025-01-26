@@ -6,13 +6,13 @@ import type {
   ReducerEvent,
   ReducerState
 } from './types/reducer'
-import type { TestCase, TestCaseEvent } from './types/testCase'
+import type { UnitTestCase, UnitTestCaseEvent } from './types/testCase'
 
 export function testAggregate<
   S extends ReducerState,
   C extends ReducerCommand,
   E extends ReducerEvent
->(aggregate: Aggregate, cases: TestCase<C, S, E>[]) {
+>(aggregate: Aggregate, cases: UnitTestCase<C, S, E>[]) {
   aggregate.reset()
 
   cases.forEach(({ label, command, expectedEvent, expectedState }, index) => {
@@ -39,7 +39,7 @@ export function testAggregate<
 
 export function testListener<E extends ReducerEvent>(
   listener: EventListener,
-  cases: TestCaseEvent<E>[]
+  cases: UnitTestCaseEvent<E>[]
 ) {
   cases.forEach(({ label, event, expectedCommand }, index) => {
     test(`${listener.type}#${index + 1}: ${label}`, () => {

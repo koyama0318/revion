@@ -41,6 +41,9 @@ export function extendReducer(
 ): Reducer<State, Event> {
   return (state: State, event: Event) => {
     const newState = reducer(state, event)
+    if (event.version != state.version + 1) {
+      throw new Error('Version mismatch')
+    }
     return {
       ...newState,
       version: event.version

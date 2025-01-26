@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "declaration": true, // 型宣言ファイルを生成
+    "emitDeclarationOnly": true, // 型のみ出力（オプション）
+    "outDir": "./dist", // 出力先ディレクトリ
+    "rootDir": "./src",
+
     // Enable latest features
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
@@ -12,7 +17,6 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
 
     // Best practices
     "strict": true,
@@ -23,5 +27,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "tests/**/*"]
 }

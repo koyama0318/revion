@@ -1,14 +1,14 @@
 import { describe } from 'bun:test'
 import { makeEventListener } from '../../src/eventListener'
-import { testListener } from '../../src/test'
-import type { TestCaseEvent } from '../../src/types/testCase'
+import type { UnitTestCaseEvent } from '../../src/types/testCase'
+import { testListener } from '../../src/unitTest'
 import type { CounterEvent } from './counter'
 import { policy } from './counter'
 import { projection } from './counter.listener'
 
 describe('counter listener test with test library', () => {
   const listener = makeEventListener('counter', policy, projection)
-  const testCases: TestCaseEvent<CounterEvent>[] = [
+  const UnitTestCases: UnitTestCaseEvent<CounterEvent>[] = [
     {
       label: 'created event',
       event: {
@@ -40,5 +40,5 @@ describe('counter listener test with test library', () => {
       }
     }
   ]
-  testListener(listener, testCases)
+  testListener(listener, UnitTestCases)
 })

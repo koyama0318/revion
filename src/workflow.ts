@@ -1,5 +1,5 @@
 import type { Aggregate, Command, Event } from './types/aggregate'
-import type { CommandDispatcher } from './types/commandDispatcher'
+import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
 import type { EventStore } from './types/eventStore'
 import type { ICommandWorkflow, IEventListenerWorkflow } from './types/workflow'

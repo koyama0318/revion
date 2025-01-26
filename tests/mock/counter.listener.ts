@@ -1,8 +1,11 @@
-import type { Projection } from '../../src/types/eventListener'
+import type { CaseProjections } from '../../src/types/eventListener'
 import type { CounterEvent } from './counter'
 
-const projection: Projection<CounterEvent> = event => {
-  console.log(event)
+const projection: CaseProjections<CounterEvent> = {
+  created: () => {},
+  added: () => {},
+  subtracted: () => {},
+  reseted: () => {}
 }
 
 export { projection }

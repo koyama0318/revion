@@ -37,17 +37,16 @@ const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
 
 const reducer: CaseReducers<CounterState, CounterEvent> = {
   created: state => {
-    state.type = 'updated'
-    state.value = 0
+    return { ...state, type: 'updated', value: 0 }
   },
   added: (state, event) => {
-    state.value += event.payload.value
+    return { ...state, value: state.value + event.payload.value }
   },
   subtracted: (state, event) => {
-    state.value -= event.payload.value
+    return { ...state, value: state.value - event.payload.value }
   },
   reseted: state => {
-    state.value = 0
+    return { ...state, value: 0 }
   }
 }
 

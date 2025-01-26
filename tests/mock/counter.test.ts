@@ -1,11 +1,11 @@
 import { describe } from 'bun:test'
-import { testAggregate } from '../../src/test'
-import type { TestCase } from '../../src/types/testCase'
+import type { UnitTestCase } from '../../src/types/testCase'
+import { testAggregate } from '../../src/unitTest'
 import type { CounterCommand, CounterEvent, CounterState } from './counter'
 import { counter } from './counter'
 
 describe('counter aggregate test with test library', () => {
-  const cases: TestCase<CounterCommand, CounterState, CounterEvent>[] = [
+  const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
     {
       label: 'create command',
       command: {

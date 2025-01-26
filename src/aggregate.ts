@@ -84,12 +84,11 @@ function mergeReducer<S extends ReducerState, E extends ReducerEvent>(
   reducer: CaseReducers<S, E>
 ): Reducer<S, E> {
   return (state: S, event: E): S => {
-    const newState = { ...state }
     const fn = reducer[event.type as keyof typeof reducer]
     if (fn) {
-      fn(newState, event as Extract<E, { type: E['type'] }>)
+      return fn(state, event as Extract<E, { type: E['type'] }>)
     }
-    return newState
+    throw new Error(`No reducer found for event type: ${event.type}`)
   }
 }
 

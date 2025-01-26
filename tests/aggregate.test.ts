@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import { NewAggregateId } from '../src/aggregateId'
+import { AggregateId } from '../src/aggregateId'
 import type { State } from '../src/types/aggregate'
 import { counter } from './mock/counter'
 
@@ -15,7 +15,7 @@ describe('aggregate test', () => {
   it('should process a command', () => {
     const command = {
       type: 'create',
-      id: NewAggregateId('counter', undefined),
+      id: new AggregateId('counter'),
       payload: {}
     }
     const aggregate = counter.processCommand(command)
