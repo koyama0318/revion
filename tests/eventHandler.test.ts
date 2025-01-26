@@ -1,16 +1,15 @@
-import { describe, it, beforeEach, expect } from 'bun:test'
-import { Handler } from '../src/handler'
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { CommandHandler } from '../src/handler'
 import { counter } from './mock/counter'
 import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
 describe('handler test', () => {
   let store: EventStoreInMemory
-  let handler: Handler
+  let handler: CommandHandler
 
   beforeEach(() => {
     store = new EventStoreInMemory()
-    handler = new Handler(store)
-    handler.register([counter.reset()])
+    handler = new CommandHandler(store, [counter.reset()])
   })
 
   it('should dispatch a command and process events on empty store', () => {
@@ -19,7 +18,7 @@ describe('handler test', () => {
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    handler.dispatch(command)
+    handler.handle(command)
 
     expect(store.events).toEqual([
       {
@@ -48,7 +47,7 @@ describe('handler test', () => {
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    handler.dispatch(command)
+    handler.handle(command)
 
     expect(store.events).toEqual([
       {
@@ -61,7 +60,7 @@ describe('handler test', () => {
       {
         type: 'added',
         id: { type: 'counter', id: '123' },
-        payload: { value: 1 },
+        payload: { value: 1, isMax: false },
         version: 2,
         timestamp: expect.anything()
       }
@@ -74,7 +73,7 @@ describe('handler test', () => {
       id: { type: 'unknown', id: '123' },
       payload: {}
     }
-    expect(() => handler.dispatch(command)).toThrow(
+    expect(() => handler.handle(command)).toThrow(
       'Aggregate for type unknown not found'
     )
   })

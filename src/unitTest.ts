@@ -1,17 +1,18 @@
-import { test, expect } from 'bun:test'
+import { expect, test } from 'bun:test'
+import type { Aggregate } from './types/aggregate'
+import type { EventListener } from './types/eventListener'
 import type {
   ReducerCommand,
   ReducerEvent,
   ReducerState
 } from './types/reducer'
-import type { Aggregate } from './types/aggregate'
-import type { TestCase } from './types/testCase'
+import type { UnitTestCase, UnitTestCaseEvent } from './types/testCase'
 
 export function testAggregate<
   S extends ReducerState,
   C extends ReducerCommand,
   E extends ReducerEvent
->(aggregate: Aggregate, cases: TestCase<C, S, E>[]) {
+>(aggregate: Aggregate, cases: UnitTestCase<C, S, E>[]) {
   aggregate.reset()
 
   cases.forEach(({ label, command, expectedEvent, expectedState }, index) => {
@@ -32,6 +33,18 @@ export function testAggregate<
       expect(lastEvent.payload).toEqual(expectedEvent.payload)
 
       aggregate.commitEvents()
+    })
+  })
+}
+
+export function testListener<E extends ReducerEvent>(
+  listener: EventListener,
+  cases: UnitTestCaseEvent<E>[]
+) {
+  cases.forEach(({ label, event, expectedCommand }, index) => {
+    test(`${listener.type}#${index + 1}: ${label}`, () => {
+      const command = listener.policy(event)
+      expect(command).toEqual(expectedCommand)
     })
   })
 }

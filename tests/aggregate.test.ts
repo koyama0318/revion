@@ -1,7 +1,7 @@
-import { describe, it, beforeEach, expect } from 'bun:test'
-import { counter } from './mock/counter'
-import { NewAggregateId } from '../src/aggregateId'
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { AggregateId } from '../src/aggregateId'
 import type { State } from '../src/types/aggregate'
+import { counter } from './mock/counter'
 
 interface ExtendedState extends State {
   value: number
@@ -15,7 +15,7 @@ describe('aggregate test', () => {
   it('should process a command', () => {
     const command = {
       type: 'create',
-      id: NewAggregateId('counter', undefined),
+      id: new AggregateId('counter'),
       payload: {}
     }
     const aggregate = counter.processCommand(command)
@@ -106,7 +106,7 @@ describe('aggregate test', () => {
       {
         type: 'added',
         id: { type: 'counter', id: '123' },
-        payload: { value: 1 },
+        payload: { value: 1, isMax: false },
         version: 2,
         timestamp: new Date()
       }
@@ -119,7 +119,7 @@ describe('aggregate test', () => {
     const expectedEvent = {
       type: 'added',
       id: { type: 'counter', id: '123' },
-      payload: { value: 1 },
+      payload: { value: 1, isMax: false },
       version: 3,
       timestamp: expect.any(Date)
     }

@@ -1,11 +1,11 @@
 import { describe } from 'bun:test'
-import type { CounterState, CounterCommand, CounterEvent } from './counter'
+import type { UnitTestCase } from '../../src/types/testCase'
+import { testAggregate } from '../../src/unitTest'
+import type { CounterCommand, CounterEvent, CounterState } from './counter'
 import { counter } from './counter'
-import type { TestCase } from '../../src/types/testCase'
-import { testAggregate } from '../../src/testAggregate'
 
 describe('counter aggregate test with test library', () => {
-  const cases: TestCase<CounterCommand, CounterState, CounterEvent>[] = [
+  const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
     {
       label: 'create command',
       command: {
@@ -23,7 +23,7 @@ describe('counter aggregate test with test library', () => {
         id: { type: 'counter', id: '123' },
         payload: {}
       },
-      expectedEvent: { type: 'added', payload: { value: 1 } },
+      expectedEvent: { type: 'added', payload: { value: 1, isMax: false } },
       expectedState: { type: 'updated', value: 1 }
     },
     {
@@ -43,7 +43,7 @@ describe('counter aggregate test with test library', () => {
         id: { type: 'counter', id: '123' },
         payload: {}
       },
-      expectedEvent: { type: 'added', payload: { value: 1 } },
+      expectedEvent: { type: 'added', payload: { value: 1, isMax: false } },
       expectedState: { type: 'updated', value: 1 }
     }
   ]

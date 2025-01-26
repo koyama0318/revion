@@ -1,5 +1,5 @@
+import type { AggregateId, Event } from '../../src/types/aggregate'
 import type { EventStore } from '../../src/types/eventStore'
-import type { Event, AggregateId } from '../../src/types/aggregate'
 
 export class EventStoreInMemory implements EventStore {
   events: Event[] = []
@@ -8,6 +8,10 @@ export class EventStoreInMemory implements EventStore {
     return this.events.filter(
       event => event.id.type === id.type && event.id.id === id.id
     )
+  }
+
+  all(): Event[] {
+    return this.events
   }
 
   save(events: Event[]) {

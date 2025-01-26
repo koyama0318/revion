@@ -1,13 +1,14 @@
-import type { State, Command, Event, Aggregate } from './types/aggregate'
+import { extendEmitter, extendReducer, extendState } from './extendReducer'
+import type { Aggregate, Command, Event, State } from './types/aggregate'
 import type {
-  ReducerState,
+  CaseEmitters,
+  CaseReducers,
+  Emitter,
+  Reducer,
   ReducerCommand,
   ReducerEvent,
-  Emitter,
-  Reducer
+  ReducerState
 } from './types/reducer'
-import { extendState, extendEmitter, extendReducer } from './extendReducer'
-import type { CaseEmitters, CaseReducers } from './types/caseReducer'
 
 export class AggregateImpl implements Aggregate {
   type: string
@@ -69,7 +70,7 @@ function mergeEmitter<
   S extends ReducerState,
   C extends ReducerCommand,
   E extends ReducerEvent
->(emitter: CaseEmitters<S, C, E>): (state: S, command: C) => E {
+>(emitter: CaseEmitters<S, C, E>): Emitter<S, C, E> {
   return (state: S, command: C): E => {
     const fn = emitter[command.type as keyof typeof emitter]
     if (fn) {
@@ -81,14 +82,13 @@ function mergeEmitter<
 
 function mergeReducer<S extends ReducerState, E extends ReducerEvent>(
   reducer: CaseReducers<S, E>
-): (state: S, event: E) => S {
+): Reducer<S, E> {
   return (state: S, event: E): S => {
-    const newState = { ...state }
     const fn = reducer[event.type as keyof typeof reducer]
     if (fn) {
-      fn(newState, event as Extract<E, { type: E['type'] }>)
+      return fn(state, event as Extract<E, { type: E['type'] }>)
     }
-    return newState
+    throw new Error(`No reducer found for event type: ${event.type}`)
   }
 }
 

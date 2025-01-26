@@ -1,16 +1,16 @@
-import { describe, it, beforeEach, afterEach, expect } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { Aggregate } from '../src/types/aggregate'
-import { Workflow } from '../src/workflow'
+import { CommandWorkflow } from '../src/workflow'
 import { counter } from './mock/counter'
 import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
 describe('workflow test', () => {
   const store = new EventStoreInMemory()
-  let workflow: Workflow
+  let workflow: CommandWorkflow
   let aggregate: Aggregate
 
   beforeEach(() => {
-    workflow = new Workflow(store)
+    workflow = new CommandWorkflow(store)
     aggregate = counter.reset()
   })
 
@@ -66,7 +66,7 @@ describe('workflow test', () => {
       {
         type: 'added',
         id: { type: 'counter', id: '123' },
-        payload: { value: 1 },
+        payload: { value: 1, isMax: false },
         version: 2,
         timestamp: expect.anything()
       }
