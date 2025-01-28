@@ -1,0 +1,6 @@
+.github/
+.vscode/
+.node-version
+.npmrc
+.env
+tests/

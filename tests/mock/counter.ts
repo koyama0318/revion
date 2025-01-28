@@ -1,10 +1,7 @@
 import { makeAggregate } from '../../src/aggregate'
 import type { AggregateId } from '../../src/types/aggregate'
-import type {
-  CaseEmitters,
-  CasePolicies,
-  CaseReducers
-} from '../../src/types/reducer'
+import type { CasePolicies } from '../../src/types/eventListener'
+import type { CaseEmitters, CaseReducers } from '../../src/types/reducer'
 
 type CounterState =
   | { type: 'initial'; value: number }

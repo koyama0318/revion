@@ -1,9 +1,20 @@
 {
   "name": "revion",
+  "description": "Revion is a library for CQRS/Event Sourcing.",
   "module": "index.ts",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "version": "0.0.3",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koyama0318/revion.git"
+  },
   "scripts": {
     "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
     "dev": "bun --hot run src/index.ts",
