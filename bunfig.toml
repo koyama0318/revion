@@ -1,0 +1,5 @@
+name = "revion"
+version = "0.0.1"
+description = "Revion is a library for CQRS/Event Sourcing."
+entry = "src/index.ts"
+outdir = "dist"

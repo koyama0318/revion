@@ -14,4 +14,10 @@ export type {
   CaseEmitters as Emitter,
   CaseReducers as Reducer
 } from './types/reducer'
-export type { UnitTestCase, UnitTestCaseEvent } from './types/testCase'
+export type {
+  EventUnitTestCase,
+  EventUnitTestResult,
+  UnitTestCase,
+  UnitTestResult
+} from './types/testCase'
+export { aggregateTest, eventListenerTest } from './unitTest'

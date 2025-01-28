@@ -1,14 +1,14 @@
-import { describe } from 'bun:test'
+import { describe, expect, test } from 'bun:test'
 import { makeEventListener } from '../../src/eventListener'
-import type { UnitTestCaseEvent } from '../../src/types/testCase'
-import { testListener } from '../../src/unitTest'
+import type { EventUnitTestCase } from '../../src/types/testCase'
+import { eventListenerTest } from '../../src/unitTest'
 import type { CounterEvent } from './counter'
 import { policy } from './counter'
 import { projection } from './counter.listener'
 
 describe('counter listener test with test library', () => {
   const listener = makeEventListener('counter', policy, projection)
-  const UnitTestCases: UnitTestCaseEvent<CounterEvent>[] = [
+  const UnitTestCases: EventUnitTestCase<CounterEvent>[] = [
     {
       label: 'created event',
       event: {
@@ -40,5 +40,11 @@ describe('counter listener test with test library', () => {
       }
     }
   ]
-  testListener(listener, UnitTestCases)
+  const results = eventListenerTest(listener, UnitTestCases)
+
+  for (const result of results) {
+    test(result.label, () => {
+      expect(result.expected).toEqual(result.output)
+    })
+  }
 })

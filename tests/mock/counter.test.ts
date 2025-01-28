@@ -1,6 +1,6 @@
-import { describe } from 'bun:test'
+import { describe, expect, test } from 'bun:test'
 import type { UnitTestCase } from '../../src/types/testCase'
-import { testAggregate } from '../../src/unitTest'
+import { aggregateTest } from '../../src/unitTest'
 import type { CounterCommand, CounterEvent, CounterState } from './counter'
 import { counter } from './counter'
 
@@ -47,5 +47,12 @@ describe('counter aggregate test with test library', () => {
       expectedState: { type: 'updated', value: 1 }
     }
   ]
-  testAggregate(counter, cases)
+
+  const results = aggregateTest(counter, cases)
+
+  for (const result of results) {
+    test(result.label, () => {
+      expect(result.expected).toEqual(result.output)
+    })
+  }
 })
