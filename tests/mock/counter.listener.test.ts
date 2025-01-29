@@ -1,50 +1,45 @@
 import { describe, expect, test } from 'bun:test'
-import { makeEventListener } from '../../src/eventListener'
 import type { EventUnitTestCase } from '../../src/types/testCase'
 import { eventListenerTest } from '../../src/unitTest'
 import type { CounterEvent } from './counter'
-import { policy } from './counter'
-import { projection } from './counter.listener'
+import { counterListener } from './counter'
+
+const cases: EventUnitTestCase<CounterEvent>[] = [
+  {
+    event: {
+      type: 'created',
+      id: { type: 'counter', id: '123' },
+      payload: { value: 0 },
+      version: 1,
+      timestamp: new Date()
+    },
+    command: {
+      type: 'increment',
+      id: { type: 'counter', id: '123' },
+      payload: {}
+    }
+  },
+  {
+    event: {
+      type: 'added',
+      id: { type: 'counter', id: '123' },
+      payload: { value: 1, isMax: true },
+      version: 1,
+      timestamp: new Date()
+    },
+    command: {
+      type: 'reset',
+      id: { type: 'counter', id: '123' },
+      payload: {}
+    }
+  }
+]
 
 describe('counter listener test with test library', () => {
-  const listener = makeEventListener('counter', policy, projection)
-  const UnitTestCases: EventUnitTestCase<CounterEvent>[] = [
-    {
-      label: 'created event',
-      event: {
-        type: 'created',
-        id: { type: 'counter', id: '123' },
-        payload: { value: 0 },
-        version: 1,
-        timestamp: new Date()
-      },
-      expectedCommand: {
-        type: 'increment',
-        id: { type: 'counter', id: '123' },
-        payload: {}
-      }
-    },
-    {
-      label: 'added event',
-      event: {
-        type: 'added',
-        id: { type: 'counter', id: '123' },
-        payload: { value: 1, isMax: true },
-        version: 1,
-        timestamp: new Date()
-      },
-      expectedCommand: {
-        type: 'reset',
-        id: { type: 'counter', id: '123' },
-        payload: {}
-      }
+  test(`counter#1: increment and decrement`, () => {
+    const results = eventListenerTest(counterListener, cases)
+    for (const result of results) {
+      expect(result.expected).toEqual(result.actual)
     }
-  ]
-  const results = eventListenerTest(listener, UnitTestCases)
-
-  for (const result of results) {
-    test(result.label, () => {
-      expect(result.expected).toEqual(result.output)
-    })
-  }
+  })
 })

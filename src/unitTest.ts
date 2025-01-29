@@ -20,7 +20,7 @@ export function aggregateTest<
   aggregate.reset()
 
   const results: UnitTestResult[] = []
-  cases.forEach(({ label, command, expectedEvent, expectedState }, index) => {
+  cases.forEach(({ command, event, state }) => {
     aggregate.processCommand(command)
 
     const lastEvent = aggregate.uncommittedEvents.at(-1)
@@ -31,13 +31,12 @@ export function aggregateTest<
     aggregate.commitEvents()
 
     results.push({
-      label: `${aggregate.type}#${index + 1}: ${label}`,
       expected: {
-        state: { ...aggregate.state, ...expectedState },
-        eventType: expectedEvent.type,
-        eventPayload: expectedEvent.payload
+        state: { ...aggregate.state, ...state },
+        eventType: event.type,
+        eventPayload: event.payload
       },
-      output: {
+      actual: {
         state: aggregate.state,
         eventType: lastEvent.type,
         eventPayload: lastEvent.payload
@@ -54,12 +53,11 @@ export function eventListenerTest<E extends ReducerEvent>(
 ): EventUnitTestResult[] {
   const results: EventUnitTestResult[] = []
 
-  cases.forEach(({ label, event, expectedCommand }, index) => {
-    const command = listener.policy(event)
+  cases.forEach(({ event, command }) => {
+    const actualCommand = listener.policy(event)
     results.push({
-      label: `${listener.type}#${index + 1}: ${label}`,
-      expected: { command: expectedCommand },
-      output: { command }
+      expected: { command },
+      actual: { command: actualCommand }
     })
   })
 

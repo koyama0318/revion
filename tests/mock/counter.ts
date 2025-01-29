@@ -1,6 +1,10 @@
 import { makeAggregate } from '../../src/aggregate'
+import { makeEventListener } from '../../src/eventListener'
 import type { AggregateId } from '../../src/types/aggregate'
-import type { CasePolicies } from '../../src/types/eventListener'
+import type {
+  CasePolicies,
+  CaseProjections
+} from '../../src/types/eventListener'
 import type { CaseEmitters, CaseReducers } from '../../src/types/reducer'
 
 type CounterState =
@@ -65,8 +69,16 @@ const policy: CasePolicies<CounterEvent> = {
   reseted: () => undefined
 }
 
+const projection: CaseProjections<CounterEvent> = {
+  created: () => {},
+  added: () => {},
+  subtracted: () => {},
+  reseted: () => {}
+}
+
 export const initialState: CounterState = { type: 'initial', value: 0 }
 export const counter = makeAggregate('counter', initialState, emitter, reducer)
+export const counterListener = makeEventListener('counter', policy, projection)
 
 export { emitter, policy, reducer }
 export type { CounterCommand, CounterEvent, CounterState }

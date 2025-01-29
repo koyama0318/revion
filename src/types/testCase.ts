@@ -6,38 +6,34 @@ export interface UnitTestCase<
   S extends ReducerState,
   E extends ReducerEvent
 > {
-  label?: string
   command: C
-  expectedEvent: E
-  expectedState: S
+  event: E
+  state: S
 }
 
 export type UnitTestResult = {
-  label: string
   expected: {
-    state: unknown
     eventType: string
     eventPayload: unknown
+    state: unknown
   }
-  output: {
-    state: unknown
+  actual: {
     eventType: string
     eventPayload: unknown
+    state: unknown
   }
 }
 
 export interface EventUnitTestCase<E extends ReducerEvent> {
-  label?: string
   event: E & Event
-  expectedCommand: Command
+  command: Command | undefined
 }
 
 export type EventUnitTestResult = {
-  label: string
   expected: {
     command: Command | undefined
   }
-  output: {
+  actual: {
     command: Command | undefined
   }
 }
