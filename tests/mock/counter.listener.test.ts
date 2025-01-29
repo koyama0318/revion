@@ -29,8 +29,7 @@ const cases: EventUnitTestCase<CounterEvent>[] = [
     },
     command: {
       type: 'reset',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      id: { type: 'counter', id: '123' }
     }
   }
 ]

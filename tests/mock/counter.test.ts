@@ -8,8 +8,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   {
     command: {
       type: 'create',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      id: { type: 'counter', id: '123' }
     },
     event: { type: 'created', payload: { value: 0 } },
     state: { type: 'updated', value: 0 }
@@ -17,8 +16,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   {
     command: {
       type: 'increment',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      id: { type: 'counter', id: '123' }
     },
     event: { type: 'added', payload: { value: 1, isMax: false } },
     state: { type: 'updated', value: 1 }
@@ -26,8 +24,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   {
     command: {
       type: 'decrement',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      id: { type: 'counter', id: '123' }
     },
     event: { type: 'subtracted', payload: { value: 1 } },
     state: { type: 'updated', value: 0 }
@@ -35,8 +32,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   {
     command: {
       type: 'increment',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      id: { type: 'counter', id: '123' }
     },
     event: { type: 'added', payload: { value: 1, isMax: false } },
     state: { type: 'updated', value: 1 }
