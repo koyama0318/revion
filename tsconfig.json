@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "declaration": true, // 型宣言ファイルを生成
-    "emitDeclarationOnly": true, // 型のみ出力（オプション）
-    "outDir": "./dist", // 出力先ディレクトリ
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
     "rootDir": "./src",
 
     // Enable latest features

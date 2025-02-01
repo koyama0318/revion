@@ -12,13 +12,13 @@ describe('handler test', () => {
     handler = new CommandHandler(store, [counter.reset()])
   })
 
-  it('should dispatch a command and process events on empty store', () => {
+  it('should dispatch a command and process events on empty store', async () => {
     const command = {
       type: 'create',
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    handler.handle(command)
+    await handler.handle(command)
 
     expect(store.events).toEqual([
       {
@@ -31,7 +31,7 @@ describe('handler test', () => {
     ])
   })
 
-  it('should dispatch a command and process events on non empty store', () => {
+  it('should dispatch a command and process events on non empty store', async () => {
     store.events = [
       {
         type: 'created',
@@ -47,7 +47,7 @@ describe('handler test', () => {
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    handler.handle(command)
+    await handler.handle(command)
 
     expect(store.events).toEqual([
       {
@@ -67,13 +67,13 @@ describe('handler test', () => {
     ])
   })
 
-  it('should throw an error if the aggregate is not found', () => {
+  it('should throw an error if the aggregate is not found', async () => {
     const command = {
       type: 'create',
       id: { type: 'unknown', id: '123' },
       payload: {}
     }
-    expect(() => handler.handle(command)).toThrow(
+    await expect(handler.handle(command)).rejects.toThrow(
       'Aggregate for type unknown not found'
     )
   })

@@ -11,8 +11,8 @@ export class CommandWorkflow implements ICommandWorkflow {
     this.eventStore = eventStore
   }
 
-  execute(aggregate: Aggregate, command: Command) {
-    const storedEvents = this.eventStore.load(command.id)
+  async execute(aggregate: Aggregate, command: Command) {
+    const storedEvents = await this.eventStore.load(command.id)
     aggregate.applyEvents(storedEvents).processCommand(command)
 
     const events = aggregate.uncommittedEvents
@@ -28,10 +28,10 @@ export class EventListenerWorkflow implements IEventListenerWorkflow {
     this.dispatcher = dispatcher
   }
 
-  receive(listener: EventListener, event: Event): void {
+  async receive(listener: EventListener, event: Event): Promise<void> {
     const command = listener.policy(event)
     if (command) {
-      this.dispatcher.dispatch(command)
+      await this.dispatcher.dispatch(command)
     }
 
     listener.projection(event)
