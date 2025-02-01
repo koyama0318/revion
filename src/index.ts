@@ -1,5 +1,6 @@
 export { makeAggregate } from './aggregate'
-export { AggregateId as ID } from './aggregateId'
+export { newID } from './aggregateId'
+export type { AggregateId as ID } from './aggregateId'
 export { makeEventListener } from './eventListener'
 export { CommandHandler, EventHandler } from './handler'
 export { integrationTest } from './integrationTest'

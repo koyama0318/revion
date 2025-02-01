@@ -1,6 +1,10 @@
 import { makeAggregate } from '../../src/aggregate'
+import { makeEventListener } from '../../src/eventListener'
 import type { AggregateId } from '../../src/types/aggregate'
-import type { CasePolicies } from '../../src/types/eventListener'
+import type {
+  CasePolicies,
+  CaseProjections
+} from '../../src/types/eventListener'
 import type { CaseEmitters, CaseReducers } from '../../src/types/reducer'
 
 type CounterState =
@@ -8,16 +12,16 @@ type CounterState =
   | { type: 'updated'; value: number }
 
 type CounterCommand =
-  | { type: 'create'; id: AggregateId; payload: object }
-  | { type: 'increment'; id: AggregateId; payload: object }
-  | { type: 'decrement'; id: AggregateId; payload: object }
-  | { type: 'reset'; id: AggregateId; payload: object }
+  | { type: 'create'; id: AggregateId }
+  | { type: 'increment'; id: AggregateId }
+  | { type: 'decrement'; id: AggregateId }
+  | { type: 'reset'; id: AggregateId }
 
 type CounterEvent =
   | { type: 'created'; payload: { value: number } }
   | { type: 'added'; payload: { value: number; isMax: boolean } }
   | { type: 'subtracted'; payload: { value: number } }
-  | { type: 'reseted'; payload: object }
+  | { type: 'reseted' }
 
 const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
   create: state => ({
@@ -29,7 +33,7 @@ const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
     payload: { value: 1, isMax: state.value + 1 > 10 }
   }),
   decrement: () => ({ type: 'subtracted', payload: { value: 1 } }),
-  reset: () => ({ type: 'reseted', payload: {} })
+  reset: () => ({ type: 'reseted' })
 }
 
 const reducer: CaseReducers<CounterState, CounterEvent> = {
@@ -57,16 +61,23 @@ const policy: CasePolicies<CounterEvent> = {
     event.payload.isMax
       ? {
           type: 'reset',
-          id: event.id,
-          payload: {}
+          id: event.id
         }
       : undefined,
   subtracted: () => undefined,
   reseted: () => undefined
 }
 
+const projection: CaseProjections<CounterEvent> = {
+  created: () => {},
+  added: () => {},
+  subtracted: () => {},
+  reseted: () => {}
+}
+
 export const initialState: CounterState = { type: 'initial', value: 0 }
 export const counter = makeAggregate('counter', initialState, emitter, reducer)
+export const counterListener = makeEventListener('counter', policy, projection)
 
 export { emitter, policy, reducer }
 export type { CounterCommand, CounterEvent, CounterState }

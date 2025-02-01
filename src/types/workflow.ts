@@ -5,10 +5,10 @@ import type { EventStore } from './eventStore'
 
 export interface ICommandWorkflow {
   eventStore: EventStore
-  execute(aggregate: Aggregate, command: Command): void
+  execute(aggregate: Aggregate, command: Command): Promise<void>
 }
 
 export interface IEventListenerWorkflow {
   dispatcher: CommandDispatcher
-  receive(listener: EventListener, event: Event): void
+  receive(listener: EventListener, event: Event): Promise<void>
 }

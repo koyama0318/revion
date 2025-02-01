@@ -7,12 +7,12 @@ export interface ReducerState {
 export interface ReducerCommand {
   type: string
   id: AggregateId
-  payload: unknown
+  payload?: unknown
 }
 
 export interface ReducerEvent {
   type: string
-  payload: unknown
+  payload?: unknown
 }
 
 export type Emitter<

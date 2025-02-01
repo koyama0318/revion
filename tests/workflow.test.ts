@@ -18,13 +18,13 @@ describe('workflow test', () => {
     store.events = []
   })
 
-  it('should execute a command', () => {
+  it('should execute a command', async () => {
     const command = {
       type: 'create',
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    workflow.execute(aggregate, command)
+    await workflow.execute(aggregate, command)
 
     expect(store.events).toEqual([
       {
@@ -37,7 +37,7 @@ describe('workflow test', () => {
     ])
   })
 
-  it('should execute a command and process events', () => {
+  it('should execute a command and process events', async () => {
     store.events = [
       {
         type: 'created',
@@ -53,7 +53,7 @@ describe('workflow test', () => {
       id: { type: 'counter', id: '123' },
       payload: {}
     }
-    workflow.execute(aggregate, command)
+    await workflow.execute(aggregate, command)
 
     expect(store.events).toEqual([
       {

@@ -20,7 +20,7 @@ export class CommandHandler {
     }
   }
 
-  handle(command: ReducerCommand): void {
+  async handle(command: ReducerCommand): Promise<void> {
     const type = command.id.type
     const factory = this.aggregateFactories.get(type)
     if (!factory) {
@@ -28,7 +28,7 @@ export class CommandHandler {
     }
 
     const aggregate = factory().reset()
-    this.workflow.execute(aggregate, extendCommand(command))
+    await this.workflow.execute(aggregate, extendCommand(command))
   }
 }
 
@@ -44,13 +44,13 @@ export class EventHandler {
     }
   }
 
-  handle(event: Event): void {
+  async handle(event: Event): Promise<void> {
     const listener = this.listenerFactories.get(event.id.type)
     if (!listener) {
       console.warn(`Listener for type ${event.id.type} not found`)
       return
     }
 
-    this.workflow.receive(listener(), event)
+    await this.workflow.receive(listener(), event)
   }
 }

@@ -1,7 +1,6 @@
 import type { AggregateId, Event } from './aggregate'
 
 export interface EventStore {
-  load(id: AggregateId): Event[]
-  all(): Event[]
-  save(events: Event[]): void
+  load(id: AggregateId): Promise<Event[]>
+  save(events: Event[]): Promise<void>
 }

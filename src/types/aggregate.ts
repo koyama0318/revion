@@ -6,13 +6,13 @@ export interface State {
 export interface Command {
   type: string
   id: AggregateId
-  payload: unknown
+  payload?: unknown
 }
 
 export interface Event {
   type: string
   id: AggregateId
-  payload: unknown
+  payload?: unknown
   version: number
   timestamp: Date
 }
