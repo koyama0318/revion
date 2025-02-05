@@ -9,7 +9,7 @@ export type CasePolicies<E extends ReducerEvent> = {
   [K in E['type']]: Policy<Extract<E, { type: K }>>
 }
 
-export type Projection<E extends ReducerEvent> = (event: E) => void
+export type Projection<E extends ReducerEvent> = (event: E) => Promise<void>
 
 export type CaseProjections<E extends ReducerEvent> = {
   [K in E['type']]: Projection<Extract<E, { type: K }>>

@@ -11,17 +11,13 @@ class EventStoreInMemory implements EventStore {
     this.events = events
   }
 
-  load(id: AggregateId): Event[] {
+  async load(id: AggregateId): Promise<Event[]> {
     return this.events.filter(
       event => event.id.type === id.type && event.id.id === id.id
     )
   }
 
-  all(): Event[] {
-    return this.events
-  }
-
-  save(events: Event[]) {
+  async save(events: Event[]) {
     this.events.push(...events)
   }
 }
@@ -33,16 +29,16 @@ class CommandDispatcherInMemory implements CommandDispatcher {
     this.commands = commands
   }
 
-  dispatch(command: Command): void {
+  async dispatch(command: Command): Promise<void> {
     this.commands.push(command)
   }
 }
 
-export function integrationTest(
+export async function integrationTest(
   aggregates: Aggregate[],
   listeners: EventListener[],
   cases: Command[]
-): Event[] {
+): Promise<Event[]> {
   const events: Event[] = []
   const eventStore = new EventStoreInMemory(events)
   const commandHandler = new CommandHandler(eventStore, aggregates)
@@ -51,9 +47,9 @@ export function integrationTest(
   const dispatcher = new CommandDispatcherInMemory(commands)
   const eventHandler = new EventHandler(dispatcher, listeners)
 
-  const process: (command: Command) => void = command => {
+  const process = async (command: Command) => {
     const beforeEvents = [...events]
-    commandHandler.handle(command)
+    await commandHandler.handle(command)
 
     const diffEvents = [...events].filter(
       event => !beforeEvents.includes(event)
@@ -61,20 +57,20 @@ export function integrationTest(
 
     for (const event of diffEvents) {
       const beforeCommands = [...commands]
-      eventHandler.handle(event)
+      await eventHandler.handle(event)
 
       const diffCommands = [...commands].filter(
         command => !beforeCommands.includes(command)
       )
       for (const command of diffCommands) {
-        process(command)
+        await process(command)
       }
     }
   }
 
-  cases.forEach(command => {
-    process(command)
-  })
+  for (const command of cases) {
+    await process(command)
+  }
 
   return events
 }
