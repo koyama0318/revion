@@ -10,10 +10,6 @@ export class EventStoreInMemory implements EventStore {
     )
   }
 
-  all(): Event[] {
-    return this.events
-  }
-
   async save(events: Event[]) {
     this.events.push(...events)
   }

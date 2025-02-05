@@ -23,7 +23,7 @@ function mergePolicy<E extends ReducerEvent>(
 function mergeProjection<E extends ReducerEvent>(
   projections: CaseProjections<E>
 ): Projection<E> {
-  return (event: E): void => {
+  return async (event: E): Promise<void> => {
     const fn = projections[event.type as keyof typeof projections]
     if (fn) {
       return fn(event as Extract<E, { type: E['type'] }>)
