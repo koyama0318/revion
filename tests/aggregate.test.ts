@@ -21,7 +21,7 @@ describe('aggregate test', () => {
     const aggregate = counter.processCommand(command)
 
     expect(aggregate.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 0,
       version: 1
     })
@@ -59,7 +59,7 @@ describe('aggregate test', () => {
     expect(aggregate.events).toEqual([event])
     expect(aggregate.uncommittedEvents).toHaveLength(0)
     expect(aggregate.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 0,
       version: 1
     })
@@ -88,7 +88,7 @@ describe('aggregate test', () => {
     expect(aggregate.events).toEqual(events)
     expect(aggregate.uncommittedEvents).toHaveLength(0)
     expect(aggregate.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 1,
       version: 2
     })
@@ -130,7 +130,7 @@ describe('aggregate test', () => {
     expect(counter.events).toEqual(events)
     expect(counter.uncommittedEvents).toEqual([])
     expect(counter.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 1,
       version: 2
     })
@@ -141,7 +141,7 @@ describe('aggregate test', () => {
     expect(counter.events).toEqual([...events, expectedEvent])
     expect(counter.uncommittedEvents).toEqual([expectedEvent])
     expect(counter.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 2,
       version: 3
     })
@@ -152,7 +152,7 @@ describe('aggregate test', () => {
     expect(counter.events).toEqual([...events, expectedEvent])
     expect(counter.uncommittedEvents).toEqual([])
     expect(counter.state as ExtendedState).toEqual({
-      type: 'updated',
+      type: 'active',
       value: 2,
       version: 3
     })

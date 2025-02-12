@@ -1,3 +1,4 @@
+import type { ReadModelRecord } from '../utils/fake/storeInMemory'
 import type { Command, Event } from './aggregate'
 import type { ReducerCommand, ReducerEvent, ReducerState } from './reducer'
 
@@ -26,14 +27,35 @@ export type UnitTestResult = {
 
 export interface EventUnitTestCase<E extends ReducerEvent> {
   event: E & Event
-  command: Command | undefined
+  command?: Command
+  preReadModels: ReadModelRecord[]
+  readModels: ReadModelRecord[]
 }
 
 export type EventUnitTestResult = {
   expected: {
-    command: Command | undefined
+    command?: Command
+    readModels: ReadModelRecord[]
   }
   actual: {
-    command: Command | undefined
+    command?: Command
+    readModels: ReadModelRecord[]
+  }
+}
+
+export type IntegrationTestCase = {
+  commands: Command[]
+  events: Event[]
+  readModels: ReadModelRecord[]
+}
+
+export type IntegrationTestResult = {
+  expected: {
+    events: Event[]
+    readModels: ReadModelRecord[]
+  }
+  actual: {
+    events: Event[]
+    readModels: ReadModelRecord[]
   }
 }
