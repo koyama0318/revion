@@ -3,7 +3,6 @@ export { newID } from './aggregateId'
 export type { AggregateId as ID } from './aggregateId'
 export { makeEventListener } from './eventListener'
 export { CommandHandler, EventHandler } from './handler'
-export { integrationTest } from './integrationTest'
 export type { Command, Event } from './types/aggregate'
 export type { CommandDispatcher } from './types/dispatcher'
 export type {
@@ -18,7 +17,12 @@ export type {
 export type {
   EventUnitTestCase,
   EventUnitTestResult,
+  IntegrationTestCase,
+  IntegrationTestResult,
   UnitTestCase,
   UnitTestResult
 } from './types/testCase'
-export { aggregateTest, eventListenerTest } from './unitTest'
+export { FakeHandler } from './utils/fake/fakeHandler'
+export type { ReadModelRecord } from './utils/fake/storeInMemory'
+export { integrationTest } from './utils/test/integrationTest'
+export { aggregateTest, eventListenerTest } from './utils/test/unitTest'
