@@ -3,9 +3,19 @@ import type { Aggregate, Event } from './types/aggregate'
 import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
 import type { EventStore } from './types/eventStore'
+import type { Query, ReadModel } from './types/query'
+import type { ReadModelStore } from './types/readModelStore'
 import type { ReducerCommand } from './types/reducer'
-import type { ICommandWorkflow, IEventListenerWorkflow } from './types/workflow'
-import { CommandWorkflow, EventListenerWorkflow } from './workflow'
+import type {
+  ICommandWorkflow,
+  IEventListenerWorkflow,
+  IQueryWorkflow
+} from './types/workflow'
+import {
+  CommandWorkflow,
+  EventListenerWorkflow,
+  QueryWorkflow
+} from './workflow'
 
 export class CommandHandler {
   readonly workflow: ICommandWorkflow
@@ -36,8 +46,12 @@ export class EventHandler {
   private readonly workflow: IEventListenerWorkflow
   private readonly listenerFactories: Map<string, () => EventListener>
 
-  constructor(dispatcher: CommandDispatcher, listeners: EventListener[] = []) {
-    this.workflow = new EventListenerWorkflow(dispatcher)
+  constructor(
+    dispatcher: CommandDispatcher,
+    store: ReadModelStore,
+    listeners: EventListener[] = []
+  ) {
+    this.workflow = new EventListenerWorkflow(dispatcher, store)
     this.listenerFactories = new Map()
     for (const listener of listeners) {
       this.listenerFactories.set(listener.type, () => listener)
@@ -52,5 +66,17 @@ export class EventHandler {
     }
 
     await this.workflow.receive(listener(), event)
+  }
+}
+
+export class QueryHandler {
+  readonly workflow: IQueryWorkflow
+
+  constructor(store: ReadModelStore) {
+    this.workflow = new QueryWorkflow(store)
+  }
+
+  async query<T extends ReadModel>(query: Query<T>): Promise<T[]> {
+    return await this.workflow.query(query)
   }
 }

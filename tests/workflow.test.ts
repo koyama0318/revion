@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { Aggregate } from '../src/types/aggregate'
+import { EventStoreInMemory } from '../src/utils/fake/storeInMemory'
 import { CommandWorkflow } from '../src/workflow'
 import { counter } from './mock/counter'
-import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
 describe('workflow test', () => {
-  const store = new EventStoreInMemory()
+  const store = new EventStoreInMemory([])
   let workflow: CommandWorkflow
   let aggregate: Aggregate
 

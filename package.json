@@ -3,7 +3,7 @@
   "description": "Revion is a library for CQRS/Event Sourcing.",
   "module": "index.ts",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",

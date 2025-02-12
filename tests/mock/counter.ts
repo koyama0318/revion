@@ -6,10 +6,11 @@ import type {
   CaseProjections
 } from '../../src/types/eventListener'
 import type { CaseEmitters, CaseReducers } from '../../src/types/reducer'
+import type { UserCounterReadModel } from './userCounter'
 
 type CounterState =
   | { type: 'initial'; value: number }
-  | { type: 'updated'; value: number }
+  | { type: 'active'; value: number }
 
 type CounterCommand =
   | { type: 'create'; id: AggregateId }
@@ -38,7 +39,7 @@ const emitter: CaseEmitters<CounterState, CounterCommand, CounterEvent> = {
 
 const reducer: CaseReducers<CounterState, CounterEvent> = {
   created: state => {
-    return { ...state, type: 'updated', value: 0 }
+    return { ...state, type: 'active', value: 0 }
   },
   added: (state, event) => {
     return { ...state, value: state.value + event.payload.value }
@@ -58,21 +59,62 @@ const policy: CasePolicies<CounterEvent> = {
     payload: {}
   }),
   added: event =>
-    event.payload.isMax
-      ? {
-          type: 'reset',
-          id: event.id
-        }
-      : undefined,
-  subtracted: () => undefined,
-  reseted: () => undefined
+    event.payload.isMax ? { type: 'reset', id: event.id } : undefined
 }
 
 const projection: CaseProjections<CounterEvent> = {
-  created: () => {},
-  added: () => {},
-  subtracted: () => {},
-  reseted: () => {}
+  created: async (store, event) => {
+    const userCounter = await store.fetchById<UserCounterReadModel>({
+      type: 'userCounter',
+      id: event.id.id
+    })
+    if (userCounter) {
+      return await store.upsert({
+        ...userCounter,
+        count: 0
+      })
+    }
+    await store.upsert({
+      id: { type: 'userCounter', id: event.id.id },
+      count: 0
+    })
+  },
+  added: async (store, event) => {
+    const userCounter = await store.fetchById<UserCounterReadModel>({
+      type: 'userCounter',
+      id: event.id.id
+    })
+    if (userCounter) {
+      await store.upsert({
+        ...userCounter,
+        count: userCounter.count + event.payload.value
+      })
+    }
+  },
+  subtracted: async (store, event) => {
+    const userCounter = await store.fetchById<UserCounterReadModel>({
+      type: 'userCounter',
+      id: event.id.id
+    })
+    if (userCounter) {
+      await store.upsert({
+        ...userCounter,
+        count: userCounter.count - event.payload.value
+      })
+    }
+  },
+  reseted: async (store, event) => {
+    const userCounter = await store.fetchById<UserCounterReadModel>({
+      type: 'userCounter',
+      id: event.id.id
+    })
+    if (userCounter) {
+      await store.upsert({
+        ...userCounter,
+        count: 0
+      })
+    }
+  }
 }
 
 export const initialState: CounterState = { type: 'initial', value: 0 }

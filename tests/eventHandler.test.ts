@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { CommandHandler } from '../src/handler'
+import { EventStoreInMemory } from '../src/utils/fake/storeInMemory'
 import { counter } from './mock/counter'
-import { EventStoreInMemory } from './mock/eventStoreInMemory'
 
 describe('handler test', () => {
   let store: EventStoreInMemory
   let handler: CommandHandler
 
   beforeEach(() => {
-    store = new EventStoreInMemory()
+    store = new EventStoreInMemory([])
     handler = new CommandHandler(store, [counter.reset()])
   })
 

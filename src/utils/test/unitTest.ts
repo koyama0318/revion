@@ -1,16 +1,17 @@
-import type { Aggregate } from './types/aggregate'
-import type { EventListener } from './types/eventListener'
+import type { Aggregate } from '../../types/aggregate'
+import type { EventListener } from '../../types/eventListener'
 import type {
   ReducerCommand,
   ReducerEvent,
   ReducerState
-} from './types/reducer'
+} from '../../types/reducer'
 import type {
   EventUnitTestCase,
   EventUnitTestResult,
   UnitTestCase,
   UnitTestResult
-} from './types/testCase'
+} from '../../types/testCase'
+import { ReadModelStoreInMemory } from '../fake/storeInMemory'
 
 export function aggregateTest<
   S extends ReducerState,
@@ -47,17 +48,27 @@ export function aggregateTest<
   return results
 }
 
-export function eventListenerTest<E extends ReducerEvent>(
+export async function eventListenerTest<E extends ReducerEvent>(
   listener: EventListener,
   cases: EventUnitTestCase<E>[]
-): EventUnitTestResult[] {
+): Promise<EventUnitTestResult[]> {
   const results: EventUnitTestResult[] = []
 
-  cases.forEach(({ event, command }) => {
+  cases.forEach(async ({ event, command, preReadModels, readModels }) => {
     const actualCommand = listener.policy(event)
+
+    const store = new ReadModelStoreInMemory(preReadModels)
+    await listener.projection(store, event)
+
     results.push({
-      expected: { command },
-      actual: { command: actualCommand }
+      expected: {
+        command,
+        readModels: readModels
+      },
+      actual: {
+        command: actualCommand,
+        readModels: store.records
+      }
     })
   })
 
