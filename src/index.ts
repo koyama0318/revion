@@ -10,6 +10,7 @@ export type {
   CaseProjections as Projection
 } from './types/eventListener'
 export type { EventStore } from './types/eventStore'
+export type { Query, ReadModel } from './types/query'
 export type {
   CaseEmitters as Emitter,
   CaseReducers as Reducer
