@@ -43,7 +43,9 @@ export class AggregateImpl implements Aggregate {
   }
 
   applyEvents(events: Event[]): this {
-    events.forEach(event => this.applyEvent(event))
+    for (const event of events) {
+      this.applyEvent(event)
+    }
     return this
   }
 

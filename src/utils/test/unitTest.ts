@@ -21,7 +21,7 @@ export function aggregateTest<
   aggregate.reset()
 
   const results: UnitTestResult[] = []
-  cases.forEach(({ command, event, state }) => {
+  for (const { command, event, state } of cases) {
     aggregate.processCommand(command)
 
     const lastEvent = aggregate.uncommittedEvents.at(-1)
@@ -43,7 +43,7 @@ export function aggregateTest<
         eventPayload: lastEvent.payload
       }
     })
-  })
+  }
 
   return results
 }
@@ -54,7 +54,7 @@ export async function eventListenerTest<E extends ReducerEvent>(
 ): Promise<EventUnitTestResult[]> {
   const results: EventUnitTestResult[] = []
 
-  cases.forEach(async ({ event, command, preReadModels, readModels }) => {
+  for (const { event, command, preReadModels, readModels } of cases) {
     const actualCommand = listener.policy(event)
 
     const store = new ReadModelStoreInMemory(preReadModels)
@@ -70,7 +70,7 @@ export async function eventListenerTest<E extends ReducerEvent>(
         readModels: store.records
       }
     })
-  })
+  }
 
   return results
 }

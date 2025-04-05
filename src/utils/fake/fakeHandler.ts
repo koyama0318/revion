@@ -5,8 +5,8 @@ import type { Query, ReadModel } from '../../types/query'
 import {
   CommandDispatcherInMemory,
   EventStoreInMemory,
-  ReadModelStoreInMemory,
-  type ReadModelRecord
+  type ReadModelRecord,
+  ReadModelStoreInMemory
 } from './storeInMemory'
 
 export class FakeHandler {
@@ -26,9 +26,9 @@ export class FakeHandler {
   }
 
   async command(command: Command): Promise<void> {
-    this.aggregates.forEach(a => {
-      a.reset()
-    })
+    for (const aggregate of this.aggregates) {
+      aggregate.reset()
+    }
     const commandHandler = new CommandHandler(this.eventStore, this.aggregates)
     const eventHandler = new EventHandler(
       this.dispatcher,

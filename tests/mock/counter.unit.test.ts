@@ -40,7 +40,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
 ]
 
 describe('counter aggregate test with test library', () => {
-  test(`counter#1: increment and decrement`, () => {
+  test('counter#1: increment and decrement', () => {
     const results = aggregateTest(counter, cases)
     for (const result of results) {
       expect(result.expected).toEqual(result.actual)
@@ -83,7 +83,7 @@ const eventCases: EventUnitTestCase<CounterEvent>[] = [
 ]
 
 describe('counter listener test with test library', () => {
-  test(`counter#1: increment and decrement`, async () => {
+  test('counter#1: increment and decrement', async () => {
     const results = await eventListenerTest(counterListener, eventCases)
     for (const result of results) {
       expect(result.expected).toEqual(result.actual)

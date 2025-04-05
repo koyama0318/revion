@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'bun:test'
 import type { IntegrationTestCase } from '../../src/types/testCase'
-import { ReadModelRecord } from '../../src/utils/fake/storeInMemory'
+import type { ReadModelRecord } from '../../src/utils/fake/storeInMemory'
 import { integrationTest } from '../../src/utils/test/integrationTest'
 import { counter, counterListener } from './counter'
 import { user, userListener } from './user'
-import { UserCounterReadModel } from './userCounter'
+import type { UserCounterReadModel } from './userCounter'
 
 const cases: IntegrationTestCase = {
   commands: [
@@ -67,7 +67,7 @@ const cases: IntegrationTestCase = {
 }
 
 describe('userCounter integration test with test library', () => {
-  test(`userCounter`, async () => {
+  test('userCounter', async () => {
     const result = await integrationTest(
       [user, counter],
       [userListener, counterListener],
