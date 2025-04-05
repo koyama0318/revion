@@ -8,6 +8,6 @@ export type AggregateId = {
 export function newID(type: string, id?: string): AggregateId {
   return {
     type,
-    id: id == null ? uuidv4() : id
+    id: id ?? uuidv4()
   }
 }

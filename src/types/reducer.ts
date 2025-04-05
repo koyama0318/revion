@@ -5,7 +5,7 @@ export interface ReducerState {
 }
 
 export interface ReducerCommand {
-  type: string
+  operation: string
   id: AggregateId
   payload?: unknown
 }
@@ -26,7 +26,7 @@ export type CaseEmitters<
   C extends ReducerCommand,
   E extends ReducerEvent
 > = {
-  [K in C['type']]: Emitter<S, Extract<C, { type: K }>, E>
+  [K in C['operation']]: Emitter<S, Extract<C, { operation: K }>, E>
 }
 
 export type Reducer<S extends ReducerState, E extends ReducerEvent> = (

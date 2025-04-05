@@ -14,7 +14,7 @@ describe('handler test', () => {
 
   it('should dispatch a command and process events on empty store', async () => {
     const command = {
-      type: 'create',
+      operation: 'create',
       id: { type: 'counter', id: '123' },
       payload: {}
     }
@@ -43,7 +43,7 @@ describe('handler test', () => {
     ]
 
     const command = {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' },
       payload: {}
     }
@@ -69,7 +69,7 @@ describe('handler test', () => {
 
   it('should throw an error if the aggregate is not found', async () => {
     const command = {
-      type: 'create',
+      operation: 'create',
       id: { type: 'unknown', id: '123' },
       payload: {}
     }

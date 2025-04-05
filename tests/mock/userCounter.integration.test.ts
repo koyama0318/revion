@@ -9,12 +9,12 @@ import type { UserCounterReadModel } from './userCounter'
 const cases: IntegrationTestCase = {
   commands: [
     {
-      type: 'create',
+      operation: 'create',
       id: { type: 'user', id: '123' },
       payload: { name: 'John', age: 20 }
     },
     {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' },
       payload: {}
     }

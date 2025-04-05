@@ -14,12 +14,12 @@ type UserState =
 
 type UserCommand =
   | {
-      type: 'create'
+      operation: 'create'
       id: AggregateId
       payload: { name: string; age: number }
     }
   | {
-      type: 'update'
+      operation: 'update'
       id: AggregateId
       payload: { name?: string; age?: number }
     }
@@ -60,7 +60,7 @@ const reducer: CaseReducers<UserState, UserEvent> = {
 
 const policy: CasePolicies<UserEvent> = {
   created: event => ({
-    type: 'create',
+    operation: 'create',
     id: { type: 'counter', id: event.id.id },
     payload: {}
   })

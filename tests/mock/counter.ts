@@ -13,10 +13,10 @@ type CounterState =
   | { type: 'active'; value: number }
 
 type CounterCommand =
-  | { type: 'create'; id: AggregateId }
-  | { type: 'increment'; id: AggregateId }
-  | { type: 'decrement'; id: AggregateId }
-  | { type: 'reset'; id: AggregateId }
+  | { operation: 'create'; id: AggregateId }
+  | { operation: 'increment'; id: AggregateId }
+  | { operation: 'decrement'; id: AggregateId }
+  | { operation: 'reset'; id: AggregateId }
 
 type CounterEvent =
   | { type: 'created'; payload: { value: number } }
@@ -53,13 +53,9 @@ const reducer: CaseReducers<CounterState, CounterEvent> = {
 }
 
 const policy: CasePolicies<CounterEvent> = {
-  created: event => ({
-    type: 'increment',
-    id: event.id,
-    payload: {}
-  }),
+  created: event => ({ operation: 'increment', id: event.id }),
   added: event =>
-    event.payload.isMax ? { type: 'reset', id: event.id } : undefined
+    event.payload.isMax ? { operation: 'reset', id: event.id } : undefined
 }
 
 const projection: CaseProjections<CounterEvent> = {

@@ -31,10 +31,10 @@ export class CommandHandler {
   }
 
   async handle(command: ReducerCommand): Promise<void> {
-    const type = command.id.type
-    const factory = this.aggregateFactories.get(type)
+    const aggregateType = command.id.type
+    const factory = this.aggregateFactories.get(aggregateType)
     if (!factory) {
-      throw new Error(`Aggregate for type ${type} not found`)
+      throw new Error(`Aggregate for type ${aggregateType} not found`)
     }
 
     const aggregate = factory().reset()

@@ -3,11 +3,13 @@ import type { EventUnitTestCase, UnitTestCase } from '../../src/types/testCase'
 import { aggregateTest, eventListenerTest } from '../../src/utils/test/unitTest'
 import type { CounterCommand, CounterEvent, CounterState } from './counter'
 import { counter, counterListener } from './counter'
+import type { UserCounterReadModel } from './userCounter'
+import type { ReadModelRecord } from '../../src/utils/fake/storeInMemory'
 
 const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   {
     command: {
-      type: 'create',
+      operation: 'create',
       id: { type: 'counter', id: '123' }
     },
     event: { type: 'created', payload: { value: 0 } },
@@ -15,7 +17,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   },
   {
     command: {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' }
     },
     event: { type: 'added', payload: { value: 1, isMax: false } },
@@ -23,7 +25,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   },
   {
     command: {
-      type: 'decrement',
+      operation: 'decrement',
       id: { type: 'counter', id: '123' }
     },
     event: { type: 'subtracted', payload: { value: 1 } },
@@ -31,7 +33,7 @@ const cases: UnitTestCase<CounterCommand, CounterState, CounterEvent>[] = [
   },
   {
     command: {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' }
     },
     event: { type: 'added', payload: { value: 1, isMax: false } },
@@ -58,12 +60,23 @@ const eventCases: EventUnitTestCase<CounterEvent>[] = [
       timestamp: new Date()
     },
     command: {
-      type: 'increment',
-      id: { type: 'counter', id: '123' },
-      payload: {}
+      operation: 'increment',
+      id: { type: 'counter', id: '123' }
     },
     preReadModels: [],
-    readModels: []
+    readModels: [
+      {
+        data: {
+          count: 0,
+          id: {
+            id: '123',
+            type: 'userCounter'
+          }
+        } as UserCounterReadModel,
+        id: '123',
+        type: 'userCounter'
+      }
+    ] as ReadModelRecord<UserCounterReadModel>[]
   },
   {
     event: {
@@ -74,7 +87,7 @@ const eventCases: EventUnitTestCase<CounterEvent>[] = [
       timestamp: new Date()
     },
     command: {
-      type: 'reset',
+      operation: 'reset',
       id: { type: 'counter', id: '123' }
     },
     preReadModels: [],

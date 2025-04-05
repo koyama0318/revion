@@ -20,7 +20,7 @@ describe('workflow test', () => {
 
   it('should execute a command', async () => {
     const command = {
-      type: 'create',
+      operation: 'create',
       id: { type: 'counter', id: '123' },
       payload: {}
     }
@@ -49,7 +49,7 @@ describe('workflow test', () => {
     ]
 
     const command = {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' },
       payload: {}
     }

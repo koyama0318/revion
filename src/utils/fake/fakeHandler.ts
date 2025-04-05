@@ -13,22 +13,28 @@ export class FakeHandler {
   private eventStore: EventStoreInMemory
   private dispatcher: CommandDispatcherInMemory
   private readModelStore: ReadModelStoreInMemory
+  private useLogger: boolean
 
   constructor(
     private aggregates: Aggregate[],
-    private listeners: EventListener[]
+    private listeners: EventListener[],
+    useLogger = true
   ) {
+    this.useLogger = useLogger
     this.eventStore = new EventStoreInMemory([])
     this.dispatcher = new CommandDispatcherInMemory(async command => {
       await this.command(command)
     })
     this.readModelStore = new ReadModelStoreInMemory([])
+    this.useLogger = useLogger
   }
 
   async command(command: Command): Promise<void> {
     for (const aggregate of this.aggregates) {
       aggregate.reset()
     }
+
+    // MARK: Create handler
     const commandHandler = new CommandHandler(this.eventStore, this.aggregates)
     const eventHandler = new EventHandler(
       this.dispatcher,
@@ -46,6 +52,11 @@ export class FakeHandler {
     // MARK: EventListener
     for (const event of diffEvents) {
       await eventHandler.handle(event)
+    }
+
+    // MARK: Log
+    if (this.useLogger) {
+      this.log()
     }
   }
 

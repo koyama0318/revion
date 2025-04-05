@@ -14,7 +14,7 @@ describe('aggregate test', () => {
 
   it('should process a command', () => {
     const command = {
-      type: 'create',
+      operation: 'create',
       id: newID('counter'),
       payload: {}
     }
@@ -112,7 +112,7 @@ describe('aggregate test', () => {
       }
     ]
     const command = {
-      type: 'increment',
+      operation: 'increment',
       id: { type: 'counter', id: '123' },
       payload: {}
     }

@@ -4,7 +4,7 @@ export interface State {
 }
 
 export interface Command {
-  type: string
+  operation: string
   id: AggregateId
   payload?: unknown
 }

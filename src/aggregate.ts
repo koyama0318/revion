@@ -74,11 +74,13 @@ function mergeEmitter<
   E extends ReducerEvent
 >(emitter: CaseEmitters<S, C, E>): Emitter<S, C, E> {
   return (state: S, command: C): E => {
-    const fn = emitter[command.type as keyof typeof emitter]
+    const fn = emitter[command.operation as keyof typeof emitter]
     if (fn) {
-      return fn(state, command as Extract<C, { type: C['type'] }>)
+      return fn(state, command as Extract<C, { operation: C['operation'] }>)
     }
-    throw new Error(`No emitter found for command type: ${command.type}`)
+    throw new Error(
+      `No emitter found for command operation: ${command.operation}`
+    )
   }
 }
 

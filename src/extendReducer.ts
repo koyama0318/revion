@@ -16,7 +16,7 @@ export function extendState(state: ReducerState): State {
 
 export function extendCommand(command: ReducerCommand): Command {
   return {
-    type: command.type,
+    operation: command.operation,
     id: command.id,
     payload: command.payload
   }
