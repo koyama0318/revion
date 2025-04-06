@@ -2,8 +2,7 @@ import type { Aggregate, Command, Event } from './aggregate'
 import type { CommandDispatcher } from './dispatcher'
 import type { EventListener } from './eventListener'
 import type { EventStore } from './eventStore'
-import type { Query, ReadModel } from './query'
-import type { ReadModelStore } from './readModelStore'
+import type { Query, QueryDefinition, QueryResultType } from './query'
 
 export interface ICommandWorkflow {
   eventStore: EventStore
@@ -12,11 +11,9 @@ export interface ICommandWorkflow {
 
 export interface IEventListenerWorkflow {
   dispatcher: CommandDispatcher
-  store: ReadModelStore
   receive(listener: EventListener, event: Event): Promise<void>
 }
 
 export interface IQueryWorkflow {
-  store: ReadModelStore
-  query<T extends ReadModel>(query: Query<T>): Promise<T[]>
+  execute<Q extends Query, QD extends QueryDefinition[]>(query: Q): Promise<QueryResultType<Q, QD>>
 }

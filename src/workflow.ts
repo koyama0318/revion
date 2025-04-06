@@ -2,7 +2,7 @@ import type { Aggregate, Command, Event } from './types/aggregate'
 import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
 import type { EventStore } from './types/eventStore'
-import type { Query, ReadModel } from './types/query'
+import type { OperationHandlers, Query, QueryDefinition, QueryResultType } from './types/query'
 import type { ReadModelStore } from './types/readModelStore'
 import type {
   ICommandWorkflow,
@@ -40,13 +40,16 @@ export class EventListenerWorkflow implements IEventListenerWorkflow {
 }
 
 export class QueryWorkflow implements IQueryWorkflow {
-  constructor(public store: ReadModelStore) {}
+  constructor(public handlers: OperationHandlers<QueryDefinition[]>) {}
 
-  async query<T extends ReadModel>(query: Query<T>): Promise<T[]> {
-    if (query.id) {
-      const item = await this.store.fetchById(query)
-      return item ? [item] : []
+  async execute<Q extends Query, QD extends QueryDefinition[]>(query: Q): Promise<QueryResultType<Q, QD>> {
+    const { operation } = query;
+
+    const handler = this.handlers[operation as keyof OperationHandlers<QueryDefinition[]>];
+    if (!handler) {
+      throw new Error(`Unknown operation: ${operation}`);
     }
-    return this.store.fetchAll(query)
+
+    return handler(query as any) as QueryResultType<Q, QD>;
   }
 }

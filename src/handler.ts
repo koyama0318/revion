@@ -3,7 +3,7 @@ import type { Aggregate, Event } from './types/aggregate'
 import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
 import type { EventStore } from './types/eventStore'
-import type { Query, ReadModel } from './types/query'
+import type { Query, QueryDefinition, QueryResultType } from './types/query'
 import type { ReadModelStore } from './types/readModelStore'
 import type { ReducerCommand } from './types/reducer'
 import type {
@@ -13,8 +13,7 @@ import type {
 } from './types/workflow'
 import {
   CommandWorkflow,
-  EventListenerWorkflow,
-  QueryWorkflow
+  EventListenerWorkflow
 } from './workflow'
 
 export class CommandHandler {
@@ -69,14 +68,32 @@ export class EventHandler {
   }
 }
 
-export class QueryHandler {
+export class QueryHandler<T extends QueryDefinition[]> {
+  readonly workflow: IQueryWorkflow<T>
+
+  constructor(workflow: IQueryWorkflow<T>) {
+    this.workflow = workflow
+  }
+
+  async query<Q extends Query>(query: Q): Promise<QueryResultType<Q, T>> {
+    return await this.workflow.execute(query)
+  }
+}
+
+export class QueryHandler2 {
   readonly workflow: IQueryWorkflow
 
-  constructor(store: ReadModelStore) {
-    this.workflow = new QueryWorkflow(store)
+  constructor(definitions: AAA) {
+    this.workflow = new QueryWorkflow(definitions.definitions)
   }
 
-  async query<T extends ReadModel>(query: Query<T>): Promise<T[]> {
-    return await this.workflow.query(query)
+  async query<Q extends Query>(query: Q): Promise<QueryResultType<Q, T>> {
+    return await this.workflow.execute(query)
   }
+}
+
+class AAA {
+  constructor(
+    public readonly definitions: QueryDefinition[]
+  ) {}
 }

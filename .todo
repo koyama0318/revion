@@ -1,0 +1,6 @@
+- queryのtypeをoperationに変更する
+- テストケース設計
+- aggregate idを廃止
+- stateがidを持つ
+- read modelを平坦化する
+- フィルタを追加する

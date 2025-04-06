@@ -60,10 +60,7 @@ const policy: CasePolicies<CounterEvent> = {
 
 const projection: CaseProjections<CounterEvent> = {
   created: async (store, event) => {
-    const userCounter = await store.fetchById<UserCounterReadModel>({
-      type: 'userCounter',
-      id: event.id.id
-    })
+    const userCounter = await store.fetchById<UserCounterReadModel>(event.id)
     if (userCounter) {
       return await store.upsert({
         ...userCounter,
