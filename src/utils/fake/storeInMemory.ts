@@ -1,8 +1,8 @@
 import type { AggregateId, Command, Event } from '../../types/aggregate'
 import type { CommandDispatcher } from '../../types/dispatcher'
-import type { EventStore } from '../../types/eventStore'
 import type { Query, ReadModel } from '../../types/query'
 import type { ReadModelStore } from '../../types/readModelStore'
+import type { EventStore } from '../../types/store'
 
 export class EventStoreInMemory implements EventStore {
   events: Event[] = []
@@ -48,7 +48,9 @@ export class ReadModelStoreInMemory implements ReadModelStore {
   }
 
   async fetchAll<T extends ReadModel>(query: Query<T>): Promise<T[]> {
-    return this.records.filter(r => r.type === query.type).map(r => r.data as T)
+    return this.records
+      .filter(r => r.type === query.operation)
+      .map(r => r.data as T)
   }
 
   async fetchById<T extends ReadModel>(

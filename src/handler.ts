@@ -2,10 +2,9 @@ import { extendCommand } from './extendReducer'
 import type { Aggregate, Event } from './types/aggregate'
 import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
-import type { EventStore } from './types/eventStore'
-import type { Query, ReadModel } from './types/query'
-import type { ReadModelStore } from './types/readModelStore'
+import type { Query } from './types/query'
 import type { ReducerCommand } from './types/reducer'
+import type { EventStore, ReadModelStore } from './types/store'
 import type {
   ICommandWorkflow,
   IEventListenerWorkflow,
@@ -13,8 +12,7 @@ import type {
 } from './types/workflow'
 import {
   CommandWorkflow,
-  EventListenerWorkflow,
-  QueryWorkflow
+  EventListenerWorkflow
 } from './workflow'
 
 export class CommandHandler {
@@ -70,13 +68,8 @@ export class EventHandler {
 }
 
 export class QueryHandler {
-  readonly workflow: IQueryWorkflow
+  private readonly workflow: IQueryWorkflow
+  private readonly QueryBus: Map<string, () => QueryHandler>
 
-  constructor(store: ReadModelStore) {
-    this.workflow = new QueryWorkflow(store)
-  }
-
-  async query<T extends ReadModel>(query: Query<T>): Promise<T[]> {
-    return await this.workflow.query(query)
-  }
+  constructor(workflow: )
 }

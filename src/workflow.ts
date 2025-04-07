@@ -1,13 +1,10 @@
 import type { Aggregate, Command, Event } from './types/aggregate'
 import type { CommandDispatcher } from './types/dispatcher'
 import type { EventListener } from './types/eventListener'
-import type { EventStore } from './types/eventStore'
-import type { Query, ReadModel } from './types/query'
-import type { ReadModelStore } from './types/readModelStore'
+import type { EventStore } from './types/store'
 import type {
   ICommandWorkflow,
-  IEventListenerWorkflow,
-  IQueryWorkflow
+  IEventListenerWorkflow
 } from './types/workflow'
 
 export class CommandWorkflow implements ICommandWorkflow {
@@ -36,17 +33,5 @@ export class EventListenerWorkflow implements IEventListenerWorkflow {
     if (command) {
       await this.dispatcher.dispatch(command)
     }
-  }
-}
-
-export class QueryWorkflow implements IQueryWorkflow {
-  constructor(public store: ReadModelStore) {}
-
-  async query<T extends ReadModel>(query: Query<T>): Promise<T[]> {
-    if (query.id) {
-      const item = await this.store.fetchById(query)
-      return item ? [item] : []
-    }
-    return this.store.fetchAll(query)
   }
 }

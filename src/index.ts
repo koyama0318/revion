@@ -9,11 +9,11 @@ export type {
   CasePolicies as Policy,
   CaseProjections as Projection
 } from './types/eventListener'
-export type { EventStore } from './types/eventStore'
 export type {
   CaseEmitters as Emitter,
   CaseReducers as Reducer
 } from './types/reducer'
+export type { EventStore } from './types/store'
 export type {
   EventUnitTestCase,
   EventUnitTestResult,
@@ -26,3 +26,4 @@ export { FakeHandler } from './utils/fake/fakeHandler'
 export type { ReadModelRecord } from './utils/fake/storeInMemory'
 export { integrationTest } from './utils/test/integrationTest'
 export { aggregateTest, eventListenerTest } from './utils/test/unitTest'
+
