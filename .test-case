@@ -1,0 +1,197 @@
+# Unit Test Cases
+
+## Command Handling
+
+### Command Bus
+
+- Should register command handler successfully
+- Should dispatch command to correct handler
+- Should apply middleware in correct order
+- Should handle unknown command type
+- Should handle handler registration conflicts
+
+### Command Handler
+
+- Should create new aggregate when not exists
+- Should load existing aggregate from history
+- Should apply events to update state
+- Should handle validation errors
+- Should save generated events
+- Should create snapshots at correct intervals
+
+### Command Validation
+
+- Should validate required fields
+- Should validate payload schema
+- Should handle missing payload
+- Should handle invalid payload type
+
+### Command Idempotency
+
+- Should detect duplicate commands
+- Should process unique commands
+- Should handle store errors
+- Should mark commands as processed
+
+### Command Authorization
+
+- Should allow authorized commands
+- Should reject unauthenticated requests
+- Should reject unauthorized commands
+- Should handle missing permissions
+- Should validate user roles
+
+## Event Handling
+
+### Event Subscription
+
+- Should start subscription successfully
+- Should stop subscription gracefully
+- Should handle connection errors
+- Should resume from last position
+- Should process events in order
+
+### Event Processing
+
+- Should apply projections correctly
+- Should update read models
+- Should handle projection errors
+- Should maintain consistency
+- Should track processed events
+
+### Error Handling
+
+- Should retry failed events
+- Should respect retry limits
+- Should move to dead letter queue
+- Should log errors appropriately
+- Should handle system errors
+
+### Idempotency
+
+- Should detect duplicate events
+- Should process unique events
+- Should handle tracker errors
+- Should mark events as processed
+
+### Concurrency Control
+
+- Should handle concurrent updates
+- Should detect conflicts
+- Should resolve conflicts
+- Should maintain consistency
+- Should handle deadlocks
+
+## Saga Management
+
+### Saga Execution
+
+- Should execute steps in sequence
+- Should handle step failures
+- Should execute compensation
+- Should maintain consistency
+- Should handle timeouts
+
+### Saga Recovery
+
+- Should resume interrupted sagas
+- Should compensate partial executions
+- Should handle compensation failures
+- Should maintain consistency
+- Should log recovery actions
+
+## Read Model
+
+### Query Handling
+
+- Should route queries correctly
+- Should return correct data
+- Should handle missing data
+- Should validate query parameters
+- Should handle store errors
+
+### Read Model Updates
+
+- Should apply updates atomically
+- Should handle concurrent updates
+- Should maintain consistency
+- Should handle store errors
+- Should track update history
+
+## Utilities
+
+### Logging
+
+- Should log at correct levels
+- Should include context information
+- Should format messages correctly
+- Should handle structured data
+- Should respect log levels
+
+### Error Handling
+
+- Should create correct error types
+- Should include error details
+- Should maintain error chain
+- Should handle unknown errors
+- Should format error messages
+
+### ID Generation
+
+- Should generate unique IDs
+- Should validate ID format
+- Should handle generation errors
+- Should maintain uniqueness
+- Should be performant
+
+## Integration Tests
+
+### Command to Event Flow
+
+- Should handle command successfully
+- Should generate correct events
+- Should update read models
+- Should maintain consistency
+- Should handle errors properly
+
+### Event to Read Model Flow
+
+- Should process events correctly
+- Should update read models
+- Should handle concurrent updates
+- Should maintain consistency
+- Should handle errors properly
+
+### Saga Flow
+
+- Should execute saga successfully
+- Should handle compensation
+- Should maintain consistency
+- Should handle errors properly
+- Should recover from failures
+
+## Performance Tests
+
+### Command Processing
+
+- Should handle high command rate
+- Should maintain response times
+- Should handle concurrent commands
+- Should scale horizontally
+- Should handle peak loads
+
+### Event Processing
+
+- Should handle high event rate
+- Should maintain processing order
+- Should handle concurrent events
+- Should scale horizontally
+- Should handle peak loads
+
+### Query Performance
+
+- Should handle high query rate
+- Should maintain response times
+- Should handle concurrent queries
+- Should scale horizontally
+- Should handle peak loads

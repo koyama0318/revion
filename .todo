@@ -35,11 +35,11 @@
   - [x] **Event Subscription:** Define mechanism for subscribing to events from `EventStore` (e.g., polling, streaming adapter interface).
   - [x] **Projection Logic:** Define clear interface/type for `Projector` functions (`(event: DomainEvent) => ReadModelUpdate`).
   - [x] **Read Model Update:** Implement logic to apply `ReadModelUpdate` to the read model repository within `HandleEventFn`.
-  - [ ] **Error Handling (Listener):** Implement robust error handling for projection and read model updates (retries, dead-letter queue concept).
-  - [ ] **Idempotency (Listener):** Ensure event handlers are idempotent (e.g., using processed event tracking).
-  - [ ] **Concurrency Control:** Manage concurrent updates to the same read model entity.
-  - [ ] **Event Handler Orchestration:** Mechanism to route events to the correct `HandleEventFn` / `Projector`.
-  - [ ] **Replay Capability:** Allow replaying events from the `EventStore` to rebuild read models.
+  - [x] **Error Handling (Listener):** Implement robust error handling for projection and read model updates (retries, dead-letter queue concept).
+  - [x] **Idempotency (Listener):** Ensure event handlers are idempotent (e.g., using processed event tracking).
+  - [x] **Concurrency Control:** Manage concurrent updates to the same read model entity.
+  - [x] **Event Handler Orchestration:** Mechanism to route events to the correct `HandleEventFn` / `Projector`.
+  - [x] **Replay Capability:** Allow replaying events from the `EventStore` to rebuild read models.
 
 ## Completed / Implemented
 

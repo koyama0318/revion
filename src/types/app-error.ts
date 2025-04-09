@@ -12,6 +12,28 @@ export type NotFoundError = {
   readonly details?: unknown
 }
 
+/** Conflict Error details. */
+export type ConflictError = {
+  readonly type: 'ConflictError'
+  readonly message: string
+  readonly details?: unknown
+}
+
+/** Permission Denied Error details. */
+export type PermissionDeniedError = {
+  readonly type: 'PermissionDeniedError'
+  readonly message: string
+  readonly details?: unknown
+}
+
+/** Internal Server Error details. */
+export type InternalServerError = {
+  readonly type: 'InternalServerError'
+  readonly message: string
+  readonly details?: unknown
+  readonly cause?: unknown
+}
+
 /** Error during EventStore operation. */
 export type StoreOperationError = {
   readonly type: 'StoreOperationError'
@@ -31,7 +53,13 @@ export type StoreOperationError = {
 // export type ConflictError = { ... }
 
 /** Union type for all possible application errors in the command side. */
-export type AppError = ValidationError | NotFoundError | StoreOperationError
+export type AppError =
+  | ValidationError
+  | NotFoundError
+  | ConflictError
+  | PermissionDeniedError
+  | InternalServerError
+  | StoreOperationError
 // | ConflictError など
 
 /**
@@ -58,6 +86,50 @@ export function createNotFoundError(
   details?: unknown
 ): NotFoundError {
   return { type: 'NotFoundError', message, details }
+}
+
+/**
+ * Creates a ConflictError object.
+ * @param message - The error message.
+ * @param details - Optional additional details.
+ * @returns A ConflictError object.
+ */
+export function createConflictError(
+  message: string,
+  details?: unknown
+): ConflictError {
+  return { type: 'ConflictError', message, details }
+}
+
+/**
+ * Creates a PermissionDeniedError object.
+ * @param message - The error message.
+ * @param details - Optional additional details.
+ * @returns A PermissionDeniedError object.
+ */
+export function createPermissionDeniedError(
+  message: string,
+  details?: unknown
+): PermissionDeniedError {
+  return { type: 'PermissionDeniedError', message, details }
+}
+
+/**
+ * Creates an InternalServerError object.
+ * @param message - The error message.
+ * @param options - Optional details and cause.
+ * @returns An InternalServerError object.
+ */
+export function createInternalServerError(
+  message: string,
+  options?: { details?: unknown; cause?: unknown }
+): InternalServerError {
+  return {
+    type: 'InternalServerError',
+    message,
+    details: options?.details,
+    cause: options?.cause
+  }
 }
 
 /**
