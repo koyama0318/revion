@@ -8,23 +8,41 @@
   - [x] Separate handler registration logic from bus creation.
   - [x] Add middleware/interceptor support for cross-cutting concerns (logging, validation, auth).
 - [x] **Stricter Typing:**
-  - [x] Change `CommandResultAsync` success type from `unknown` to `void` or `undefined` explicitly.
+  - [x] Change `CommandResultAsync` success type from `void` or `undefined` explicitly.
   - [x] Add/Improve `ID` type generation and validation logic (Changed to `AggregateType`/`AggregateId`, added `generateUuid`).
-  - [ ] Utilize more specific `DomainEventPayload` types where possible.
+  - [x] Utilize more specific `DomainEventPayload` types where possible.
 - [ ] **Improve Testability:** Review design for easier unit testing, especially mocking/stubbing dependencies (Functional refactoring likely helped).
 - [ ] **Structured Logging:** Replace `console.error`/`console.log` with a proper logging abstraction (DI for logger).
 - [x] **Documentation:**
   - [x] Add JSDoc/TSDoc comments to public APIs.
   - [ ] Create/Update README with usage examples.
 
-## New Features
+## New Features (Command Side)
 
 - [ ] **Command Validation:** Implement payload validation mechanism before handler execution (e.g., using Zod, skeleton added).
-- [ ] **Query Side Implementation:** Add core components for the query side (Query Handlers, Query Bus, Read Model projection logic).
+- [ ] **Distributed Transactions / Sagas:** Introduce patterns for managing operations spanning multiple aggregates or external systems.
+- [ ] **Retry / Idempotency (Command):** Add mechanisms for retrying failed commands and ensuring idempotency.
+- [ ] **Authentication / Authorization (Command):** Integrate checks for command execution permissions.
+
+## New Features (Query / Event Listener Side)
+
+- [x] **Query Side Implementation:**
+  - [x] Define `Query` and `QueryResult` types more formally.
+  - [x] Refactor `Query` type to use `entityType` and `entityId` instead of aggregate-related terms.
+  - [x] Implement `QueryBus` and `createqueryHandler` (similar structure to command side).
+  - [x] Define `ReadModelRepository` interface for accessing read models.
+- [x] **Event Listener / Projection Implementation:**
+  - [x] **Event Subscription:** Define mechanism for subscribing to events from `EventStore` (e.g., polling, streaming adapter interface).
+  - [x] **Projection Logic:** Define clear interface/type for `Projector` functions (`(event: DomainEvent) => ReadModelUpdate`).
+  - [x] **Read Model Update:** Implement logic to apply `ReadModelUpdate` to the read model repository within `HandleEventFn`.
+  - [ ] **Error Handling (Listener):** Implement robust error handling for projection and read model updates (retries, dead-letter queue concept).
+  - [ ] **Idempotency (Listener):** Ensure event handlers are idempotent (e.g., using processed event tracking).
+  - [ ] **Concurrency Control:** Manage concurrent updates to the same read model entity.
+  - [ ] **Event Handler Orchestration:** Mechanism to route events to the correct `HandleEventFn` / `Projector`.
+  - [ ] **Replay Capability:** Allow replaying events from the `EventStore` to rebuild read models.
+
+## Completed / Implemented
+
 - [x] **Full Event Sourcing Support:**
   - [x] Add logic for state reconstruction from events (`reconstructState` in functional approach).
   - [x] Implement snapshotting mechanism for performance.
-- [ ] **Distributed Transactions / Sagas:** Introduce patterns for managing operations spanning multiple aggregates or external systems.
-- [ ] **Asynchronous Event Handling:** Implement robust error handling and processing logic for asynchronous `HandleEventFn` (e.g., for updating read models).
-- [ ] **Retry / Idempotency:** Add mechanisms for retrying failed commands/events and ensuring idempotency.
-- [ ] **Authentication / Authorization:** Integrate checks for command execution permissions.
