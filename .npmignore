@@ -4,3 +4,4 @@
 .npmrc
 .env
 tests/
+example/

@@ -1,0 +1,30 @@
+# CQRS Command Library Improvement & Feature TODO
+
+## Improvements
+
+- [x] **Refactor `CommandAggregate` (Optional):** Explored functional approach by removing class dependency from handler, passing state explicitly.
+- [ ] **Expand Error Types:** Define more specific error types in `app-error.ts` (e.g., `ConflictError`, `PermissionDeniedError`, `InternalServerError`). (`StoreOperationError` added).
+- [x] **Enhance `createCommandBus`:**
+  - [x] Separate handler registration logic from bus creation.
+  - [x] Add middleware/interceptor support for cross-cutting concerns (logging, validation, auth).
+- [x] **Stricter Typing:**
+  - [x] Change `CommandResultAsync` success type from `unknown` to `void` or `undefined` explicitly.
+  - [x] Add/Improve `ID` type generation and validation logic (Changed to `AggregateType`/`AggregateId`, added `generateUuid`).
+  - [ ] Utilize more specific `DomainEventPayload` types where possible.
+- [ ] **Improve Testability:** Review design for easier unit testing, especially mocking/stubbing dependencies (Functional refactoring likely helped).
+- [ ] **Structured Logging:** Replace `console.error`/`console.log` with a proper logging abstraction (DI for logger).
+- [x] **Documentation:**
+  - [x] Add JSDoc/TSDoc comments to public APIs.
+  - [ ] Create/Update README with usage examples.
+
+## New Features
+
+- [ ] **Command Validation:** Implement payload validation mechanism before handler execution (e.g., using Zod, skeleton added).
+- [ ] **Query Side Implementation:** Add core components for the query side (Query Handlers, Query Bus, Read Model projection logic).
+- [x] **Full Event Sourcing Support:**
+  - [x] Add logic for state reconstruction from events (`reconstructState` in functional approach).
+  - [x] Implement snapshotting mechanism for performance.
+- [ ] **Distributed Transactions / Sagas:** Introduce patterns for managing operations spanning multiple aggregates or external systems.
+- [ ] **Asynchronous Event Handling:** Implement robust error handling and processing logic for asynchronous `HandleEventFn` (e.g., for updating read models).
+- [ ] **Retry / Idempotency:** Add mechanisms for retrying failed commands/events and ensuring idempotency.
+- [ ] **Authentication / Authorization:** Integrate checks for command execution permissions.
