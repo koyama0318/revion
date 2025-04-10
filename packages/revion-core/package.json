@@ -1,0 +1,33 @@
+{
+  "name": "revion-core",
+  "description": "Revion is a library for CQRS/Event Sourcing.",
+  "type": "module",
+  "version": "0.0.14",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "files": ["dist", "src"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koyama0318/revion.git"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
+    "test": "bun test --watch",
+    "check": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "latest",
+    "@types/uuid": "^10.0.0",
+    "biome": "latest",
+    "typescript-eslint": "^8.21.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "zod": "^3.24.2"
+  }
+}

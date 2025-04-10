@@ -33,7 +33,7 @@ import {
   errAsync,
   loggingMiddleware,
   okAsync
-} from '../src' // パスを src/index.ts に戻す
+} from '../packages/revion-core/src' // パスを src/index.ts に戻す
 
 // --- 1. Counter Aggregate Definition ---
 
