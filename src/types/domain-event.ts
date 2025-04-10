@@ -1,4 +1,4 @@
-import type { AggregateId, AggregateType } from './id'
+import type { AggregateId, AggregateType } from './aggregate-id'
 
 /** Base interface for the payload of a domain event. */
 export interface DomainEventPayload {

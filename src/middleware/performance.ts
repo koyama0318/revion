@@ -1,4 +1,4 @@
-import type { DispatchFn, MiddlewareFn } from '../command/bus'
+import type { DispatchFn, MiddlewareFn } from '../command/command-bus'
 import type { Command } from '../types/command'
 import type { CommandResultAsync } from '../types/command'
 

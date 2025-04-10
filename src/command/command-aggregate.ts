@@ -1,4 +1,5 @@
 import { type Result, err, ok } from 'neverthrow'
+import type { AggregateId, AggregateType } from '../types/aggregate-id'
 import type { AppError } from '../types/app-error'
 import type { Command } from '../types/command'
 import type {
@@ -7,8 +8,7 @@ import type {
   Reducer,
   State
 } from '../types/command-aggregate'
-import type { DomainEvent, DomainEventPayload } from '../types/event'
-import type { AggregateId, AggregateType } from '../types/id'
+import type { DomainEvent, DomainEventPayload } from '../types/domain-event'
 import { generateUuid } from '../utils/id'
 
 export class CommandAggregate<

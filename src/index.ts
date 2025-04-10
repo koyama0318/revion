@@ -1,13 +1,19 @@
 // Command Bus & Handler
-export { createCommandBus } from './command/bus'
+export { createCommandBus } from './command/command-bus'
 export type {
   CommandBus,
   MiddlewareFn,
   DispatchFn,
   RegisterHandlerFn
-} from './command/bus'
-export { createCommandHandler } from './command/handler'
-export type { ProcessCommandFn } from './command/handler'
+} from './command/command-bus'
+export { createCommandHandler } from './command/command-handler'
+export type { ProcessCommandFn } from './command/command-handler'
+
+// Query Bus & Handler
+export { createQueryBus } from './query/query-bus'
+export type { QueryBus } from './query/query-bus'
+export { createQueryHandler } from './query/query-handler'
+export type { HandleQueryFn } from './query/query-handler'
 
 // Functional Aggregate Helpers
 export {
@@ -49,11 +55,11 @@ export {
 } from './types/app-error'
 export type { Command, CommandResultAsync } from './types/command'
 export type { State, EventDecider, Reducer } from './types/command-aggregate'
-// export type { ICommandAggregate } from './types/command-aggregate' // Interface might not be needed if using functional approach
-export type { DomainEvent, DomainEventPayload } from './types/event'
+export type { DomainEvent, DomainEventPayload } from './types/domain-event'
 export type { EventStore } from './types/event-store'
-export type { AggregateId, AggregateType } from './types/id'
+export type { AggregateId, AggregateType } from './types/aggregate-id'
 export type { Snapshot } from './types/snapshot'
+export type { Query, QueryResult } from './types/query'
 
 // Logger
 export { logger } from './utils/logger'

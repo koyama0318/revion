@@ -1,4 +1,4 @@
-import type { AggregateId, AggregateType } from './id'
+import type { AggregateId, AggregateType } from './aggregate-id'
 
 /** Represents a query to retrieve data. */
 export interface Query {
@@ -20,3 +20,11 @@ export interface QueryResult<Data = unknown> {
   /** The data retrieved by the query. */
   data: Data
 }
+
+/**
+ * Represents a handler for processing queries.
+ * @template Data The type of the data returned by the query.
+ */
+export type QueryHandler<Data = unknown> = (
+  query: Query
+) => Promise<QueryResult<Data>>

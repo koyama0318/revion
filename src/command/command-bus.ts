@@ -1,7 +1,7 @@
 import { ResultAsync, errAsync } from 'neverthrow'
 import { createNotFoundError, createValidationError } from '../types/app-error'
 import type { Command, CommandResultAsync } from '../types/command'
-import type { ProcessCommandFn } from './handler'
+import type { ProcessCommandFn } from './command-handler'
 
 /** Type definition for a function that dispatches a command. */
 export type DispatchFn = (command: Command) => CommandResultAsync
@@ -18,6 +18,8 @@ export interface CommandBus {
   dispatch: DispatchFn
   /** Registers a handler function for a specific aggregate type. */
   register: RegisterHandlerFn
+  /** Adds a middleware function to the command bus. */
+  use: (middleware: MiddlewareFn) => void
 }
 
 /**
@@ -36,15 +38,16 @@ export type MiddlewareFn = (
  * Creates a new CommandBus instance.
  * @param middlewares - An optional array of middleware functions to apply.
  *                      Middlewares are executed in the order they appear in the array.
- * @returns A CommandBus object with `dispatch` and `register` methods.
+ * @returns A CommandBus object with `dispatch`, `register`, and `use` methods.
  */
 export function createCommandBus(middlewares: MiddlewareFn[] = []): CommandBus {
   const commandHandlers = new Map<string, ProcessCommandFn>()
+  let middlewareChain: DispatchFn
 
   const register: RegisterHandlerFn = (aggregateType, handler) => {
     if (commandHandlers.has(aggregateType)) {
-      console.warn(
-        `Handler for aggregate type "${aggregateType}" already registered. Overwriting.`
+      throw new Error(
+        `Handler for aggregate type "${aggregateType}" already registered`
       )
     }
     commandHandlers.set(aggregateType, handler)
@@ -76,20 +79,29 @@ export function createCommandBus(middlewares: MiddlewareFn[] = []): CommandBus {
     })
   }
 
-  // Builds the middleware chain using reduceRight.
-  // The last middleware calls `actualDispatch`.
-  const dispatchWithMiddleware: DispatchFn =
-    middlewares.reduceRight<DispatchFn>(
+  const use = (middleware: MiddlewareFn) => {
+    middlewares.push(middleware)
+    middlewareChain = middlewares.reduceRight<DispatchFn>(
       (nextMiddlewareOrHandler, currentMiddleware) => {
-        // Curry the `next` function for the current middleware.
         return (command: Command) =>
           currentMiddleware(command, nextMiddlewareOrHandler)
       },
       actualDispatch
     )
+  }
+
+  // Initialize middleware chain
+  middlewareChain = middlewares.reduceRight<DispatchFn>(
+    (nextMiddlewareOrHandler, currentMiddleware) => {
+      return (command: Command) =>
+        currentMiddleware(command, nextMiddlewareOrHandler)
+    },
+    actualDispatch
+  )
 
   return {
-    dispatch: dispatchWithMiddleware,
-    register
+    dispatch: command => middlewareChain(command),
+    register,
+    use
   }
 }

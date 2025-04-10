@@ -1,5 +1,5 @@
 import { ResultAsync } from 'neverthrow'
-import type { DispatchFn } from '../command/bus'
+import type { DispatchFn } from '../command/command-bus'
 import type { AppError } from '../types/app-error'
 import { createValidationError } from '../types/app-error'
 import type { Command, CommandResultAsync } from '../types/command'

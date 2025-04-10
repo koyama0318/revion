@@ -1,7 +1,7 @@
 import { ResultAsync } from 'neverthrow'
 import type { AppError } from '../types/app-error'
-import type { DomainEvent, DomainEventPayload } from '../types/event'
-import type { HandleEventFn } from './handler'
+import type { DomainEvent, DomainEventPayload } from '../types/domain-event'
+import type { HandleEventFn } from './event-handler'
 
 /**
  * Options for replaying events.

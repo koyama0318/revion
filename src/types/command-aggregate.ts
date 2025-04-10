@@ -1,8 +1,8 @@
 import type { Result } from 'neverthrow'
+import type { AggregateId, AggregateType } from './aggregate-id'
 import type { AppError } from './app-error'
 import type { Command } from './command'
-import type { DomainEvent, DomainEventPayload } from './event'
-import type { AggregateId, AggregateType } from './id'
+import type { DomainEvent, DomainEventPayload } from './domain-event'
 import type { Snapshot } from './snapshot'
 
 /** Represents the state of an aggregate. */
@@ -30,13 +30,14 @@ export type EventDecider<
  * A function that applies an event to the current state to produce the next state.
  * It should be a pure function and handle different event payload types internally.
  * @template S The type of the aggregate state.
+ * @template P The specific type(s) of domain event payload this reducer can handle.
  * @param state The current state.
  * @param event The domain event to apply.
  * @returns The next state.
  */
-export type Reducer<S extends State> = (
+export type Reducer<S extends State, P extends DomainEventPayload> = (
   state: S,
-  event: DomainEvent<DomainEventPayload>
+  event: DomainEvent<P>
 ) => S
 
 /** Defines the interface for a command aggregate root. */

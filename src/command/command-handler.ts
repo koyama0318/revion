@@ -1,4 +1,5 @@
 import { ResultAsync, errAsync, fromPromise, okAsync } from 'neverthrow'
+import type { AggregateId, AggregateType } from '../types/aggregate-id'
 import {
   type AppError,
   createNotFoundError,
@@ -6,9 +7,8 @@ import {
 } from '../types/app-error'
 import type { Command, CommandResultAsync } from '../types/command'
 import type { EventDecider, Reducer, State } from '../types/command-aggregate'
-import type { DomainEvent, DomainEventPayload } from '../types/event'
+import type { DomainEvent, DomainEventPayload } from '../types/domain-event'
 import type { EventStore } from '../types/event-store'
-import type { AggregateId, AggregateType } from '../types/id'
 import type { Snapshot } from '../types/snapshot'
 
 import { decideAndReduce } from './functional-aggregate'
@@ -39,9 +39,9 @@ export function createCommandHandler<
   P extends DomainEventPayload
 >(
   decider: EventDecider<S, C, P>,
-  reducer: Reducer<S>,
+  reducer: Reducer<S, P>,
   createInitialState: (type: AggregateType, id: AggregateId) => S,
-  eventStore: EventStore
+  eventStore: EventStore<S, P>
 ): ProcessCommandFn {
   /**
    * Loads the current state and version of an aggregate,
@@ -55,7 +55,7 @@ export function createCommandHandler<
     AppError
   > => {
     const loadSnapshotResult = ResultAsync.fromPromise(
-      eventStore.loadSnapshot<S>(aggregateType),
+      eventStore.loadSnapshot(aggregateType),
       e =>
         createStoreOperationError('Failed to load snapshot', 'loadSnapshot', {
           cause: e,
@@ -97,79 +97,59 @@ export function createCommandHandler<
   const saveEventsAndSnapshot = (
     newState: S,
     newVersion: number,
-    events: DomainEvent<DomainEventPayload>[]
+    events: DomainEvent<P>[]
   ): ResultAsync<void, AppError> => {
     const saveEventsResult = ResultAsync.fromPromise(
       eventStore.save(events),
-      error =>
-        createStoreOperationError('Failed to save events', 'saveEvents', {
-          cause: error,
-          details: { eventCount: events.length }
+      e =>
+        createStoreOperationError('Failed to save events', 'save', {
+          cause: e,
+          details: { events }
         })
     )
 
     return saveEventsResult.andThen(() => {
-      // Save snapshot periodically.
-      // TODO: Improve snapshot condition (e.g., based on last snapshot version).
-      if (newVersion > 0 && newVersion % SNAPSHOT_INTERVAL === 0) {
-        const snapshot: Snapshot<S> = {
-          aggregateId: newState.aggregateId,
-          aggregateType: newState.aggregateType,
-          state: newState,
-          version: newVersion,
-          timestamp: new Date()
-        }
-        return ResultAsync.fromPromise(eventStore.saveSnapshot(snapshot), e =>
-          createStoreOperationError('Failed to save snapshot', 'saveSnapshot', {
-            cause: e,
-            details: {
-              aggregateId: snapshot.aggregateId,
-              version: snapshot.version
-            }
-          })
+      if (newVersion % SNAPSHOT_INTERVAL === 0) {
+        return ResultAsync.fromPromise(
+          eventStore.saveSnapshot({
+            aggregateId: newState.aggregateId,
+            aggregateType: newState.aggregateType,
+            state: newState,
+            version: newVersion,
+            timestamp: new Date()
+          }),
+          e =>
+            createStoreOperationError(
+              'Failed to save snapshot',
+              'saveSnapshot',
+              {
+                cause: e,
+                details: { state: newState, version: newVersion }
+              }
+            )
         )
       }
       return okAsync(undefined)
     })
   }
 
-  // The actual command processing function returned by the factory.
   return (command: Command): CommandResultAsync => {
-    const { aggregateType, aggregateId } = command
-
-    return (
-      loadStateAndVersion(aggregateType, aggregateId)
-        .andThen(({ state, version }) => {
-          // Decide and reduce events based on the loaded state and command.
-          const dispatchResult = decideAndReduce<S, C, P>(
-            state,
-            version,
-            command as C,
-            decider,
-            reducer
+    return loadStateAndVersion(
+      command.aggregateType,
+      command.aggregateId
+    ).andThen(({ state, version, aggregateId }) => {
+      if (aggregateId !== command.aggregateId) {
+        return errAsync(
+          createNotFoundError(
+            `Aggregate ${command.aggregateType} with id ${command.aggregateId} not found`
           )
+        )
+      }
 
-          if (dispatchResult.isErr()) {
-            return errAsync(dispatchResult.error)
-          }
-
-          const { newState, newEvents } = dispatchResult.value
-
-          // If no events were generated, do nothing.
-          if (newEvents.length === 0) {
-            return okAsync(undefined)
-          }
-
-          // Save the new events and potentially a snapshot.
-          const finalVersion = newEvents[newEvents.length - 1].version
-          return saveEventsAndSnapshot(
-            newState,
-            finalVersion,
-            newEvents as DomainEvent<DomainEventPayload>[]
-          )
-        })
-        // Map the final successful result to undefined (command execution doesn't return data).
-        .map(() => undefined)
-    )
+      return decideAndReduce(state, command, decider, reducer, version).andThen(
+        ({ newState, newVersion, events }) =>
+          saveEventsAndSnapshot(newState, newVersion, events).map(() => events)
+      )
+    })
   }
 }

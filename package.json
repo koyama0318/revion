@@ -16,6 +16,7 @@
     "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
     "dev": "bun --hot run src/index.ts",
     "test": "bun test --watch",
+    "test:ci": "bun test",
     "check": "biome check --write ."
   },
   "devDependencies": {

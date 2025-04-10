@@ -1,6 +1,6 @@
 import type { Result } from 'neverthrow'
 import type { AppError } from './app-error'
-import type { DomainEvent, DomainEventPayload } from './event'
+import type { DomainEvent, DomainEventPayload } from './domain-event'
 import type { ReadModel } from './read-model'
 
 /**

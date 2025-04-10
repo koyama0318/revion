@@ -2,7 +2,7 @@ import { ResultAsync } from 'neverthrow'
 import type { AppError } from '../types/app-error'
 import { createNotFoundError } from '../types/app-error'
 import type { Query, QueryResult } from '../types/query'
-import type { HandleQueryFn } from './handler'
+import type { HandleQueryFn } from './query-handler'
 
 /**
  * Represents a bus for handling queries.

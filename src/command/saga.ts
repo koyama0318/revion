@@ -2,7 +2,7 @@ import { ResultAsync } from 'neverthrow'
 import type { AppError } from '../types/app-error'
 import { createInternalServerError } from '../types/app-error'
 import type { Command, CommandResultAsync } from '../types/command'
-import type { DomainEvent, DomainEventPayload } from '../types/event'
+import type { DomainEvent, DomainEventPayload } from '../types/domain-event'
 import { logger } from '../utils/logger'
 
 export interface SagaStep {

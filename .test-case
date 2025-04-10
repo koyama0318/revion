@@ -1,197 +1,170 @@
-# Unit Test Cases
+# Test Cases
 
-## Command Handling
+## Unit Tests
 
-### Command Bus
+### Command Domain
 
-- Should register command handler successfully
-- Should dispatch command to correct handler
-- Should apply middleware in correct order
-- Should handle unknown command type
-- Should handle handler registration conflicts
+#### Command Bus
 
-### Command Handler
+- [x] Should register command handler successfully
+- [x] Should dispatch command to correct handler
+- [ ] Should apply middleware in correct order
+- [x] Should handle unknown command type
+- [ ] Should handle handler registration conflicts
 
-- Should create new aggregate when not exists
-- Should load existing aggregate from history
-- Should apply events to update state
-- Should handle validation errors
-- Should save generated events
-- Should create snapshots at correct intervals
+#### Command Handler
 
-### Command Validation
+- [x] Should create new aggregate when not exists
+- [x] Should load existing aggregate from history
+- [x] Should apply events to update state
+- [x] Should handle validation errors
+- [x] Should save generated events
+- [x] Should create snapshots at correct intervals
 
-- Should validate required fields
-- Should validate payload schema
-- Should handle missing payload
-- Should handle invalid payload type
+#### Command Validation
 
-### Command Idempotency
+- [ ] Should validate required fields
+- [ ] Should validate payload schema
+- [ ] Should handle missing payload
+- [ ] Should handle invalid payload type
 
-- Should detect duplicate commands
-- Should process unique commands
-- Should handle store errors
-- Should mark commands as processed
+#### Command Idempotency
 
-### Command Authorization
+- [ ] Should detect duplicate commands
+- [ ] Should process unique commands
+- [ ] Should handle store errors
+- [ ] Should mark commands as processed
 
-- Should allow authorized commands
-- Should reject unauthenticated requests
-- Should reject unauthorized commands
-- Should handle missing permissions
-- Should validate user roles
+#### Command Authorization
 
-## Event Handling
+- [ ] Should allow authorized commands
+- [ ] Should reject unauthenticated requests
+- [ ] Should reject unauthorized commands
+- [ ] Should handle missing permissions
+- [ ] Should validate user roles
 
-### Event Subscription
+### Event Handler Domain
 
-- Should start subscription successfully
-- Should stop subscription gracefully
-- Should handle connection errors
-- Should resume from last position
-- Should process events in order
+#### Event Subscription
 
-### Event Processing
+- [x] Should start subscription successfully
+- [x] Should stop subscription gracefully
+- [ ] Should handle connection errors
+- [ ] Should resume from last position
+- [ ] Should process events in order
 
-- Should apply projections correctly
-- Should update read models
-- Should handle projection errors
-- Should maintain consistency
-- Should track processed events
+#### Event Processing
 
-### Error Handling
+- [ ] Should apply projections correctly
+- [ ] Should update read models
+- [ ] Should handle projection errors
+- [ ] Should maintain consistency
+- [ ] Should track processed events
 
-- Should retry failed events
-- Should respect retry limits
-- Should move to dead letter queue
-- Should log errors appropriately
-- Should handle system errors
+#### Error Handling
 
-### Idempotency
+- [x] Should retry failed events
+- [x] Should respect retry limits
+- [x] Should move to dead letter queue
+- [x] Should log errors appropriately
+- [x] Should handle system errors
 
-- Should detect duplicate events
-- Should process unique events
-- Should handle tracker errors
-- Should mark events as processed
+#### Idempotency
 
-### Concurrency Control
+- [ ] Should detect duplicate events
+- [ ] Should process unique events
+- [ ] Should handle tracker errors
+- [ ] Should mark events as processed
 
-- Should handle concurrent updates
-- Should detect conflicts
-- Should resolve conflicts
-- Should maintain consistency
-- Should handle deadlocks
+#### Concurrency Control
 
-## Saga Management
+- [ ] Should handle concurrent updates
+- [ ] Should detect conflicts
+- [ ] Should resolve conflicts
+- [ ] Should maintain consistency
+- [ ] Should handle deadlocks
 
-### Saga Execution
+### Query Domain
 
-- Should execute steps in sequence
-- Should handle step failures
-- Should execute compensation
-- Should maintain consistency
-- Should handle timeouts
+#### Query Handler Registration
 
-### Saga Recovery
+- [x] Should register query handler successfully
+- [x] Should handle duplicate handler registration
+- [x] Should handle invalid operation names
+- [x] Should handle invalid handler types
 
-- Should resume interrupted sagas
-- Should compensate partial executions
-- Should handle compensation failures
-- Should maintain consistency
-- Should log recovery actions
+#### Query Execution
 
-## Read Model
+- [x] Should return correct data for valid query
+- [x] Should handle missing data gracefully
+- [x] Should handle query validation errors
+- [x] Should handle handler execution errors
+- [x] Should maintain type safety
 
-### Query Handling
+#### Query Types
 
-- Should route queries correctly
-- Should return correct data
-- Should handle missing data
-- Should validate query parameters
-- Should handle store errors
+- [x] Should handle single entity queries
+- [x] Should handle multiple entity queries
+- [x] Should handle aggregate queries
+- [x] Should handle complex query parameters
+- [x] Should handle query pagination
 
-### Read Model Updates
+#### Error Handling
 
-- Should apply updates atomically
-- Should handle concurrent updates
-- Should maintain consistency
-- Should handle store errors
-- Should track update history
-
-## Utilities
-
-### Logging
-
-- Should log at correct levels
-- Should include context information
-- Should format messages correctly
-- Should handle structured data
-- Should respect log levels
-
-### Error Handling
-
-- Should create correct error types
-- Should include error details
-- Should maintain error chain
-- Should handle unknown errors
-- Should format error messages
-
-### ID Generation
-
-- Should generate unique IDs
-- Should validate ID format
-- Should handle generation errors
-- Should maintain uniqueness
-- Should be performant
+- [x] Should handle missing handler errors
+- [x] Should handle invalid query parameters
+- [x] Should handle database errors
+- [x] Should handle timeout errors
+- [x] Should handle concurrent query errors
 
 ## Integration Tests
 
 ### Command to Event Flow
 
-- Should handle command successfully
-- Should generate correct events
-- Should update read models
-- Should maintain consistency
-- Should handle errors properly
+- [x] Should handle command successfully
+- [x] Should generate correct events
+- [x] Should update read models
+- [x] Should maintain consistency
+- [x] Should handle errors properly
 
 ### Event to Read Model Flow
 
-- Should process events correctly
-- Should update read models
-- Should handle concurrent updates
-- Should maintain consistency
-- Should handle errors properly
+- [ ] Should process events correctly
+- [ ] Should update read models
+- [ ] Should handle concurrent updates
+- [ ] Should maintain consistency
+- [ ] Should handle errors properly
 
 ### Saga Flow
 
-- Should execute saga successfully
-- Should handle compensation
-- Should maintain consistency
-- Should handle errors properly
-- Should recover from failures
+- [ ] Should execute saga successfully
+- [ ] Should handle compensation
+- [ ] Should maintain consistency
+- [ ] Should handle errors properly
+- [ ] Should recover from failures
 
 ## Performance Tests
 
 ### Command Processing
 
-- Should handle high command rate
-- Should maintain response times
-- Should handle concurrent commands
-- Should scale horizontally
-- Should handle peak loads
+- [ ] Should handle high command rate
+- [ ] Should maintain response times
+- [ ] Should handle concurrent commands
+- [ ] Should scale horizontally
+- [ ] Should handle peak loads
 
 ### Event Processing
 
-- Should handle high event rate
-- Should maintain processing order
-- Should handle concurrent events
-- Should scale horizontally
-- Should handle peak loads
+- [ ] Should handle high event rate
+- [ ] Should maintain processing order
+- [ ] Should handle concurrent events
+- [ ] Should scale horizontally
+- [ ] Should handle peak loads
 
 ### Query Performance
 
-- Should handle high query rate
-- Should maintain response times
-- Should handle concurrent queries
-- Should scale horizontally
-- Should handle peak loads
+- [ ] Should handle high query rate
+- [ ] Should maintain response times
+- [ ] Should handle concurrent queries
+- [ ] Should scale horizontally
+- [ ] Should handle peak loads

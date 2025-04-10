@@ -1,9 +1,11 @@
 import type { ResultAsync } from 'neverthrow'
+import type { AggregateId, AggregateType } from './aggregate-id'
 import type { AppError } from './app-error'
-import type { AggregateId, AggregateType } from './id'
 
 /** Represents a command to be executed. */
 export interface Command {
+  /** The unique identifier of the command. */
+  readonly commandId: string
   /** The specific operation requested by the command. */
   readonly operation: string
   /** The type of the aggregate this command targets. */

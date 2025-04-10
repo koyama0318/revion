@@ -1,5 +1,5 @@
+import type { AggregateId, AggregateType } from './aggregate-id'
 import type { State } from './command-aggregate'
-import type { AggregateId, AggregateType } from './id'
 
 /** Represents a snapshot of an aggregate's state at a specific version. */
 export interface Snapshot<S extends State> {

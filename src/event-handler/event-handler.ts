@@ -1,6 +1,6 @@
 import { type ResultAsync, errAsync, okAsync } from 'neverthrow'
 import type { AppError } from '../types/app-error'
-import type { DomainEvent, DomainEventPayload } from '../types/event'
+import type { DomainEvent, DomainEventPayload } from '../types/domain-event'
 import type { GenericProjector } from '../types/projection'
 import type { ReadModel, ReadModelRepository } from '../types/read-model'
 
