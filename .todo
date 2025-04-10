@@ -3,7 +3,7 @@
 ## Improvements
 
 - [x] **Refactor `CommandAggregate` (Optional):** Explored functional approach by removing class dependency from handler, passing state explicitly.
-- [ ] **Expand Error Types:** Define more specific error types in `app-error.ts` (e.g., `ConflictError`, `PermissionDeniedError`, `InternalServerError`). (`StoreOperationError` added).
+- [x] **Expand Error Types:** Define more specific error types in `app-error.ts` (e.g., `ConflictError`, `PermissionDeniedError`, `InternalServerError`). (`StoreOperationError` added).
 - [x] **Enhance `createCommandBus`:**
   - [x] Separate handler registration logic from bus creation.
   - [x] Add middleware/interceptor support for cross-cutting concerns (logging, validation, auth).
@@ -12,17 +12,43 @@
   - [x] Add/Improve `ID` type generation and validation logic (Changed to `AggregateType`/`AggregateId`, added `generateUuid`).
   - [x] Utilize more specific `DomainEventPayload` types where possible.
 - [ ] **Improve Testability:** Review design for easier unit testing, especially mocking/stubbing dependencies (Functional refactoring likely helped).
-- [ ] **Structured Logging:** Replace `console.error`/`console.log` with a proper logging abstraction (DI for logger).
+- [x] **Structured Logging:** Replace `console.error`/`console.log` with a proper logging abstraction (DI for logger).
 - [x] **Documentation:**
   - [x] Add JSDoc/TSDoc comments to public APIs.
   - [ ] Create/Update README with usage examples.
+- [x] **Authentication/Authorization Implementation:**
+  - [x] Implementation of `auth.ts` middleware which is currently empty.
+  - [x] Add role-based access control for commands.
+  - [x] Support for user context in command execution.
+- [ ] **Telemetry & Monitoring:**
+  - [ ] Add OpenTelemetry integration for distributed tracing.
+  - [ ] Implement metrics collection for command/query execution times.
+  - [ ] Enhance `performanceMiddleware` with proper metrics export.
+- [ ] **Configuration Management:**
+  - [ ] Create a central configuration system for all components.
+  - [ ] Support environment-based configuration switching.
+  - [ ] Add configuration validation with schema checking.
+- [ ] **Testing Infrastructure:**
+  - [ ] Create testing utilities for command handlers and aggregates.
+  - [x] Add standard example code for testing and development.
+  - [ ] Implement snapshot testing for event sourcing verification.
+- [ ] **Error Handling Improvements:**
+  - [ ] Add global error boundary/handler for unhandled exceptions.
+  - [ ] Implement configurable retry policies for different error types.
+  - [ ] Add error correlation IDs for tracking issues across systems.
+  - [ ] Improve error reporting with detailed contextual information.
 
 ## New Features (Command Side)
 
-- [ ] **Command Validation:** Implement payload validation mechanism before handler execution (e.g., using Zod, skeleton added).
+- [x] **Command Validation:** Implement payload validation mechanism before handler execution (using Zod).
 - [ ] **Distributed Transactions / Sagas:** Introduce patterns for managing operations spanning multiple aggregates or external systems.
-- [ ] **Retry / Idempotency (Command):** Add mechanisms for retrying failed commands and ensuring idempotency.
-- [ ] **Authentication / Authorization (Command):** Integrate checks for command execution permissions.
+- [x] **Retry / Idempotency (Command):** Add mechanisms for retrying failed commands and ensuring idempotency.
+- [x] **Authentication / Authorization (Command):** Integrate checks for command execution permissions.
+- [ ] **Bulk Command Processing:** Support for processing multiple commands as a batch with transaction semantics.
+- [ ] **Command Scheduling:** Add capability to schedule commands for future execution.
+- [ ] **Command History & Auditing:** Track command execution history for audit purposes.
+- [ ] **Command Versioning:** Support for backward compatibility with command versions.
+- [ ] **Command Throttling/Rate Limiting:** Protect system from command floods.
 
 ## New Features (Query / Event Listener Side)
 
@@ -40,6 +66,56 @@
   - [x] **Concurrency Control:** Manage concurrent updates to the same read model entity.
   - [x] **Event Handler Orchestration:** Mechanism to route events to the correct `HandleEventFn` / `Projector`.
   - [x] **Replay Capability:** Allow replaying events from the `EventStore` to rebuild read models.
+- [ ] **Query Caching:**
+  - [ ] Implement in-memory caching mechanism for frequently executed queries.
+  - [ ] Add cache invalidation based on related events.
+  - [ ] Support for configurable time-to-live (TTL) for cached query results.
+  - [ ] Add cache statistics for monitoring.
+- [ ] **Pagination & Filtering:**
+  - [ ] Add standard pagination support (offset/limit and cursor-based).
+  - [ ] Implement filtering framework with predicates.
+  - [ ] Support for sorting query results.
+  - [ ] Add metadata to query results (total count, page info).
+- [ ] **Real-time Query Updates:**
+  - [ ] Support for WebSocket/SSE for real-time updates to query results.
+  - [ ] Add subscription mechanism for clients.
+  - [ ] Implement notification service for read model changes.
+- [ ] **Query Authorization:**
+  - [ ] Port authorization middleware from command side to queries.
+  - [ ] Implement data-level authorization (row-level security).
+  - [ ] Add attribute-based access control for fine-grained permissions.
+
+## Infrastructure & Persistence
+
+- [x] **Multiple Storage Adapters:**
+  - [x] Support for in-memory event store (for testing)
+  - [x] Add TTL-based idempotency store
+  - [ ] Implement adapters for different databases (SQL, NoSQL)
+  - [ ] Support for cloud-based event stores (EventBridge, Kinesis)
+  - [ ] File-based storage option for development/testing
+- [ ] **Event Store Optimization:**
+  - [ ] Event compression for large event stores
+  - [ ] Partitioning strategy for improved query performance
+  - [ ] Event versioning and schema evolution
+- [ ] **Performance Optimizations:**
+  - [ ] Add batching support for event storage.
+  - [ ] Implement read-side denormalization strategies.
+  - [ ] Add support for materialized views.
+  - [ ] Implement connection pooling for database adapters.
+
+## Developer Experience
+
+- [ ] **Debugging Tools:**
+  - [ ] Create visual event flow inspector.
+  - [ ] Add command/event simulator for testing.
+  - [ ] Implement diagnostic logging for troubleshooting.
+- [ ] **Code Generation:**
+  - [ ] Add generators for common patterns (commands, events, etc.).
+  - [ ] Create scaffolding tools for new aggregates and handlers.
+- [ ] **Documentation:**
+  - [ ] Add comprehensive examples covering common use cases.
+  - [ ] Create architectural decision records (ADRs).
+  - [ ] Generate API documentation with interactive examples.
 
 ## Completed / Implemented
 

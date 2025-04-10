@@ -26,45 +26,39 @@ export function decideAndReduce<
   C extends Command,
   P extends DomainEventPayload
 >(
-  currentState: S,
+  state: S,
   command: C,
   decider: EventDecider<S, C, P>,
   reducer: Reducer<S, P>,
-  currentVersion: number
+  version: number
 ): Result<
   { newState: S; newVersion: number; events: DomainEvent<P>[] },
   AppError
 > {
-  const eventPayloadsResult = decider(currentState, command)
-
-  if (eventPayloadsResult.isErr()) {
-    return err(eventPayloadsResult.error)
+  const eventsResult = decider(state, command)
+  if (eventsResult.isErr()) {
+    return err(eventsResult.error)
   }
 
-  const eventPayloads = eventPayloadsResult.value
-  const newEvents: DomainEvent<P>[] = []
-  let nextState = currentState
-  let versionCounter = currentVersion
+  const events = eventsResult.value.map((payload, index) => ({
+    eventId: `event-${version + index + 1}`,
+    aggregateId: state.aggregateId,
+    aggregateType: state.aggregateType,
+    eventType: command.operation,
+    version: version + index + 1,
+    payload,
+    timestamp: new Date()
+  }))
 
-  for (const payload of eventPayloads) {
-    versionCounter++
-    const event: DomainEvent<P> = {
-      eventId: uuidv4(),
-      aggregateType: command.aggregateType,
-      aggregateId: command.aggregateId,
-      eventType: command.operation,
-      version: versionCounter,
-      payload,
-      timestamp: new Date()
-    }
-    nextState = reducer(nextState, event)
-    newEvents.push(event)
-  }
+  const newState = events.reduce(
+    (currentState, event) => reducer(currentState, event),
+    state
+  )
 
   return ok({
-    newState: nextState,
-    newVersion: versionCounter,
-    events: newEvents
+    newState,
+    newVersion: version + events.length,
+    events
   })
 }
 

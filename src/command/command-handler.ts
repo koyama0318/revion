@@ -1,4 +1,4 @@
-import { ResultAsync, errAsync, fromPromise, okAsync } from 'neverthrow'
+import { ResultAsync, errAsync, okAsync } from 'neverthrow'
 import type { AggregateId, AggregateType } from '../types/aggregate-id'
 import {
   type AppError,
@@ -54,8 +54,9 @@ export function createCommandHandler<
     { state: S; version: number; aggregateId: AggregateId },
     AppError
   > => {
+    // First, try to load snapshot
     const loadSnapshotResult = ResultAsync.fromPromise(
-      eventStore.loadSnapshot(aggregateType),
+      eventStore.loadSnapshot(aggregateType, aggregateIdFromCommand),
       e =>
         createStoreOperationError('Failed to load snapshot', 'loadSnapshot', {
           cause: e,
@@ -63,13 +64,15 @@ export function createCommandHandler<
         })
     )
 
-    return loadSnapshotResult.andThen(snapshot => {
+    // Then load history after the snapshot
+    return loadSnapshotResult.andThen(snapshotResult => {
+      const snapshot = snapshotResult.isOk() ? snapshotResult.value : undefined
       const version = snapshot?.version ?? 0
       const currentAggregateId =
         snapshot?.state.aggregateId ?? aggregateIdFromCommand
 
       const loadHistoryResult = ResultAsync.fromPromise(
-        eventStore.loadHistory(aggregateType, version),
+        eventStore.loadHistory(aggregateType, aggregateIdFromCommand, version),
         e =>
           createStoreOperationError('Failed to load history', 'loadHistory', {
             cause: e,
@@ -77,8 +80,9 @@ export function createCommandHandler<
           })
       )
 
-      return loadHistoryResult.map(history => {
-        const { state, version: finalVersion } = reconstructState(
+      return loadHistoryResult.map(historyResult => {
+        const history = historyResult.isOk() ? historyResult.value : []
+        const { state, version: newVersion } = reconstructState(
           snapshot,
           history,
           createInitialState,
@@ -86,7 +90,12 @@ export function createCommandHandler<
           aggregateType,
           currentAggregateId
         )
-        return { state, version: finalVersion, aggregateId: currentAggregateId }
+
+        return {
+          state,
+          version: newVersion,
+          aggregateId: currentAggregateId
+        }
       })
     })
   }
@@ -99,25 +108,32 @@ export function createCommandHandler<
     newVersion: number,
     events: DomainEvent<P>[]
   ): ResultAsync<void, AppError> => {
+    // Save events first
     const saveEventsResult = ResultAsync.fromPromise(
-      eventStore.save(events),
+      eventStore.save(events[0].aggregateType, events[0].aggregateId, events),
       e =>
-        createStoreOperationError('Failed to save events', 'save', {
+        createStoreOperationError('Failed to save events', 'saveEvents', {
           cause: e,
           details: { events }
         })
     )
 
+    // Then conditionally save snapshot
     return saveEventsResult.andThen(() => {
       if (newVersion % SNAPSHOT_INTERVAL === 0) {
+        // Save snapshot if at the interval
         return ResultAsync.fromPromise(
-          eventStore.saveSnapshot({
-            aggregateId: newState.aggregateId,
-            aggregateType: newState.aggregateType,
-            state: newState,
-            version: newVersion,
-            timestamp: new Date()
-          }),
+          eventStore.saveSnapshot(
+            events[0].aggregateType,
+            events[0].aggregateId,
+            {
+              aggregateId: newState.aggregateId,
+              aggregateType: newState.aggregateType,
+              state: newState,
+              version: newVersion,
+              timestamp: new Date()
+            }
+          ),
           e =>
             createStoreOperationError(
               'Failed to save snapshot',
@@ -127,17 +143,20 @@ export function createCommandHandler<
                 details: { state: newState, version: newVersion }
               }
             )
-        )
+        ).map(() => undefined)
       }
       return okAsync(undefined)
     })
   }
 
+  // The actual command handler function
   return (command: Command): CommandResultAsync => {
+    // Load the state
     return loadStateAndVersion(
       command.aggregateType,
       command.aggregateId
     ).andThen(({ state, version, aggregateId }) => {
+      // Verify the aggregate exists and matches
       if (aggregateId !== command.aggregateId) {
         return errAsync(
           createNotFoundError(
@@ -146,10 +165,26 @@ export function createCommandHandler<
         )
       }
 
-      return decideAndReduce(state, command, decider, reducer, version).andThen(
-        ({ newState, newVersion, events }) =>
-          saveEventsAndSnapshot(newState, newVersion, events).map(() => events)
+      // Process the command to generate events
+      const decideResult = decideAndReduce(
+        state,
+        command as C,
+        decider,
+        reducer,
+        version
       )
+
+      if (decideResult.isErr()) {
+        return errAsync(decideResult.error)
+      }
+
+      const { newState, newVersion, events } = decideResult.value
+
+      // Save events and snapshot
+      return saveEventsAndSnapshot(newState, newVersion, events).map(() => ({
+        newState: newState as State,
+        events: events as DomainEvent<DomainEventPayload>[]
+      }))
     })
   }
 }

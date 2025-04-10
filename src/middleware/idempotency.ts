@@ -3,23 +3,8 @@ import type { DispatchFn } from '../command/command-bus'
 import type { AppError } from '../types/app-error'
 import { createConflictError } from '../types/app-error'
 import type { Command, CommandResultAsync } from '../types/command'
+import type { IdempotencyStore } from '../utils/idempotency-store'
 import { logger } from '../utils/logger'
-
-export interface IdempotencyStore {
-  /**
-   * Checks if a command has been processed before.
-   * @param commandId - The unique identifier of the command.
-   * @returns A ResultAsync containing true if the command has been processed, false otherwise.
-   */
-  isProcessed(commandId: string): ResultAsync<boolean, AppError>
-
-  /**
-   * Marks a command as processed.
-   * @param commandId - The unique identifier of the command.
-   * @returns A ResultAsync containing void on success, or an AppError on failure.
-   */
-  markAsProcessed(commandId: string): ResultAsync<void, AppError>
-}
 
 /**
  * Creates an idempotency middleware that ensures commands are processed only once.

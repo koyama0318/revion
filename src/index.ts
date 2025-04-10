@@ -33,7 +33,18 @@ export type {
   RequiredFieldsRule,
   PayloadSchemaRule
 } from './middleware/validation'
+export { createSchemaValidator } from './middleware/validation'
 export { performanceMiddleware } from './middleware/performance'
+export { createIdempotencyMiddleware } from './middleware/idempotency'
+export {
+  createAuthorizationMiddleware,
+  RoleBasedPolicy
+} from './middleware/auth'
+export type {
+  UserContext,
+  AuthorizationPolicy,
+  GetUserContextFn
+} from './middleware/auth'
 
 // Core Types
 export type {
@@ -43,7 +54,12 @@ export type {
   ConflictError,
   PermissionDeniedError,
   InternalServerError,
-  StoreOperationError
+  StoreOperationError,
+  TimeoutError,
+  NetworkError,
+  DependencyError,
+  DataIntegrityError,
+  CommandExecutionError
 } from './types/app-error'
 export {
   createValidationError,
@@ -51,7 +67,12 @@ export {
   createConflictError,
   createPermissionDeniedError,
   createInternalServerError,
-  createStoreOperationError
+  createStoreOperationError,
+  createTimeoutError,
+  createNetworkError,
+  createDependencyError,
+  createDataIntegrityError,
+  createCommandExecutionError
 } from './types/app-error'
 export type { Command, CommandResultAsync } from './types/command'
 export type { State, EventDecider, Reducer } from './types/command-aggregate'
@@ -67,3 +88,11 @@ export type { Logger, LogLevel, LogContext } from './utils/logger'
 
 // Utility Functions
 export { generateUuid } from './utils/id'
+export { ResultAsync, okAsync, errAsync } from './utils/result-async'
+
+// Idempotency Store
+export type { IdempotencyStore } from './utils/idempotency-store'
+export {
+  InMemoryIdempotencyStore,
+  TTLIdempotencyStore
+} from './utils/idempotency-store'

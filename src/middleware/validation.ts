@@ -1,4 +1,5 @@
 import { ResultAsync } from 'neverthrow'
+import type { z } from 'zod'
 import type { DispatchFn } from '../command/command-bus'
 import type { AppError } from '../types/app-error'
 import { createValidationError } from '../types/app-error'
@@ -37,27 +38,32 @@ export class RequiredFieldsRule implements ValidationRule {
 }
 
 export class PayloadSchemaRule implements ValidationRule {
-  constructor(private readonly schema: Record<string, unknown>) {}
+  private readonly zodSchema: z.ZodType
+
+  constructor(schema: z.ZodType) {
+    this.zodSchema = schema
+  }
 
   validate(command: Command): ResultAsync<void, AppError> {
     if (!command.payload) {
       return ResultAsync.fromPromise(
         Promise.reject(
           createValidationError('Command payload is required', {
-            schema: this.schema
+            command
           })
         ),
         error => error as AppError
       )
     }
 
-    // TODO: Implement schema validation using a validation library like Zod
-    // For now, we'll just check if the payload is an object
-    if (typeof command.payload !== 'object' || command.payload === null) {
+    const result = this.zodSchema.safeParse(command.payload)
+
+    if (!result.success) {
+      const formattedErrors = result.error.format()
       return ResultAsync.fromPromise(
         Promise.reject(
-          createValidationError('Command payload must be an object', {
-            schema: this.schema,
+          createValidationError('Command payload validation failed', {
+            errors: formattedErrors,
             payload: command.payload
           })
         ),
@@ -70,6 +76,17 @@ export class PayloadSchemaRule implements ValidationRule {
       error => error as AppError
     )
   }
+}
+
+/**
+ * Helper function to create a validation rule for a specific command type
+ * @param schema The Zod schema to validate against
+ * @returns A PayloadSchemaRule instance
+ */
+export function createSchemaValidator<T>(
+  schema: z.ZodType<T>
+): PayloadSchemaRule {
+  return new PayloadSchemaRule(schema)
 }
 
 export function createValidationMiddleware(

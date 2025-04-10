@@ -21,12 +21,12 @@ export class CommandAggregate<
   private events: DomainEvent<DomainEventPayload>[]
   private version: number
   private readonly decider: EventDecider<S, C, P>
-  private readonly reducer: Reducer<S>
+  private readonly reducer: Reducer<S, DomainEventPayload>
 
   constructor(
     initialState: S,
     decider: EventDecider<S, C, P>,
-    reducer: Reducer<S>
+    reducer: Reducer<S, DomainEventPayload>
   ) {
     this.state = initialState
     this.events = []
@@ -45,7 +45,7 @@ export class CommandAggregate<
   }
 
   private reduce(event: DomainEvent<DomainEventPayload>): void {
-    this.state = this.reducer(this.state, event)
+    this.state = this.reducer(this.state, event as DomainEvent<P>)
     this.version = event.version
     this.events.push(event)
   }
