@@ -1,6 +1,6 @@
 {
-  "name": "revion-toolkit",
-  "description": "Simplified toolkit for event sourcing with revion",
+  "name": "revion-examples",
+  "description": "",
   "type": "module",
   "version": "0.0.1",
   "main": "./dist/index.js",
@@ -29,6 +29,7 @@
   "dependencies": {
     "neverthrow": "^8.2.0",
     "revion-core": "workspace:*",
+    "revion-toolkit": "workspace:*",
     "uuid": "^10.0.0",
     "zod": "^3.24.2"
   }

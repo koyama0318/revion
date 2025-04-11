@@ -92,7 +92,6 @@
   - [x] Add TTL-based idempotency store
   - [ ] Implement adapters for different databases (SQL, NoSQL)
   - [ ] Support for cloud-based event stores (EventBridge, Kinesis)
-  - [ ] File-based storage option for development/testing
 - [ ] **Event Store Optimization:**
   - [ ] Event compression for large event stores
   - [ ] Partitioning strategy for improved query performance

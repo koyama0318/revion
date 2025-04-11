@@ -1,5 +1,9 @@
 {
   "name": "revion",
   "private": true,
-  "workspaces": ["packages/revion-core", "packages/revion-toolkit"]
+  "workspaces": [
+    "packages/revion-core",
+    "packages/revion-toolkit",
+    "packages/revion-examples"
+  ]
 }
