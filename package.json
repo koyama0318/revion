@@ -14,21 +14,19 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
-    "dev": "bun --hot run src/index.ts",
+    "dev": "bun --hot run ./src/index.ts",
     "test": "bun test --watch",
     "check": "biome check --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/bun": "latest",
-    "biome": "latest",
-    "typescript-eslint": "^8.21.0"
+    "@types/bun": "^1.2.9",
+    "@biomejs/biome": "1.9.4"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@types/uuid": "^10.0.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
   }
 }
