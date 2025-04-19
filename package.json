@@ -16,17 +16,17 @@
     "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
     "dev": "bun --hot run ./src/index.ts",
     "test": "bun test --watch",
+    "test:coverage": "bun test --coverage",
     "check": "biome check --write ."
   },
   "devDependencies": {
-    "@types/bun": "^1.2.9",
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "^1.2.9"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "uuid": "^11.1.0",
-    "zod": "^3.24.2"
+    "uuid": "^11.1.0"
   }
 }
