@@ -1,5 +1,4 @@
-import type { Snapshot } from '../types/domain-event'
-import type { DomainEvent } from '../types/domain-event'
+import type { DomainEvent, Snapshot } from '../types/command'
 import type { EventStore } from '../types/event-store'
 import type { AggregateId } from '../types/id'
 import type { AsyncResult } from './result'

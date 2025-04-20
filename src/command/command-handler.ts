@@ -1,12 +1,18 @@
-import type { Command } from '../types/command'
-import type { EventDecider, Reducer, State } from '../types/command-aggregate'
+import type { Command, DomainEvent, EventDecider, Reducer, State } from '../types/command'
 import type { CommandHandler, CommandHandlerFactory } from '../types/command-bus'
-import type { DomainEvent } from '../types/domain-event'
+import type {
+  LiteCommand,
+  LiteDomainEvent,
+  LiteEventDecider,
+  LiteReducer,
+  LiteState
+} from '../types/command-lite'
 import type { AppError } from '../types/error'
 import type { EventStore } from '../types/event-store'
 import type { AggregateId } from '../types/id'
 import type { AsyncResult } from '../utils/result'
 import { err, ok } from '../utils/result'
+import { extendLiteEventDecider, extendLiteReducer } from './command-lite'
 
 export const SNAPSHOT_INTERVAL = 100
 
@@ -92,10 +98,10 @@ class CommandProcessor<S extends State, C extends Command, E extends DomainEvent
       })
     }
 
-    if (events[0].version !== lastEventVersion.value + 1) {
+    if (lastEventVersion.value + 1 !== events[0].version) {
       return err({
         code: 'CONFLICT',
-        message: `Event version mismatch: ${events[0].version}, ${lastEventVersion.value + 1}`
+        message: `Event version mismatch: expected: ${lastEventVersion.value + 1}, received: ${events[0].version}`
       })
     }
 
@@ -140,6 +146,34 @@ export const createCommandHandler = <S extends State, C extends Command, E exten
 
     return (command: Command): AsyncResult<void, AppError> => {
       return processor.handle(command as C)
+    }
+  }
+}
+
+export const createLiteCommandHandler = <
+  LS extends LiteState,
+  LC extends LiteCommand,
+  LE extends LiteDomainEvent
+>(
+  initState: (id: AggregateId) => LS,
+  eventDecider: LiteEventDecider<LS, LC, LE>,
+  reducer: LiteReducer<LS, LE>
+): CommandHandlerFactory => {
+  const init = (id: AggregateId): State => {
+    return { ...initState(id), version: 0 }
+  }
+  const ed = extendLiteEventDecider(eventDecider)
+  const re = extendLiteReducer(reducer)
+
+  return (eventStore: EventStore): CommandHandler => {
+    const processor = new CommandProcessor(init, ed, re, eventStore)
+
+    return (command: Command): AsyncResult<void, AppError> => {
+      const commandWithPayload = {
+        ...command,
+        payload: command.payload ?? {}
+      }
+      return processor.handle(commandWithPayload as Command)
     }
   }
 }

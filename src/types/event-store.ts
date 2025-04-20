@@ -1,5 +1,5 @@
 import type { AsyncResult } from '../utils/result'
-import type { DomainEvent, Snapshot } from './domain-event'
+import type { DomainEvent, Snapshot } from './command'
 import type { AggregateId } from './id'
 
 export interface EventStore {

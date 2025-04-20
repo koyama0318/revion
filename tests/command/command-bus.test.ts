@@ -7,7 +7,8 @@ import { ok } from '../../src/utils/result'
 
 const mockCommand: Command = {
   operation: 'doSomething',
-  aggregateId: 'test#01963f1e-96b3-7000-944d-68549ad889a2'
+  aggregateId: 'test#01963f1e-96b3-7000-944d-68549ad889a2',
+  payload: {}
 }
 
 function setupHandlers(): Record<string, CommandHandler> {

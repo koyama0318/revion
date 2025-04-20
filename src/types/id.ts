@@ -1,4 +1,4 @@
-import { randomUUIDv7 } from 'bun'
+import { v7 } from 'uuid'
 import { err, ok } from '../utils/result'
 import type { Result } from '../utils/result'
 import type { AppError } from './error'
@@ -9,7 +9,7 @@ export type AggregateId = `${string}#${string}`
 export type Id<T extends string> = `${T}#${string}`
 
 export function newAggregateId(type: string): AggregateId {
-  return createAggregateId(type, randomUUIDv7())
+  return createAggregateId(type, v7())
 }
 
 export function createAggregateId(type: string, uuid: string): AggregateId {

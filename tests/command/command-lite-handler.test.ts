@@ -4,9 +4,9 @@ import type { EventStore } from '../../src/types/event-store'
 import type { Id } from '../../src/types/id'
 import { EventStoreInMemory } from '../../src/utils/event-store-in-memory'
 import { err, ok } from '../../src/utils/result'
-import { setupHandlerFactory } from '../fixtures/counter'
+import { setupLiteHandlerFactory } from '../fixtures/counter-lite'
 
-describe('CommandHandler', () => {
+describe('CommandLiteHandler', () => {
   let eventStore: EventStore
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('CommandHandler', () => {
   })
 
   it('should call handler if valid command is dispatched', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const command1 = {
@@ -36,7 +36,7 @@ describe('CommandHandler', () => {
   })
 
   it('should process command if events exist', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     await eventStore.saveEvents([
@@ -60,7 +60,7 @@ describe('CommandHandler', () => {
   })
 
   it('should process command if snapshot exists', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const event = {
@@ -97,7 +97,7 @@ describe('CommandHandler', () => {
   })
 
   it('should save snapshot if events count is over snapshot interval', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const event = {
@@ -123,7 +123,7 @@ describe('CommandHandler', () => {
   })
 
   it('should return error if event read fails', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const event = {
@@ -154,7 +154,7 @@ describe('CommandHandler', () => {
       return err(new Error('error'))
     }
 
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(es)
 
     const command = {
@@ -174,7 +174,7 @@ describe('CommandHandler', () => {
   })
 
   it('should not process command if snapshot exists but data is invalid', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const event = {
@@ -214,7 +214,7 @@ describe('CommandHandler', () => {
   })
 
   it('should return error if decider returns validation error', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const command = {
@@ -233,7 +233,7 @@ describe('CommandHandler', () => {
   })
 
   it('should return error if decider returns empty event', async () => {
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(eventStore)
 
     const command = {
@@ -257,7 +257,7 @@ describe('CommandHandler', () => {
       return err(new Error('error'))
     }
 
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(es)
 
     const command = {
@@ -282,7 +282,7 @@ describe('CommandHandler', () => {
       return ok(1)
     }
 
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(es)
 
     const command = {
@@ -306,7 +306,7 @@ describe('CommandHandler', () => {
       return err(new Error('error'))
     }
 
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(es)
 
     const command = {
@@ -331,7 +331,7 @@ describe('CommandHandler', () => {
       return err(new Error('error'))
     }
 
-    const factory = setupHandlerFactory()
+    const factory = setupLiteHandlerFactory()
     const handler = factory(es)
 
     const event = {
