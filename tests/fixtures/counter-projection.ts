@@ -1,10 +1,12 @@
+import { EventBus } from '../../src/event/event-bus'
 import { createEventHandler } from '../../src/event/event-handler'
 import type { AppError } from '../../src/types/error'
 import type { EventHandlerFactory } from '../../src/types/event'
 import { parseAggregateId } from '../../src/types/id'
 import type { ReadStorage } from '../../src/types/read-storage'
+import { ReadStorageInMemory } from '../../src/utils/read-storage-in-memory'
 import type { AsyncResult } from '../../src/utils/result'
-import type { CounterEvent } from './counter'
+import type { CounterEvent } from './counter-command'
 
 type CounterView = {
   type: 'Counter'
@@ -21,8 +23,14 @@ export function setupProjectionFactory(): EventHandlerFactory {
 
     const { type, uuid } = idResult.value
     switch (event.eventType) {
+      case 'created': {
+        return storage.save({
+          type,
+          id: uuid,
+          count: event.payload.amount
+        })
+      }
       case 'increment': {
-        console.log('increment', event.aggregateId)
         const prev = await storage.getById<CounterView>(type, uuid)
         if (!prev.ok) {
           return prev
@@ -32,7 +40,6 @@ export function setupProjectionFactory(): EventHandlerFactory {
           count: prev.value.count + event.payload.amount
         })
       }
-
       case 'decrement': {
         const prev = await storage.getById<CounterView>(type, uuid)
         if (!prev.ok) {
@@ -48,3 +55,8 @@ export function setupProjectionFactory(): EventHandlerFactory {
 
   return createEventHandler<CounterEvent>(projection)
 }
+
+const readStorage = new ReadStorageInMemory()
+const factory = setupProjectionFactory()
+const handler = factory(readStorage)
+export const eventBus = new EventBus({ counter: handler })

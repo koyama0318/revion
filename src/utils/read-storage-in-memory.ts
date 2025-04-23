@@ -6,9 +6,9 @@ import { err, ok } from './result'
 export class ReadStorageInMemory implements ReadStorage {
   readonly views: Record<string, View[]> = {}
 
-  async getList<T extends View>(type: string, id: string): AsyncResult<T[], AppError> {
+  async getList<T extends View>(type: string): AsyncResult<T[], AppError> {
     const views = this.views[type] as T[]
-    return ok(views)
+    return ok(views ?? [])
   }
 
   async getById<T extends View>(type: string, id: string): AsyncResult<T, AppError> {
@@ -31,7 +31,6 @@ export class ReadStorageInMemory implements ReadStorage {
   }
 
   async delete(type: string, id: string): AsyncResult<void, AppError> {
-    this.views[type] = this.views[type].filter(v => v.id !== id)
     return ok(undefined)
   }
 }

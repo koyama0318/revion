@@ -8,7 +8,7 @@ export type View = {
 }
 
 export interface ReadStorage {
-  getList<T extends View>(type: string, id: string): AsyncResult<T[], AppError>
+  getList<T extends View>(type: string): AsyncResult<T[], AppError>
   getById<T extends View>(type: string, id: string): AsyncResult<T, AppError>
   save<T extends View>(data: T): AsyncResult<void, AppError>
   delete(type: string, id: string): AsyncResult<void, AppError>

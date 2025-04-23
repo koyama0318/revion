@@ -1,6 +1,8 @@
+import { CommandBus } from '../../src/command/command-bus'
 import { createLiteCommandHandler } from '../../src/command/command-handler'
 import type { CommandHandlerFactory } from '../../src/types/command'
 import type { AggregateId, Id } from '../../src/types/id'
+import { EventStoreInMemory } from '../../src/utils/event-store-in-memory'
 import { err, ok } from '../../src/utils/result'
 
 type CounterState = {
@@ -18,13 +20,13 @@ type CounterCommand = {
 
 export type CounterEvent = {
   aggregateId: Id<'Counter'>
-  eventType: 'increment' | 'decrement'
+  eventType: 'created' | 'increment' | 'decrement'
   payload: {
     amount: number
   }
 }
 
-export function setupLiteHandlerFactory(): CommandHandlerFactory {
+export function setupCommandHandlerFactory(): CommandHandlerFactory {
   const initState = (id: AggregateId): CounterState => ({
     aggregateId: id as Id<'Counter'>,
     count: 0
@@ -33,6 +35,15 @@ export function setupLiteHandlerFactory(): CommandHandlerFactory {
   const eventDecider = (state: CounterState, command: CounterCommand) => {
     switch (command.operation) {
       case 'increment':
+        if (state.count === 0) {
+          return ok([
+            {
+              aggregateId: command.aggregateId,
+              eventType: 'created' as const,
+              payload: { amount: command.payload.amount }
+            }
+          ])
+        }
         return ok([
           {
             aggregateId: command.aggregateId,
@@ -60,6 +71,11 @@ export function setupLiteHandlerFactory(): CommandHandlerFactory {
 
   const reducer = (state: CounterState, event: CounterEvent): CounterState => {
     switch (event.eventType) {
+      case 'created':
+        return {
+          ...state,
+          count: event.payload.amount
+        }
       case 'increment':
         return {
           ...state,
@@ -79,3 +95,8 @@ export function setupLiteHandlerFactory(): CommandHandlerFactory {
     reducer
   )
 }
+
+const eventStore = new EventStoreInMemory()
+const factory = setupCommandHandlerFactory()
+const handler = factory(eventStore)
+export const commandBus = new CommandBus({ counter: handler }, [])

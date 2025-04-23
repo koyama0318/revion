@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { CommandBus } from '../../src/command/command-bus'
 import type { Command, CommandHandler, CommandMiddleware } from '../../src/types/command'
 import { ok } from '../../src/utils/result'
+import { commandBus } from '../fixtures/counter-command'
 
 const mockCommand: Command = {
   operation: 'doSomething',
@@ -12,6 +13,19 @@ const mockCommand: Command = {
 function setupHandlers(): Record<string, CommandHandler> {
   return { test: async _ => ok(undefined) }
 }
+
+describe('CommandBus integration', () => {
+  it('should call handler if valid command is dispatched', async () => {
+    const command: Command = {
+      operation: 'increment',
+      aggregateId: 'counter#00000000-0000-0000-0000-000000000000',
+      payload: { amount: 1 }
+    }
+    const result = await commandBus.dispatch(command)
+
+    expect(result).toEqual(ok(undefined))
+  })
+})
 
 describe('CommandBus', () => {
   it('should call handler if valid command is dispatched', async () => {
