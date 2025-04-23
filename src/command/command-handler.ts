@@ -1,5 +1,12 @@
-import type { Command, DomainEvent, EventDecider, Reducer, State } from '../types/command'
-import type { CommandHandler, CommandHandlerFactory } from '../types/command-bus'
+import type {
+  Command,
+  CommandHandler,
+  CommandHandlerFactory,
+  DomainEvent,
+  EventDecider,
+  Reducer,
+  State
+} from '../types/command'
 import type {
   LiteCommand,
   LiteDomainEvent,

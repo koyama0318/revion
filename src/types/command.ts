@@ -1,5 +1,6 @@
-import type { Result } from '../utils/result'
+import type { AsyncResult, Result } from '../utils/result'
 import type { AppError } from './error'
+import type { EventStore } from './event-store'
 import type { AggregateId } from './id'
 
 export type State = {
@@ -52,3 +53,9 @@ export type EventDecider<S extends State, C extends Command, E extends DomainEve
  * @returns The next state.
  */
 export type Reducer<S extends State, E extends DomainEvent> = (state: S, event: E) => S
+
+export type CommandHandler = (command: Command) => AsyncResult<void, AppError>
+
+export type CommandMiddleware = (command: Command, next: CommandHandler) => AsyncResult<void, AppError>
+
+export type CommandHandlerFactory = (eventStore: EventStore) => CommandHandler

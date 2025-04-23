@@ -1,11 +1,10 @@
-import { createCommandHandler } from '../../src/command/command-handler'
-import type { CommandHandlerFactory } from '../../src/types/command-bus'
+import { createLiteCommandHandler } from '../../src/command/command-handler'
+import type { CommandHandlerFactory } from '../../src/types/command'
 import type { AggregateId, Id } from '../../src/types/id'
 import { err, ok } from '../../src/utils/result'
 
 type CounterState = {
   aggregateId: Id<'Counter'>
-  version: number
   count: number
 }
 
@@ -17,20 +16,17 @@ type CounterCommand = {
   }
 }
 
-type CounterEvent = {
+export type CounterEvent = {
   aggregateId: Id<'Counter'>
   eventType: 'increment' | 'decrement'
-  version: number
-  timestamp: Date
   payload: {
     amount: number
   }
 }
 
-export function setupHandlerFactory(): CommandHandlerFactory {
+export function setupLiteHandlerFactory(): CommandHandlerFactory {
   const initState = (id: AggregateId): CounterState => ({
     aggregateId: id as Id<'Counter'>,
-    version: 0,
     count: 0
   })
 
@@ -41,8 +37,6 @@ export function setupHandlerFactory(): CommandHandlerFactory {
           {
             aggregateId: command.aggregateId,
             eventType: 'increment' as const,
-            version: state.version + 1,
-            timestamp: new Date(),
             payload: { amount: command.payload.amount }
           }
         ])
@@ -51,8 +45,6 @@ export function setupHandlerFactory(): CommandHandlerFactory {
           {
             aggregateId: command.aggregateId,
             eventType: 'decrement' as const,
-            version: state.version + 1,
-            timestamp: new Date(),
             payload: { amount: command.payload.amount }
           }
         ])
@@ -71,17 +63,19 @@ export function setupHandlerFactory(): CommandHandlerFactory {
       case 'increment':
         return {
           ...state,
-          version: event.version,
           count: state.count + event.payload.amount
         }
       case 'decrement':
         return {
           ...state,
-          version: event.version,
           count: state.count - event.payload.amount
         }
     }
   }
 
-  return createCommandHandler<CounterState, CounterCommand, CounterEvent>(initState, eventDecider, reducer)
+  return createLiteCommandHandler<CounterState, CounterCommand, CounterEvent>(
+    initState,
+    eventDecider,
+    reducer
+  )
 }

@@ -1,5 +1,4 @@
-import type { Command } from '../types/command'
-import type { CommandHandler, CommandMiddleware } from '../types/command-bus'
+import type { Command, CommandHandler, CommandMiddleware } from '../types/command'
 import type { AppError } from '../types/error'
 import { parseAggregateId } from '../types/id'
 import { type AsyncResult, err } from '../utils/result'

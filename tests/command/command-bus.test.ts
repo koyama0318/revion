@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { CommandBus } from '../../src/command/command-bus'
-import type { Command } from '../../src/types/command'
-import type { CommandMiddleware } from '../../src/types/command-bus'
-import type { CommandHandler } from '../../src/types/command-bus'
+import type { Command, CommandHandler, CommandMiddleware } from '../../src/types/command'
 import { ok } from '../../src/utils/result'
 
 const mockCommand: Command = {

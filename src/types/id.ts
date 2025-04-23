@@ -3,7 +3,7 @@ import { err, ok } from '../utils/result'
 import type { Result } from '../utils/result'
 import type { AppError } from './error'
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export type AggregateId = `${string}#${string}`
 export type Id<T extends string> = `${T}#${string}`
