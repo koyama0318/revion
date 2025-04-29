@@ -16,7 +16,7 @@
     "attributePosition": "auto",
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 110
+    "lineWidth": 100
   },
   "organizeImports": {
     "enabled": true
@@ -30,6 +30,12 @@
       },
       "style": {
         "useTemplate": "error"
+      },
+      "correctness": {
+        "noUnusedImports": "warn",
+        "noUnusedLabels": "warn",
+        "noUnusedVariables": "warn",
+        "noUnusedFunctionParameters": "warn"
       }
     }
   },
@@ -38,7 +44,7 @@
       "arrowParentheses": "asNeeded",
       "bracketSameLine": false,
       "bracketSpacing": true,
-      "jsxQuoteStyle": "single",
+      "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
       "quoteStyle": "single",
       "semicolons": "asNeeded",

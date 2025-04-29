@@ -24,3 +24,13 @@ export type LiteEventDecider<LS extends LiteState, LC extends LiteCommand, LE ex
 ) => Result<LE[], AppError>
 
 export type LiteReducer<LS extends LiteState, LE extends LiteDomainEvent> = (state: LS, event: LE) => LS
+
+export type LiteReplayerMap = {
+  [K in string]?: LiteReplayer<any, any>;
+};
+
+export type LiteReplayer<S extends LiteState, E extends LiteDomainEvent> = {
+  aggregateType: string,
+  initState: (id: AggregateId) => S,
+  reducer: (state: S, event: E) => S
+}
