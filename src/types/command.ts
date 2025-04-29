@@ -58,4 +58,8 @@ export type CommandHandler = (command: Command) => AsyncResult<void, AppError>
 
 export type CommandMiddleware = (command: Command, next: CommandHandler) => AsyncResult<void, AppError>
 
-export type CommandHandlerFactory = (eventStore: EventStore) => CommandHandler
+export interface CommandHandlerDeps {
+  eventStore: EventStore
+}
+
+export type CommandHandlerFactory<D extends CommandHandlerDeps = CommandHandlerDeps> = (deps: D) => CommandHandler

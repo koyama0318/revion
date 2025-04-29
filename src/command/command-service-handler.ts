@@ -1,4 +1,4 @@
-import type { Command, CommandHandler, CommandHandlerFactory } from "../types/command"
+import type { Command, CommandHandler, CommandHandlerDeps, CommandHandlerFactory } from "../types/command"
 import type { LiteReplayerMap } from "../types/command-lite"
 import type { AppError } from "../types/error"
 import type { EventStore } from "../types/event-store"
@@ -49,13 +49,16 @@ class CommandServiceProcessor {
     }
 }
 
-export const createCommandServiceHandler = (
-    deciderFactory: ServiceEventDeciderFactory,
+export const createCommandServiceHandler = <CD extends CommandHandlerDeps>(
+    deciderFactory: ServiceEventDeciderFactory<CD>,
     replayerMap: ReplayerMap
-): CommandHandlerFactory => {
-    return (eventStore: EventStore): CommandHandler => {
-        const decider = deciderFactory(eventStore)
-        const processor = new CommandServiceProcessor(decider, replayerMap, eventStore)
+): CommandHandlerFactory<CD> => {
+    return (deps: CD): CommandHandler => {
+        if (!deps.eventStore) {
+            throw new Error('Event store is required')
+        }
+        const decider = deciderFactory(deps)
+        const processor = new CommandServiceProcessor(decider, replayerMap, deps.eventStore)
 
         return async (command: Command): AsyncResult<void, AppError> => {
             return processor.handle(command)
@@ -63,10 +66,10 @@ export const createCommandServiceHandler = (
     }
 }
 
-export const createLiteCommandServiceHandler = (
-    deciderFactory: ServiceEventDeciderFactory,
-    replayerMap: LiteReplayerMap
-): CommandHandlerFactory => {
+export const createLiteCommandServiceHandler = <CD extends CommandHandlerDeps>(
+    deciderFactory: ServiceEventDeciderFactory<CD>,
+    replayerMap: LiteReplayerMap,
+): CommandHandlerFactory<CD> => {
     const map: ReplayerMap = {}
     for (const key in replayerMap) {
         const replayer = replayerMap[key];

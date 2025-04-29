@@ -98,5 +98,5 @@ export function setupCommandHandlerFactory(): CommandHandlerFactory {
 
 const eventStore = new EventStoreInMemory()
 const factory = setupCommandHandlerFactory()
-const handler = factory(eventStore)
+const handler = factory({eventStore})
 export const commandBus = new CommandBus({ counter: handler }, [])

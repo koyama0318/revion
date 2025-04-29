@@ -1,6 +1,7 @@
 import type {
   Command,
   CommandHandler,
+  CommandHandlerDeps,
   CommandHandlerFactory,
   DomainEvent,
   EventDecider,
@@ -18,7 +19,7 @@ import type { AppError } from '../types/error'
 import type { EventStore } from '../types/event-store'
 import type { AggregateId } from '../types/id'
 import type { AsyncResult } from '../utils/result'
-import { err, ok } from '../utils/result'
+import { err, ok, toResult } from '../utils/result'
 import { extendLiteEventDecider, extendLiteReducer } from './command-lite'
 import { replayState } from './replay-state'
 
@@ -61,19 +62,18 @@ class CommandProcessor<S extends State, C extends Command, E extends DomainEvent
   }
 
   private async saveEvents(events: E[], state: S): AsyncResult<void, AppError> {
-    const lastEventVersion = await this.eventStore.getLastEventVersion(state.aggregateId)
-    if (!lastEventVersion.ok) {
+    let gotVersion = await toResult(() => this.eventStore.getLastEventVersion(state.aggregateId))
+    if (!gotVersion.ok) {
       return err({
         code: 'LAST_EVENT_VERSION_CANNOT_BE_LOADED',
         message: 'Last event version cannot be loaded',
-        cause: lastEventVersion.error
+        cause: gotVersion.error
       })
     }
-
-    if (lastEventVersion.value + 1 !== events[0].version) {
+    if (gotVersion.value + 1 !== events[0].version) {
       return err({
         code: 'CONFLICT',
-        message: `Event version mismatch: expected: ${lastEventVersion.value + 1}, received: ${events[0].version}`
+        message: `Event version mismatch: expected: ${gotVersion.value + 1}, received: ${events[0].version}`
       })
     }
 
@@ -85,22 +85,22 @@ class CommandProcessor<S extends State, C extends Command, E extends DomainEvent
         data: state
       }
 
-      const result = await this.eventStore.saveSnapshot(snapshot)
-      if (!result.ok) {
+      let savedSnapshot = await toResult(() => this.eventStore.saveSnapshot(snapshot))
+      if (!savedSnapshot.ok) {
         return err({
           code: 'SNAPSHOT_CANNOT_BE_SAVED',
           message: 'Snapshot cannot be saved',
-          cause: result.error
+          cause: savedSnapshot.error
         })
       }
     }
 
-    const result = await this.eventStore.saveEvents(events)
-    if (!result.ok) {
+    let savedEvents = await toResult(() => this.eventStore.saveEvents(events))
+    if (!savedEvents.ok) {
       return err({
         code: 'EVENTS_CANNOT_BE_SAVED',
         message: 'Events cannot be saved',
-        cause: result.error
+        cause: savedEvents.error
       })
     }
 
@@ -109,13 +109,16 @@ class CommandProcessor<S extends State, C extends Command, E extends DomainEvent
 }
 
 
-export const createCommandHandler = <S extends State, C extends Command, E extends DomainEvent>(
+export const createCommandHandler = <S extends State, C extends Command, E extends DomainEvent, CD extends CommandHandlerDeps>(
   initState: (id: AggregateId) => S,
   eventDecider: EventDecider<S, C, E>,
   reducer: Reducer<S, E>
-): CommandHandlerFactory => {
-  return (eventStore: EventStore): CommandHandler => {
-    const processor = new CommandProcessor(initState, eventDecider, reducer, eventStore)
+): CommandHandlerFactory<CD> => {
+  return (deps: CD): CommandHandler => {
+    if (!deps.eventStore) {
+      throw new Error('Event store is required')
+    }
+    const processor = new CommandProcessor(initState, eventDecider, reducer, deps.eventStore)
 
     return (command: Command): AsyncResult<void, AppError> => {
       return processor.handle(command as C)
@@ -126,12 +129,13 @@ export const createCommandHandler = <S extends State, C extends Command, E exten
 export const createLiteCommandHandler = <
   LS extends LiteState,
   LC extends LiteCommand,
-  LE extends LiteDomainEvent
+  LE extends LiteDomainEvent,
+  CD extends CommandHandlerDeps = CommandHandlerDeps
 >(
   initState: (id: AggregateId) => LS,
   eventDecider: LiteEventDecider<LS, LC, LE>,
   reducer: LiteReducer<LS, LE>
-): CommandHandlerFactory => {
+): CommandHandlerFactory<CD> => {
   const init = (id: AggregateId): State => {
     return { ...initState(id), version: 0 }
   }

@@ -1,36 +1,32 @@
 import type { DomainEvent, Snapshot } from '../types/command'
-import type { AppError } from '../types/error'
 import type { EventStore } from '../types/event-store'
 import type { AggregateId } from '../types/id'
-import type { AsyncResult } from './result'
-import { ok } from './result'
 
 export class EventStoreInMemory implements EventStore {
   readonly events: DomainEvent[] = []
   readonly snapshots: Snapshot[] = []
 
-  async getEvents(aggregateId: AggregateId, fromVersion = 0): AsyncResult<DomainEvent[], AppError> {
+  async getEvents(aggregateId: AggregateId, fromVersion = 0): Promise<DomainEvent[]> {
     const events = this.events.filter(e => e.aggregateId === aggregateId && e.version >= fromVersion)
-    return ok(events)
+    return events
   }
 
-  async getLastEventVersion(aggregateId: AggregateId): AsyncResult<number, AppError> {
+  async getLastEventVersion(aggregateId: AggregateId): Promise<number> {
     const events = this.events.filter(e => e.aggregateId === aggregateId)
-    return ok(events.length)
+    return events.length
   }
 
-  async saveEvents(events: DomainEvent[]): AsyncResult<DomainEvent[], AppError> {
+  async saveEvents(events: DomainEvent[]): Promise<DomainEvent[]> {
     this.events.push(...events)
-    return ok(events)
+    return events
   }
 
-  async getSnapshot(aggregateId: AggregateId): AsyncResult<Snapshot | null, AppError> {
+  async getSnapshot(aggregateId: AggregateId): Promise<Snapshot | null> {
     const snapshot = this.snapshots.find(snapshot => snapshot.aggregateId === aggregateId)
-    return ok(snapshot ?? null)
+    return snapshot ?? null
   }
 
-  async saveSnapshot(snapshot: Snapshot): AsyncResult<void, AppError> {
+  async saveSnapshot(snapshot: Snapshot): Promise<void> {
     this.snapshots.push(snapshot)
-    return ok(undefined)
   }
 }

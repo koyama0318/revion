@@ -15,7 +15,7 @@ describe('CommandLiteHandler', () => {
 
   it('should call handler if valid command is dispatched', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const command1 = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -37,7 +37,7 @@ describe('CommandLiteHandler', () => {
 
   it('should process command if events exist', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     await eventStore.saveEvents([
       {
@@ -61,7 +61,7 @@ describe('CommandLiteHandler', () => {
 
   it('should process command if snapshot exists', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -98,7 +98,7 @@ describe('CommandLiteHandler', () => {
 
   it('should save snapshot if events count is over snapshot interval', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -124,7 +124,7 @@ describe('CommandLiteHandler', () => {
 
   it('should return error if event read fails', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -151,11 +151,11 @@ describe('CommandLiteHandler', () => {
   it('should return error if snapshot read fails', async () => {
     const es = new EventStoreInMemory()
     es.getSnapshot = async () => {
-      return err(new Error('error'))
+      throw new Error('error')
     }
 
     const factory = setupCommandHandlerFactory()
-    const handler = factory(es)
+    const handler = factory({eventStore: es})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -175,7 +175,7 @@ describe('CommandLiteHandler', () => {
 
   it('should not process command if snapshot exists but data is invalid', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -215,7 +215,7 @@ describe('CommandLiteHandler', () => {
 
   it('should return error if decider returns validation error', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -234,7 +234,7 @@ describe('CommandLiteHandler', () => {
 
   it('should return error if decider returns empty event', async () => {
     const factory = setupCommandHandlerFactory()
-    const handler = factory(eventStore)
+    const handler = factory({eventStore})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -254,11 +254,11 @@ describe('CommandLiteHandler', () => {
   it('should return error if last version read fails', async () => {
     const es = new EventStoreInMemory()
     es.getLastEventVersion = async () => {
-      return err(new Error('error'))
+      throw new Error('error')
     }
 
     const factory = setupCommandHandlerFactory()
-    const handler = factory(es)
+    const handler = factory({eventStore: es})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -278,12 +278,10 @@ describe('CommandLiteHandler', () => {
 
   it('should return error if optimistic lock fails', async () => {
     const es = new EventStoreInMemory()
-    es.getLastEventVersion = async () => {
-      return ok(1)
-    }
+    es.getLastEventVersion = async () => 1
 
     const factory = setupCommandHandlerFactory()
-    const handler = factory(es)
+    const handler = factory({eventStore: es})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -303,11 +301,11 @@ describe('CommandLiteHandler', () => {
   it('should return error if events save fails', async () => {
     const es = new EventStoreInMemory()
     es.saveEvents = async () => {
-      return err(new Error('error'))
+      throw new Error('error')
     }
 
     const factory = setupCommandHandlerFactory()
-    const handler = factory(es)
+    const handler = factory({eventStore: es})
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -328,11 +326,11 @@ describe('CommandLiteHandler', () => {
   it('should return error if snapshot save fails', async () => {
     const es = new EventStoreInMemory()
     es.saveSnapshot = async () => {
-      return err(new Error('error'))
+      throw new Error('error')
     }
 
     const factory = setupCommandHandlerFactory()
-    const handler = factory(es)
+    const handler = factory({eventStore: es})
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,

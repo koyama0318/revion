@@ -19,3 +19,12 @@ export function ok<T>(value: T): Ok<T> {
 export function err<E>(error: E): Err<E> {
   return { ok: false, error }
 }
+
+export async function toResult<T>(fn: () => Promise<T>): Promise<Result<T, Error>> {
+  try {
+    const value = await fn();
+    return ok(value);
+  } catch (e: unknown) {
+    return err(e instanceof Error ? e : new Error(String(e)));
+  }
+}

@@ -3,7 +3,7 @@ import type { AppError } from "../types/error"
 import type { EventStore } from "../types/event-store"
 import type { AggregateId } from "../types/id"
 import type { AsyncResult } from "../utils/result"
-import { err, ok } from "../utils/result"
+import { err, ok, toResult } from "../utils/result"
 
 export async function replayState<S extends State, E extends DomainEvent>({
     aggregateId,
@@ -19,9 +19,9 @@ export async function replayState<S extends State, E extends DomainEvent>({
     let state = initState(aggregateId) as S
     let currentVersion = 0
   
-      const snapshot = await eventStore.getSnapshot(aggregateId)
-      if (!snapshot.ok) {
-        return err({
+    const snapshot = await toResult(() => eventStore.getSnapshot(aggregateId))
+    if (!snapshot.ok) {
+      return err({
           code: 'SNAPSHOT_CANNOT_BE_LOADED',
           message: 'Snapshot cannot be loaded',
           cause: snapshot.error
@@ -40,7 +40,7 @@ export async function replayState<S extends State, E extends DomainEvent>({
         currentVersion = snapshot.value.version
       }
   
-      const events = await eventStore.getEvents(aggregateId, currentVersion)
+      const events = await toResult(() => eventStore.getEvents(aggregateId, currentVersion))
       if (!events.ok) {
         return err({
           code: 'EVENTS_CANNOT_BE_LOADED',
