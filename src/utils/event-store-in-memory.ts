@@ -7,7 +7,9 @@ export class EventStoreInMemory implements EventStore {
   readonly snapshots: Snapshot[] = []
 
   async getEvents(aggregateId: AggregateId, fromVersion = 0): Promise<DomainEvent[]> {
-    const events = this.events.filter(e => e.aggregateId === aggregateId && e.version >= fromVersion)
+    const events = this.events.filter(
+      e => e.aggregateId === aggregateId && e.version >= fromVersion
+    )
     return events
   }
 

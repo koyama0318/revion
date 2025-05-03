@@ -43,7 +43,9 @@ export class FakeHandler<CD extends CommandHandlerDeps> {
   }
 
   async dispatch(command: LiteCommand): AsyncResult<void, AppError> {
-    const gotVersion = await toResult(() => this.commandDeps.eventStore.getLastEventVersion(command.aggregateId))
+    const gotVersion = await toResult(() =>
+      this.commandDeps.eventStore.getLastEventVersion(command.aggregateId)
+    )
     if (!gotVersion.ok) {
       return err({
         code: 'LAST_EVENT_VERSION_CANNOT_BE_LOADED',
@@ -57,7 +59,9 @@ export class FakeHandler<CD extends CommandHandlerDeps> {
       payload: command.payload ?? {}
     })
 
-    const events = await toResult(() => this.commandDeps.eventStore.getEvents(command.aggregateId, gotVersion.value + 1))
+    const events = await toResult(() =>
+      this.commandDeps.eventStore.getEvents(command.aggregateId, gotVersion.value + 1)
+    )
     if (!events.ok) {
       return err({
         code: 'EVENTS_CANNOT_BE_LOADED',

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import { QueryBus } from '../../src/query/query-bus'
 import type { Query, QueryHandler } from '../../src/types/query'
+import { ReadStorageInMemory } from '../../src/utils/read-storage-in-memory'
 import { err, ok } from '../../src/utils/result'
-import { queryBus } from '../fixtures/counter-query'
+import { queryHandler1, queryHandler2 } from '../fixtures/counter'
 
 const mockQuery: Query = {
   type: 'test',
@@ -15,6 +16,11 @@ function setupHandlers(): Record<string, QueryHandler> {
 
 describe('QueryBus integration', () => {
   it('should call handler if valid query is dispatched', async () => {
+    const readStorage = new ReadStorageInMemory()
+    const queryBus = new QueryBus({
+      counterList: queryHandler1(readStorage),
+      counterById: queryHandler2(readStorage)
+    })
     const result1 = await queryBus.execute({ type: 'counterList' })
     const result2 = await queryBus.execute({
       type: 'counterById',

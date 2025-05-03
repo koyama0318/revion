@@ -56,10 +56,15 @@ export type Reducer<S extends State, E extends DomainEvent> = (state: S, event: 
 
 export type CommandHandler = (command: Command) => AsyncResult<void, AppError>
 
-export type CommandMiddleware = (command: Command, next: CommandHandler) => AsyncResult<void, AppError>
+export type CommandMiddleware = (
+  command: Command,
+  next: CommandHandler
+) => AsyncResult<void, AppError>
 
 export interface CommandHandlerDeps {
   eventStore: EventStore
 }
 
-export type CommandHandlerFactory<D extends CommandHandlerDeps = CommandHandlerDeps> = (deps: D) => CommandHandler
+export type CommandHandlerFactory<D extends CommandHandlerDeps = CommandHandlerDeps> = (
+  deps: D
+) => CommandHandler

@@ -22,9 +22,9 @@ export function err<E>(error: E): Err<E> {
 
 export async function toResult<T>(fn: () => Promise<T>): Promise<Result<T, Error>> {
   try {
-    const value = await fn();
-    return ok(value);
+    const value = await fn()
+    return ok(value)
   } catch (e: unknown) {
-    return err(e instanceof Error ? e : new Error(String(e)));
+    return err(e instanceof Error ? e : new Error(String(e)))
   }
 }

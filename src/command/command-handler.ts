@@ -19,9 +19,10 @@ import type { AppError } from '../types/error'
 import type { EventStore } from '../types/event-store'
 import type { AggregateId } from '../types/id'
 import type { AsyncResult } from '../utils/result'
-import { err, ok, toResult } from '../utils/result'
+import { err } from '../utils/result'
 import { extendLiteEventDecider, extendLiteReducer } from './command-lite'
 import { replayState } from './replay-state'
+import { saveEvents } from './save-events'
 
 export const SNAPSHOT_INTERVAL = 100
 
@@ -58,58 +59,16 @@ class CommandProcessor<S extends State, C extends Command, E extends DomainEvent
     const events = newEvents.value
     const nextState = newEvents.value.reduce(this.reducer, state.value)
 
-    return this.saveEvents(events, nextState)
-  }
-
-  private async saveEvents(events: E[], state: S): AsyncResult<void, AppError> {
-    let gotVersion = await toResult(() => this.eventStore.getLastEventVersion(state.aggregateId))
-    if (!gotVersion.ok) {
-      return err({
-        code: 'LAST_EVENT_VERSION_CANNOT_BE_LOADED',
-        message: 'Last event version cannot be loaded',
-        cause: gotVersion.error
-      })
-    }
-    if (gotVersion.value + 1 !== events[0].version) {
-      return err({
-        code: 'CONFLICT',
-        message: `Event version mismatch: expected: ${gotVersion.value + 1}, received: ${events[0].version}`
-      })
-    }
-
-    if (state.version >= SNAPSHOT_INTERVAL) {
-      const snapshot = {
-        aggregateId: state.aggregateId,
-        version: state.version,
-        timestamp: new Date(),
-        data: state
-      }
-
-      let savedSnapshot = await toResult(() => this.eventStore.saveSnapshot(snapshot))
-      if (!savedSnapshot.ok) {
-        return err({
-          code: 'SNAPSHOT_CANNOT_BE_SAVED',
-          message: 'Snapshot cannot be saved',
-          cause: savedSnapshot.error
-        })
-      }
-    }
-
-    let savedEvents = await toResult(() => this.eventStore.saveEvents(events))
-    if (!savedEvents.ok) {
-      return err({
-        code: 'EVENTS_CANNOT_BE_SAVED',
-        message: 'Events cannot be saved',
-        cause: savedEvents.error
-      })
-    }
-
-    return ok(undefined)
+    return saveEvents({ events, state: nextState, eventStore: this.eventStore })
   }
 }
 
-
-export const createCommandHandler = <S extends State, C extends Command, E extends DomainEvent, CD extends CommandHandlerDeps>(
+const createCommandHandler = <
+  S extends State,
+  C extends Command,
+  E extends DomainEvent,
+  CD extends CommandHandlerDeps
+>(
   initState: (id: AggregateId) => S,
   eventDecider: EventDecider<S, C, E>,
   reducer: Reducer<S, E>

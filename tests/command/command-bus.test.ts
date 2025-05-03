@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import { CommandBus } from '../../src/command/command-bus'
 import type { Command, CommandHandler, CommandMiddleware } from '../../src/types/command'
+import { EventStoreInMemory } from '../../src/utils/event-store-in-memory'
 import { ok } from '../../src/utils/result'
-import { commandBus } from '../fixtures/counter-command'
+import { counterHandler } from '../fixtures/counter'
 
 const mockCommand: Command = {
   operation: 'doSomething',
@@ -21,6 +22,8 @@ describe('CommandBus integration', () => {
       aggregateId: 'counter#00000000-0000-0000-0000-000000000000',
       payload: { amount: 1 }
     }
+    const eventStore = new EventStoreInMemory()
+    const commandBus = new CommandBus({ counter: counterHandler({ eventStore }) }, [])
     const result = await commandBus.dispatch(command)
 
     expect(result).toEqual(ok(undefined))

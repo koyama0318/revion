@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { createAggregateId, newAggregateId, parseAggregateId } from '../../src/types/id'
 
 describe('AggregateId', () => {
@@ -7,7 +7,9 @@ describe('AggregateId', () => {
       const type = 'user'
       const id = newAggregateId(type)
 
-      expect(id).toMatch(/^user#[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+      expect(id).toMatch(
+        /^user#[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      )
     })
   })
 

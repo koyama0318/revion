@@ -18,19 +18,25 @@ export type LiteDomainEvent = {
   payload?: unknown
 }
 
-export type LiteEventDecider<LS extends LiteState, LC extends LiteCommand, LE extends LiteDomainEvent> = (
+export type LiteEventDecider<
+  LS extends LiteState,
+  LC extends LiteCommand,
+  LE extends LiteDomainEvent
+> = (state: LS, command: LC) => Result<LE[], AppError>
+
+export type LiteReducer<LS extends LiteState, LE extends LiteDomainEvent> = (
   state: LS,
-  command: LC
-) => Result<LE[], AppError>
+  event: LE
+) => LS
 
-export type LiteReducer<LS extends LiteState, LE extends LiteDomainEvent> = (state: LS, event: LE) => LS
+// biome-ignore lint/suspicious/noExplicitAny:
+export type AnyLiteCommandReplayer = LiteCommandReplayer<any, any>
 
-export type LiteReplayerMap = {
-  [K in string]?: LiteReplayer<any, any>;
-};
-
-export type LiteReplayer<S extends LiteState, E extends LiteDomainEvent> = {
-  aggregateType: string,
-  initState: (id: AggregateId) => S,
+export type LiteCommandReplayer<
+  S extends LiteState = LiteState,
+  E extends LiteDomainEvent = LiteDomainEvent
+> = {
+  aggregateType: string
+  initState: (id: AggregateId) => S
   reducer: (state: S, event: E) => S
 }

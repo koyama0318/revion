@@ -23,14 +23,12 @@ export class ReadStorageInMemory implements ReadStorage {
   }
 
   async save<T extends View>(data: T): AsyncResult<void, AppError> {
-    if (!this.views[data.type]) {
-      this.views[data.type] = []
-    }
-    this.views[data.type].push(data)
+    this.views[data.type] = [...(this.views[data.type] ?? []), data]
     return ok(undefined)
   }
 
   async delete(type: string, id: string): AsyncResult<void, AppError> {
+    this.views[type] = (this.views[type] ?? []).filter(v => v.id !== id)
     return ok(undefined)
   }
 }

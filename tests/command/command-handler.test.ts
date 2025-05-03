@@ -4,9 +4,9 @@ import type { EventStore } from '../../src/types/event-store'
 import type { Id } from '../../src/types/id'
 import { EventStoreInMemory } from '../../src/utils/event-store-in-memory'
 import { err, ok } from '../../src/utils/result'
-import { setupCommandHandlerFactory } from '../fixtures/counter-command'
+import { counterHandler } from '../fixtures/counter'
 
-describe('CommandLiteHandler', () => {
+describe('LiteCommandHandler', () => {
   let eventStore: EventStore
 
   beforeEach(() => {
@@ -14,8 +14,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should call handler if valid command is dispatched', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const command1 = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -24,7 +23,7 @@ describe('CommandLiteHandler', () => {
     }
     const command2 = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
-      operation: 'decrement',
+      operation: 'increment',
       payload: { amount: 1 }
     }
 
@@ -36,8 +35,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should process command if events exist', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     await eventStore.saveEvents([
       {
@@ -60,8 +58,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should process command if snapshot exists', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -97,8 +94,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should save snapshot if events count is over snapshot interval', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -123,8 +119,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should return error if event read fails', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -154,8 +149,7 @@ describe('CommandLiteHandler', () => {
       throw new Error('error')
     }
 
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore: es})
+    const handler = counterHandler({ eventStore: es })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -174,8 +168,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should not process command if snapshot exists but data is invalid', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -214,8 +207,7 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should return error if decider returns validation error', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -233,12 +225,11 @@ describe('CommandLiteHandler', () => {
   })
 
   it('should return error if decider returns empty event', async () => {
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore})
+    const handler = counterHandler({ eventStore })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
-      operation: 'noEvent',
+      operation: 'decrement',
       payload: { amount: 1 }
     }
     const result = await handler(command)
@@ -257,8 +248,7 @@ describe('CommandLiteHandler', () => {
       throw new Error('error')
     }
 
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore: es})
+    const handler = counterHandler({ eventStore: es })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -280,8 +270,7 @@ describe('CommandLiteHandler', () => {
     const es = new EventStoreInMemory()
     es.getLastEventVersion = async () => 1
 
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore: es})
+    const handler = counterHandler({ eventStore: es })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -304,8 +293,7 @@ describe('CommandLiteHandler', () => {
       throw new Error('error')
     }
 
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore: es})
+    const handler = counterHandler({ eventStore: es })
 
     const command = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
@@ -329,8 +317,7 @@ describe('CommandLiteHandler', () => {
       throw new Error('error')
     }
 
-    const factory = setupCommandHandlerFactory()
-    const handler = factory({eventStore: es})
+    const handler = counterHandler({ eventStore: es })
 
     const event = {
       aggregateId: 'Counter#1' as Id<'Counter'>,
