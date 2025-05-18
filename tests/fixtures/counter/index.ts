@@ -1,5 +1,0 @@
-export { handler as counterHandler, replayer as counterReplayer } from './counter-command'
-export { serviceFactory as counterServiceCommand } from './counter-command-service'
-export { eventHandler as counterEventHandler } from './counter-projection'
-export { queryHandler1, queryHandler2 } from './counter-query'
-export * from './types'
