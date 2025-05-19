@@ -9,12 +9,13 @@ export type {
   AggregateId,
   AppError,
   CommandDispatcher,
-  DomainServiceFn,
-  CaseEventDeciderFn as EventDeciderFn,
+  DomainServiceFn as DomainService,
+  CaseEventDeciderFn as EventDecider,
   EventStore,
-  CasePolicyFn as PolicyFn,
-  ProjectionFn,
+  CasePolicyFn as Policy,
+  ProjectionFn as Projection,
+  QueryResolverFn as QueryResolver,
   ReadDatabase,
-  CaseReducerFn as ReducerFn
+  CaseReducerFn as Reducer
 } from './types'
 export * from './utils'

@@ -1,9 +1,9 @@
-import type { DomainServiceFn, StateCommandPair } from '../../../../src'
+import type { DomainService, StateCommandPair } from '../../../../src'
 import { applyAndSave, createDomainService } from '../../../../src'
 import type { CounterCommand, CounterEvent, CounterState } from '../counter'
 import type { MergeCounterCommand } from './types'
 
-const service: DomainServiceFn<MergeCounterCommand> = async (command, combined) => {
+const service: DomainService<MergeCounterCommand> = async (command, combined) => {
   const { fromCounterId, toCounterId } = command.payload
 
   const fromCounter = await combined.replayFn<CounterState>(fromCounterId)

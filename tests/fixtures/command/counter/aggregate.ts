@@ -1,4 +1,4 @@
-import type { EventDeciderFn, ReducerFn } from '../../../../src'
+import type { EventDecider, Reducer } from '../../../../src'
 import { createAggregate } from '../../../../src'
 import type { CounterCommand, CounterEvent, CounterId, CounterState } from './types'
 
@@ -7,7 +7,7 @@ const stateInit = (id: CounterId): CounterState => ({
   count: 0
 })
 
-const decider: EventDeciderFn<CounterState, CounterCommand, CounterEvent> = {
+const decider: EventDecider<CounterState, CounterCommand, CounterEvent> = {
   create: _ => {
     return { type: 'created' }
   },
@@ -22,7 +22,7 @@ const decider: EventDeciderFn<CounterState, CounterCommand, CounterEvent> = {
   }
 }
 
-const reducer: ReducerFn<CounterState, CounterEvent> = {
+const reducer: Reducer<CounterState, CounterEvent> = {
   created: state => {
     state.count = 0
   },

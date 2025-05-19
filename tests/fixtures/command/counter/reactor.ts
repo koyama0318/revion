@@ -1,9 +1,9 @@
-import type { PolicyFn, ProjectionFn } from '../../../../src'
+import type { Policy, Projection } from '../../../../src'
 import { createEventReactor } from '../../../../src'
 import type { ViewMap } from '../../view'
 import type { CounterCommand, CounterEvent, CounterId } from './types'
 
-const policy: PolicyFn<CounterCommand, CounterEvent> = {
+const policy: Policy<CounterCommand, CounterEvent> = {
   created: event => {
     const command: CounterCommand = {
       operation: 'increment',
@@ -13,7 +13,7 @@ const policy: PolicyFn<CounterCommand, CounterEvent> = {
   }
 }
 
-const projection: ProjectionFn<CounterEvent, ViewMap> = {
+const projection: Projection<CounterEvent, ViewMap> = {
   created: {
     counter: {
       init: e => ({
