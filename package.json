@@ -15,9 +15,10 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && bun build ./src/index.ts --outdir ./dist",
     "dev": "bun --hot run ./src/index.ts",
-    "test": "bun test --watch",
+    "test": "bun test",
     "test:coverage": "bun test --coverage",
-    "check": "biome check --write ."
+    "check": "biome check --write .",
+    "lint": "biome check ."
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
