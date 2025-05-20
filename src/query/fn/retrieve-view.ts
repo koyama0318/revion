@@ -28,7 +28,7 @@ export function createRetrieveViewFnFactory<
   D extends QueryHandlerDeps
 >(resolver: QueryResolverFn<QM, V>): (deps: D) => RetrieveViewFn {
   return (deps: D) => {
-    return async (query: Query) => {
+    return async (query: Query): AsyncResult<QueryResult, AppError> => {
       const operation = query.operation
       const queryFn = resolver[operation as keyof QM]
       if (!queryFn) {

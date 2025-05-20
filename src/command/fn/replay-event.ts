@@ -9,7 +9,7 @@ import type {
   State,
   StateInitFn
 } from '../../types'
-import { err, ok } from '../../utils'
+import { err, ok, toAsyncResult } from '../../utils'
 import type { CommandHandlerDeps } from '../command-handler'
 
 export type ReplayEventFn<T extends string, S extends State> = (
@@ -35,20 +35,20 @@ export function createReplayEventFnFactory<
       let state = stateInit(id) as S
       let currentVersion = 0
 
-      const snapshotResult = await deps.eventStore.getSnapshot(id)
-      if (!snapshotResult.ok) {
+      const snapshot = await toAsyncResult(() => deps.eventStore.getSnapshot(id))
+      if (!snapshot.ok) {
         return err({
           code: 'SNAPSHOT_CANNOT_BE_LOADED',
           message: 'Snapshot cannot be loaded',
-          cause: snapshotResult.error
+          cause: snapshot.error
         })
       }
-      if (snapshotResult.value && snapshotResult.value !== null) {
-        state = snapshotResult.value.state as S
-        currentVersion = snapshotResult.value.version
+      if (snapshot.value && snapshot.value !== null) {
+        state = snapshot.value.state as S
+        currentVersion = snapshot.value.version
       }
 
-      const events = await deps.eventStore.getEvents(id, currentVersion + 1)
+      const events = await toAsyncResult(() => deps.eventStore.getEvents(id, currentVersion + 1))
       if (!events.ok) {
         return err({
           code: 'EVENTS_CANNOT_BE_LOADED',

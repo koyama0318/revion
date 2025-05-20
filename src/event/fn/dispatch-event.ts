@@ -7,7 +7,7 @@ import type {
   ExtendedDomainEvent,
   PolicyFn
 } from '../../types'
-import { ok } from '../../utils'
+import { err, ok, toAsyncResult } from '../../utils'
 
 type DispatchEventFn<E extends DomainEvent> = (
   event: ExtendedDomainEvent<E>
@@ -17,11 +17,20 @@ export function createDispatchEventFnFactory<C extends Command, E extends Domain
   policy: PolicyFn<C, E>
 ): (deps: CommandDispatcher) => DispatchEventFn<E> {
   return (deps: CommandDispatcher) => {
-    return async (event: ExtendedDomainEvent<E>) => {
+    return async (event: ExtendedDomainEvent<E>): AsyncResult<void, AppError> => {
       const command = policy(event)
       if (!command) return ok(undefined)
 
-      return await deps.dispatch(command)
+      const dispatched = await toAsyncResult(() => deps.dispatch(command))
+      if (!dispatched.ok) {
+        return err({
+          code: 'COMMAND_DISPATCH_FAILED',
+          message: 'Command dispatch failed',
+          cause: dispatched.error
+        })
+      }
+
+      return ok(undefined)
     }
   }
 }

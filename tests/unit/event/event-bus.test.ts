@@ -8,7 +8,7 @@ describe('event bus', () => {
     it('should return ok when event is received', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => ok(undefined) },
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const receive = createEventBus(deps, [counterReactor])
@@ -30,7 +30,7 @@ describe('event bus', () => {
     it('should return error if handler is not found', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => ok(undefined) },
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const receive = createEventBus(deps, [counterReactor])
@@ -54,7 +54,9 @@ describe('event bus', () => {
       // Arrange
       const deps = {
         eventDispatcher: {
-          dispatch: async _ => err({ code: 'EVENT_HANDLER_FAILED', message: 'Failed' })
+          dispatch: async _ => {
+            throw new Error('test')
+          }
         },
         readDatabase: new ReadDatabaseInMemory()
       }
@@ -71,7 +73,7 @@ describe('event bus', () => {
       // Assert
       expect(result.ok).toBe(false)
       if (!result.ok) {
-        expect(result.error.code).toBe('EVENT_HANDLER_FAILED')
+        expect(result.error.code).toBe('COMMAND_DISPATCH_FAILED')
       }
     })
   })

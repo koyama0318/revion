@@ -7,7 +7,7 @@ import type {
   ReadDatabase,
   ViewMap
 } from '../../types'
-import { err, ok } from '../../utils'
+import { err, ok, toAsyncResult } from '../../utils'
 
 export type ProjectEventFn<E extends DomainEvent> = (
   event: ExtendedDomainEvent<E>
@@ -17,7 +17,7 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
   projection: ProjectionFn<E, VM>
 ): (db: ReadDatabase) => ProjectEventFn<E> {
   return (db: ReadDatabase) => {
-    return async (event: ExtendedDomainEvent<E>) => {
+    return async (event: ExtendedDomainEvent<E>): AsyncResult<void, AppError> => {
       const eventType = event.event.type as E['type']
       const defs = projection[eventType]
       if (!defs) {
@@ -30,27 +30,49 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
       for (const [viewType, def] of Object.entries(defs)) {
         if ('init' in def) {
           const view = def.init(event)
-          const saved = await db.save(viewType, view)
-          if (!saved.ok) return saved
+          const saved = await toAsyncResult(() => db.save(viewType, view))
+          if (!saved.ok) {
+            return err({
+              code: 'SAVE_VIEW_FAILED',
+              message: `Save view failed: ${viewType}`
+            })
+          }
 
           continue
         }
 
         if ('id' in def && 'apply' in def) {
           const id: string = def.id(event)
-          const view = await db.getById(viewType, id)
-          if (!view.ok) return view
+          const view = await toAsyncResult(() => db.getById(viewType, id))
+          if (!view.ok) {
+            return err({
+              code: 'GET_VIEW_FAILED',
+              message: `Get view failed: ${viewType} with id ${id}`
+            })
+          }
+
           def.apply(event, view.value)
-          const saved = await db.save(viewType, view.value)
-          if (!saved.ok) return saved
+
+          const saved = await toAsyncResult(() => db.save(viewType, view.value))
+          if (!saved.ok) {
+            return err({
+              code: 'SAVE_VIEW_FAILED',
+              message: `Save view failed: ${viewType}`
+            })
+          }
 
           continue
         }
 
         if ('deleteId' in def) {
           const id: string = def.deleteId(event)
-          const deleted = await db.delete(viewType, id)
-          if (!deleted.ok) return deleted
+          const deleted = await toAsyncResult(() => db.delete(viewType, id))
+          if (!deleted.ok) {
+            return err({
+              code: 'DELETE_VIEW_FAILED',
+              message: `Delete view failed: ${viewType} with id ${id}`
+            })
+          }
         }
       }
 

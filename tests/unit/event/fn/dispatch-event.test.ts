@@ -8,7 +8,7 @@ import { counterReactor } from '../../../fixtures/command/counter'
 describe('dispatch event function', () => {
   it('should return ok when event is dispatched', async () => {
     // Arrange
-    const dispatch = async _ => ok(undefined)
+    const dispatch = async _ => Promise.resolve()
     const eventFn = createDispatchEventFnFactory(counterReactor.policy)({ dispatch })
     const event = {
       event: { type: 'created' },
@@ -26,7 +26,9 @@ describe('dispatch event function', () => {
 
   it('should return error when event is not dispatched', async () => {
     // Arrange
-    const dispatch = async _ => err({ code: 'DISPATCH_ERROR', message: 'Dispatch error' })
+    const dispatch = async _ => {
+      throw new Error('test')
+    }
     const eventFn = createDispatchEventFnFactory(counterReactor.policy)({ dispatch })
     const event = {
       event: { type: 'created' },
@@ -41,7 +43,7 @@ describe('dispatch event function', () => {
     // Assert
     expect(res.ok).toBe(false)
     if (!res.ok) {
-      expect(res.error.code).toBe('DISPATCH_ERROR')
+      expect(res.error.code).toBe('COMMAND_DISPATCH_FAILED')
     }
   })
 })

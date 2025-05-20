@@ -53,7 +53,6 @@ describe('retrieve view function', () => {
 
     // Act
     const res = await retrieveFn(query)
-    console.log(res.ok)
 
     // Assert
     expect(res.ok).toBe(false)
@@ -81,7 +80,9 @@ describe('retrieve view function', () => {
   it('should return error when view list is not found', async () => {
     // Arrange
     const db = new ReadDatabaseInMemory()
-    db.getList = async () => err({ code: 'test', message: '' })
+    db.getList = async () => {
+      throw new Error('test')
+    }
     const retrieveFn = createRetrieveViewFnFactory(counterResolver.resolver)({ readDatabase: db })
     const query = { operation: 'counterList', options: { limit: 10 } }
 

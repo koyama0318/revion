@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { createSaveEventFnFactory } from '../../../../src/command/fn/save-event'
-import { EventStoreInMemory, err } from '../../../../src/utils'
+import { EventStoreInMemory } from '../../../../src/utils'
 
 describe('save event function', () => {
   it('should return ok when events are saved', async () => {
@@ -109,8 +109,9 @@ describe('save event function', () => {
   it('should return error when event version cannot be loaded', async () => {
     // Arrange
     const es = new EventStoreInMemory()
-    es.getLastEventVersion = async () =>
-      err({ code: 'LAST_EVENT_VERSION_CANNOT_BE_LOADED', message: '' })
+    es.getLastEventVersion = async () => {
+      throw new Error('test')
+    }
     const deps = { eventStore: es }
     const saveEventFn = createSaveEventFnFactory()(deps)
 
@@ -199,7 +200,7 @@ describe('save event function', () => {
     // Assert
     expect(res.ok).toBe(false)
     if (!res.ok) {
-      expect(res.error.code).toBe('CONFLICT')
+      expect(res.error.code).toBe('EVENT_VERSION_CONFLICT')
     }
   })
 
@@ -214,7 +215,9 @@ describe('save event function', () => {
         timestamp: new Date()
       })
     }
-    es.saveSnapshot = async () => err({ code: 'SNAPSHOT_CANNOT_BE_SAVED', message: '' })
+    es.saveSnapshot = async () => {
+      throw new Error('test')
+    }
     const deps = { eventStore: es }
     const saveEventFn = createSaveEventFnFactory()(deps)
 
@@ -246,7 +249,9 @@ describe('save event function', () => {
   it('should return error when events cannot be saved', async () => {
     // Arrange
     const es = new EventStoreInMemory()
-    es.saveEvents = async () => err({ code: 'EVENTS_CANNOT_BE_SAVED', message: '' })
+    es.saveEvents = async () => {
+      throw new Error('test')
+    }
     const deps = { eventStore: es }
     const saveEventFn = createSaveEventFnFactory()(deps)
 

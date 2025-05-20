@@ -1,5 +1,4 @@
-import type { AppError, AsyncResult, GetListOptions, ReadDatabase, View, ViewMap } from '../types'
-import { err, ok } from './result'
+import type { GetListOptions, ReadDatabase, View, ViewMap } from '../types'
 
 export class ReadDatabaseInMemory implements ReadDatabase {
   private storage: Record<string, Record<string, View>> = {}
@@ -7,9 +6,9 @@ export class ReadDatabaseInMemory implements ReadDatabase {
   async getList<K extends keyof ViewMap, F extends GetListOptions<ViewMap[K]>>(
     type: K,
     filter: F
-  ): AsyncResult<ViewMap[K][], AppError> {
+  ): Promise<ViewMap[K][]> {
     const dataMap = this.storage[type]
-    if (!dataMap) return ok([])
+    if (!dataMap) return []
 
     let items: ViewMap[K][] = Object.values(dataMap) as ViewMap[K][]
 
@@ -46,33 +45,28 @@ export class ReadDatabaseInMemory implements ReadDatabase {
     const limit = filter.limit ?? items.length
     const paged = items.slice(offset, offset + limit)
 
-    return ok(paged)
+    return paged
   }
 
-  async getById<K extends keyof ViewMap>(type: K, id: string): AsyncResult<ViewMap[K], AppError> {
+  async getById<K extends keyof ViewMap>(type: K, id: string): Promise<ViewMap[K]> {
     const typeStorage = this.storage[type as string] || {}
     const view = typeStorage[id]
     if (!view) {
-      return err({
-        code: 'VIEW_NOT_FOUND',
-        message: `View not found: ${type} with id ${id}`
-      })
+      throw new Error(`View not found: ${type} with id ${id}`)
     }
-    return ok(view)
+    return view
   }
 
-  async save<K extends keyof ViewMap>(type: K, data: ViewMap[K]): AsyncResult<void, AppError> {
+  async save<K extends keyof ViewMap>(type: K, data: ViewMap[K]): Promise<void> {
     const typeStorage = this.storage[type as string] || {}
     typeStorage[(data as View).id] = data
     this.storage[type as string] = typeStorage
-    return ok(undefined)
   }
 
-  async delete<K extends keyof ViewMap>(type: K, id: string): AsyncResult<void, AppError> {
+  async delete<K extends keyof ViewMap>(type: K, id: string): Promise<void> {
     const typeStorage = this.storage[type as string]
     if (typeStorage) {
       delete typeStorage[id]
     }
-    return ok(undefined)
   }
 }

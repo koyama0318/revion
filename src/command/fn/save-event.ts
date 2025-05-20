@@ -7,7 +7,7 @@ import type {
   Snapshot,
   State
 } from '../../types'
-import { err, ok } from '../../utils'
+import { err, ok, toAsyncResult } from '../../utils'
 import type { CommandHandlerDeps } from '../command-handler'
 
 export const SNAPSHOT_INTERVAL = 100
@@ -42,7 +42,9 @@ export function createSaveEventFnFactory<
         })
       }
 
-      const gotVersion = await deps.eventStore.getLastEventVersion(state.state.id)
+      const gotVersion = await toAsyncResult(() =>
+        deps.eventStore.getLastEventVersion(state.state.id)
+      )
       if (!gotVersion.ok) {
         return err({
           code: 'LAST_EVENT_VERSION_CANNOT_BE_LOADED',
@@ -53,7 +55,7 @@ export function createSaveEventFnFactory<
 
       if (gotVersion.value + 1 !== firstEvent.version) {
         return err({
-          code: 'CONFLICT',
+          code: 'EVENT_VERSION_CONFLICT',
           message: `Event version mismatch: expected: ${gotVersion.value + 1}, received: ${firstEvent.version}`
         })
       }
@@ -65,7 +67,7 @@ export function createSaveEventFnFactory<
           timestamp: new Date()
         }
 
-        const savedSnapshot = await deps.eventStore.saveSnapshot(snapshot)
+        const savedSnapshot = await toAsyncResult(() => deps.eventStore.saveSnapshot(snapshot))
         if (!savedSnapshot.ok) {
           return err({
             code: 'SNAPSHOT_CANNOT_BE_SAVED',
@@ -75,7 +77,7 @@ export function createSaveEventFnFactory<
         }
       }
 
-      const savedEvents = await deps.eventStore.saveEvents(events)
+      const savedEvents = await toAsyncResult(() => deps.eventStore.saveEvents(events))
       if (!savedEvents.ok) {
         return err({
           code: 'EVENTS_CANNOT_BE_SAVED',

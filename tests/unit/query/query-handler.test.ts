@@ -42,10 +42,7 @@ describe('query handler', () => {
       // Arrange
       const db = new ReadDatabaseInMemory()
       db.getList = async () => {
-        return err({
-          code: 'READ_DATABASE_ERROR',
-          message: ''
-        })
+        throw new Error('test')
       }
       const deps = { readDatabase: db }
       const handlers = createQueryHandlers(deps, [counterResolver])

@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'bun:test'
 import { createEventHandlers } from '../../../src/event/event-handler'
 import type { ExtendedDomainEvent } from '../../../src/types'
-import { ReadDatabaseInMemory, err, ok } from '../../../src/utils'
+import { ReadDatabaseInMemory } from '../../../src/utils'
 import { type CounterEvent, counterReactor } from '../../fixtures/command/counter'
+import type { CounterView } from '../../fixtures/view'
 
 describe('event handler', () => {
   describe('initialize', () => {
     it('should create event handler', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => ok(undefined) },
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
 
@@ -21,11 +22,11 @@ describe('event handler', () => {
     })
   })
 
-  describe('when event is received', () => {
+  describe('when event is received and successfully processed', () => {
     it('should return ok if event is valid', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => ok(undefined) },
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const handlers = createEventHandlers(deps, [counterReactor])
@@ -44,54 +45,130 @@ describe('event handler', () => {
     })
   })
 
-  it('should return error if projection failed', async () => {
-    // Arrange
-    const deps = {
-      eventDispatcher: { dispatch: async _ => ok(undefined) },
-      readDatabase: new ReadDatabaseInMemory()
-    }
-    deps.readDatabase.save = async _ => err({ code: 'READ_DB_ERROR', message: 'test' })
-    const handlers = createEventHandlers(deps, [counterReactor])
-    const event = {
-      event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
-      version: 1,
-      timestamp: new Date()
-    } as ExtendedDomainEvent<CounterEvent>
+  describe('when event is received and failed to initialize a view', () => {
+    it('should return an error if the initial projection fails when saving a view', async () => {
+      // Arrange
+      const deps = {
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        readDatabase: new ReadDatabaseInMemory()
+      }
+      deps.readDatabase.save = async _ => {
+        throw new Error('test')
+      }
+      const handlers = createEventHandlers(deps, [counterReactor])
+      const event = {
+        event: { type: 'created' },
+        aggregateId: { type: 'counter', id: '1' },
+        version: 1,
+        timestamp: new Date()
+      } as ExtendedDomainEvent<CounterEvent>
 
-    // Act
-    const res = await handlers[event.aggregateId.type](event)
+      // Act
+      const res = await handlers[event.aggregateId.type](event)
 
-    // Assert
-    expect(res.ok).toBe(false)
-    if (!res.ok) {
-      expect(res.error.code).toBe('READ_DB_ERROR')
-    }
+      // Assert
+      expect(res.ok).toBe(false)
+      if (!res.ok) {
+        expect(res.error.code).toBe('SAVE_VIEW_FAILED')
+      }
+    })
   })
 
-  it('should return error if event dispatch failed', async () => {
-    // Arrange
-    const deps = {
-      eventDispatcher: {
-        dispatch: async _ => err({ code: 'EVENT_DISPATCH_ERROR', message: 'test' })
-      },
-      readDatabase: new ReadDatabaseInMemory()
-    }
-    const handlers = createEventHandlers(deps, [counterReactor])
-    const event = {
-      event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
-      version: 1,
-      timestamp: new Date()
-    } as ExtendedDomainEvent<CounterEvent>
+  describe('when event is received and failed to update a view', () => {
+    it('should return an error if the updated projection fails when getting a view', async () => {
+      // Arrange
+      const db = new ReadDatabaseInMemory()
+      db.save('counter', {
+        type: 'counter',
+        id: '1',
+        count: 0
+      } as CounterView)
+      db.getById = async _ => {
+        throw new Error('test')
+      }
+      const deps = {
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        readDatabase: db
+      }
+      const handlers = createEventHandlers(deps, [counterReactor])
+      const event = {
+        event: { type: 'incremented' },
+        aggregateId: { type: 'counter', id: '1' },
+        version: 1,
+        timestamp: new Date()
+      } as ExtendedDomainEvent<CounterEvent>
 
-    // Act
-    const res = await handlers[event.aggregateId.type](event)
+      // Act
+      const res = await handlers[event.aggregateId.type](event)
 
-    // Assert
-    expect(res.ok).toBe(false)
-    if (!res.ok) {
-      expect(res.error.code).toBe('EVENT_DISPATCH_ERROR')
-    }
+      // Assert
+      expect(res.ok).toBe(false)
+      if (!res.ok) {
+        expect(res.error.code).toBe('GET_VIEW_FAILED')
+      }
+    })
+
+    it('should return an error if the updated projection fails when saving a view', async () => {
+      // Arrange
+      const db = new ReadDatabaseInMemory()
+      db.save('counter', {
+        type: 'counter',
+        id: '1',
+        count: 0
+      } as CounterView)
+      db.save = async _ => {
+        throw new Error('test')
+      }
+      const deps = {
+        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        readDatabase: db
+      }
+      const handlers = createEventHandlers(deps, [counterReactor])
+      const event = {
+        event: { type: 'incremented' },
+        aggregateId: { type: 'counter', id: '1' },
+        version: 1,
+        timestamp: new Date()
+      } as ExtendedDomainEvent<CounterEvent>
+
+      // Act
+      const res = await handlers[event.aggregateId.type](event)
+
+      // Assert
+      expect(res.ok).toBe(false)
+      if (!res.ok) {
+        expect(res.error.code).toBe('SAVE_VIEW_FAILED')
+      }
+    })
+  })
+
+  describe('when event is received and failed to dispatch a command', () => {
+    it('should return error if event dispatch failed', async () => {
+      // Arrange
+      const deps = {
+        eventDispatcher: {
+          dispatch: async _ => {
+            throw new Error('test')
+          }
+        },
+        readDatabase: new ReadDatabaseInMemory()
+      }
+      const handlers = createEventHandlers(deps, [counterReactor])
+      const event = {
+        event: { type: 'created' },
+        aggregateId: { type: 'counter', id: '1' },
+        version: 1,
+        timestamp: new Date()
+      } as ExtendedDomainEvent<CounterEvent>
+
+      // Act
+      const res = await handlers[event.aggregateId.type](event)
+
+      // Assert
+      expect(res.ok).toBe(false)
+      if (!res.ok) {
+        expect(res.error.code).toBe('COMMAND_DISPATCH_FAILED')
+      }
+    })
   })
 })

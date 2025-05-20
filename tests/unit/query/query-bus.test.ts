@@ -12,7 +12,7 @@ describe('query bus', () => {
 
       // Act
       const res = await query({ operation: 'counterList', options: { limit: 10 } })
-      console.log(res)
+
       // Assert
       expect(res.ok).toBe(true)
       if (res.ok) {
