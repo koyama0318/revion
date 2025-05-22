@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { createEventBus } from '../../../src/event/event-bus'
-import { ReadDatabaseInMemory } from '../../../src/utils'
-import { counterReactor } from '../../data/command/counter'
+import { createEventBus } from '../../src/event/event-bus'
+import { ReadDatabaseInMemory } from '../../src/utils'
+import { counterReactor } from '../data/command/counter'
 
 describe('event bus', () => {
   describe('event', () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { ReadDatabaseInMemory } from '../../../src'
-import { createQueryBus } from '../../../src/query/query-bus'
-import { counterResolver } from '../../data/query/counter'
+import { ReadDatabaseInMemory } from '../../src'
+import { createQueryBus } from '../../src/query/query-bus'
+import { counterResolver } from '../data/query/counter'
 
 describe('query bus', () => {
   describe('query', () => {

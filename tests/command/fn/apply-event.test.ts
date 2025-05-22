@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { err } from '../../../../src'
-import { createApplyEventFnFactory } from '../../../../src/command/fn/apply-event'
-import type { ExtendedDomainEvent, ExtendedState } from '../../../../src/types'
-import type { CounterCommand, CounterEvent, CounterState } from '../../../data/command/counter'
-import { counter } from '../../../data/command/counter'
+import { err } from '../../../src'
+import { createApplyEventFnFactory } from '../../../src/command/fn/apply-event'
+import type { ExtendedDomainEvent, ExtendedState } from '../../../src/types'
+import type { CounterCommand, CounterEvent, CounterState } from '../../data/command/counter'
+import { counter } from '../../data/command/counter'
 
 describe('apply event function', () => {
   it('should return ok when events are generated', async () => {

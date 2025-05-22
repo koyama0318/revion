@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { createQueryHandlers } from '../../../src/query/query-handler'
-import { ReadDatabaseInMemory } from '../../../src/utils'
-import { type CounterListQuery, counterResolver } from '../../data/query/counter'
+import { createQueryHandlers } from '../../src/query/query-handler'
+import { ReadDatabaseInMemory } from '../../src/utils'
+import { type CounterListQuery, counterResolver } from '../data/query/counter'
 
 describe('query handler', () => {
   describe('initialize', () => {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { EventStoreInMemory, ok } from '../../../../src'
-import { createReplayEventFnFactory } from '../../../../src/command/fn/replay-event'
-import type { ExtendedState } from '../../../../src/types'
-import type { CounterState } from '../../../data/command/counter'
-import { counter } from '../../../data/command/counter'
+import { EventStoreInMemory, ok } from '../../../src'
+import { createReplayEventFnFactory } from '../../../src/command/fn/replay-event'
+import type { ExtendedState } from '../../../src/types'
+import type { CounterState } from '../../data/command/counter'
+import { counter } from '../../data/command/counter'
 
 describe('replay event function', () => {
   it('should return ok when events are replayed', async () => {

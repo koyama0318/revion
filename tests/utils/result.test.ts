@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { err, ok, toAsyncResult, toResult } from '../../../src/utils'
+import { err, ok, toAsyncResult, toResult } from '../../src/utils'
 
 describe('Result utilities', () => {
   describe('ok', () => {

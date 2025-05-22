@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { createCommandHandlers } from '../../../src/command/command-handler'
-import type { Command } from '../../../src/types'
-import { EventStoreInMemory } from '../../../src/utils'
-import { counter } from '../../data/command/counter'
-import { mergeCounter } from '../../data/command/mergeCounter'
+import { createCommandHandlers } from '../../src/command/command-handler'
+import type { Command } from '../../src/types'
+import { EventStoreInMemory } from '../../src/utils'
+import { counter } from '../data/command/counter'
+import { mergeCounter } from '../data/command/mergeCounter'
 
 describe('command handler', () => {
   describe('initialize', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { AggregateId } from '../../../src/types'
-import { validateAggregateId } from '../../../src/utils'
+import type { AggregateId } from '../../src/types'
+import { validateAggregateId } from '../../src/utils'
 
 describe('aggregate id', () => {
   it('should return true for valid aggregate ID', () => {

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
-import { createDispatchEventFnFactory } from '../../../../src/event/fn/dispatch-event'
-import type { ExtendedDomainEvent } from '../../../../src/types'
-import type { CounterEvent } from '../../../data/command/counter'
-import { counterReactor } from '../../../data/command/counter'
+import { createDispatchEventFnFactory } from '../../../src/event/fn/dispatch-event'
+import type { ExtendedDomainEvent } from '../../../src/types'
+import type { CounterEvent } from '../../data/command/counter'
+import { counterReactor } from '../../data/command/counter'
 
 describe('dispatch event function', () => {
   it('should return ok when event is dispatched', async () => {

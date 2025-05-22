@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
-import { EventStoreInMemory, createCommandBus } from '../../../src'
-import type { CommandHandlerMiddleware } from '../../../src/command/command-bus'
-import { counter } from '../../data/command/counter'
-import { mergeCounter } from '../../data/command/mergeCounter'
+import { EventStoreInMemory, createCommandBus } from '../../src'
+import type { CommandHandlerMiddleware } from '../../src/command/command-bus'
+import { counter } from '../data/command/counter'
+import { mergeCounter } from '../data/command/mergeCounter'
 
 describe('command bus', () => {
   describe('command', () => {
