@@ -48,12 +48,10 @@ export class ReadDatabaseInMemory implements ReadDatabase {
     return paged
   }
 
-  async getById<K extends keyof ViewMap>(type: K, id: string): Promise<ViewMap[K]> {
+  async getById<K extends keyof ViewMap>(type: K, id: string): Promise<ViewMap[K] | null> {
     const typeStorage = this.storage[type as string] || {}
     const view = typeStorage[id]
-    if (!view) {
-      throw new Error(`View not found: ${type} with id ${id}`)
-    }
+    if (!view) return null
     return view
   }
 

@@ -1,5 +1,5 @@
 import type { GetListOptions } from '../../../../src/types'
-import type { CounterView } from '../../view'
+import type { CounterView } from '../view'
 
 export type CounterListQuery = {
   operation: 'counterList'

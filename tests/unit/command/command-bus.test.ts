@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { createCommandBus } from '../../../src'
+import { EventStoreInMemory, createCommandBus } from '../../../src'
 import type { CommandHandlerMiddleware } from '../../../src/command/command-bus'
-import { EventStoreInMemory } from '../../../src/utils'
 import { counter } from '../../data/command/counter'
 import { mergeCounter } from '../../data/command/mergeCounter'
 

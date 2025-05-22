@@ -1,6 +1,6 @@
 import type { Policy, Projection } from '../../../../src'
 import { createEventReactor } from '../../../../src'
-import type { ViewMap } from '../../view'
+import type { ViewMap } from '../../query/view'
 import type { CounterCommand, CounterEvent, CounterId } from './types'
 
 const policy: Policy<CounterCommand, CounterEvent> = {

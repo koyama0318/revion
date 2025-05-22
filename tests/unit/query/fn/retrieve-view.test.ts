@@ -3,7 +3,7 @@ import { createRetrieveViewFnFactory } from '../../../../src/query/fn/retrieve-v
 import { ReadDatabaseInMemory } from '../../../../src/utils'
 import type { CounterListQuery } from '../../../data/query/counter'
 import { counterResolver } from '../../../data/query/counter'
-import type { CounterView } from '../../../data/view'
+import type { CounterView } from '../../../data/query/view'
 
 describe('retrieve view function', () => {
   it('should return ok when view is retrieved', async () => {
@@ -117,7 +117,7 @@ describe('retrieve view function', () => {
     }
   })
 
-  it('should return error when view is not found by id', async () => {
+  it('should return ok when view is not found by id', async () => {
     // Arrange
     const db = new ReadDatabaseInMemory()
     const retrieveFn = createRetrieveViewFnFactory(counterResolver.resolver)({ readDatabase: db })
@@ -127,10 +127,9 @@ describe('retrieve view function', () => {
     const res = await retrieveFn(query)
 
     // Assert
-    expect(res.ok).toBe(false)
-    if (!res.ok) {
-      expect(res.error.code).toBe('READ_DATABASE_ERROR')
-      expect(res.error.message).toBe('Failed to retrieve view by id')
+    expect(res.ok).toBe(true)
+    if (res.ok) {
+      expect(res.value.counter).toBeNull()
     }
   })
 

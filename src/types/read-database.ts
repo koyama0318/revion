@@ -13,7 +13,7 @@ export type ReadDatabase = {
     type: K,
     options: T
   ): Promise<ViewMap[K][]>
-  getById<K extends keyof ViewMap>(type: K, id: string): Promise<ViewMap[K]>
+  getById<K extends keyof ViewMap>(type: K, id: string): Promise<ViewMap[K] | null>
   save<K extends keyof ViewMap>(type: K, data: ViewMap[K]): Promise<void>
   delete<K extends keyof ViewMap>(type: K, id: string): Promise<void>
 }

@@ -3,7 +3,3 @@ export type CounterView = {
   id: string
   count: number
 }
-
-export type ViewMap = {
-  counter: CounterView
-}

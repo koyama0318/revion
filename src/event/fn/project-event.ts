@@ -5,6 +5,7 @@ import type {
   ExtendedDomainEvent,
   ProjectionFn,
   ReadDatabase,
+  View,
   ViewMap
 } from '../../types'
 import { err, ok, toAsyncResult } from '../../utils'
@@ -30,6 +31,21 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
       for (const [viewType, def] of Object.entries(defs)) {
         if ('init' in def) {
           const view = def.init(event)
+          const existing = await toAsyncResult(() => db.getById(viewType, view.id))
+          if (!existing.ok) {
+            return err({
+              code: 'GET_VIEW_FAILED',
+              message: `Get view failed: ${viewType} with id ${view.id}`
+            })
+          }
+
+          if (existing.value) {
+            return err({
+              code: 'VIEW_ALREADY_EXISTS',
+              message: `View already exists: ${viewType} with id ${view.id}`
+            })
+          }
+
           const saved = await toAsyncResult(() => db.save(viewType, view))
           if (!saved.ok) {
             return err({
@@ -50,10 +66,16 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
               message: `Get view failed: ${viewType} with id ${id}`
             })
           }
+          if (!view.value) {
+            return err({
+              code: 'VIEW_NOT_FOUND',
+              message: `View not found: ${viewType} with id ${id}`
+            })
+          }
 
           def.apply(event, view.value)
 
-          const saved = await toAsyncResult(() => db.save(viewType, view.value))
+          const saved = await toAsyncResult(() => db.save(viewType, view.value as View))
           if (!saved.ok) {
             return err({
               code: 'SAVE_VIEW_FAILED',

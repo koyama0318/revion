@@ -4,7 +4,7 @@ import type { ExtendedDomainEvent } from '../../../../src/types'
 import { ReadDatabaseInMemory } from '../../../../src/utils'
 import type { CounterEvent } from '../../../data/command/counter'
 import { counterReactor } from '../../../data/command/counter'
-import type { CounterView } from '../../../data/view'
+import type { CounterView } from '../../../data/query/view'
 
 describe('project event function', () => {
   it('should return ok when created event is generated', async () => {
@@ -76,7 +76,7 @@ describe('project event function', () => {
     expect(view).toEqual({ count: 1, type: 'counter', id: '1' } as CounterView)
   })
 
-  it('should return error when deleted event is generated', async () => {
+  it('should return ok when deleted event is generated', async () => {
     // Arrange
     const db = new ReadDatabaseInMemory()
     const projectFn = createProjectEventFnFactory(counterReactor.projection)(db)
@@ -100,6 +100,6 @@ describe('project event function', () => {
 
     // Assert
     expect(res.ok).toBe(true)
-    expect(() => db.getById('counter', '1')).toThrow()
+    expect(await db.getById('counter', '1')).toBeNull()
   })
 })

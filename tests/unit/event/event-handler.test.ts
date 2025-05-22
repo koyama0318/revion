@@ -3,14 +3,14 @@ import { createEventHandlers } from '../../../src/event/event-handler'
 import type { ExtendedDomainEvent } from '../../../src/types'
 import { ReadDatabaseInMemory } from '../../../src/utils'
 import { type CounterEvent, counterReactor } from '../../data/command/counter'
-import type { CounterView } from '../../data/view'
+import type { CounterView } from '../../data/query/view'
 
 describe('event handler', () => {
   describe('initialize', () => {
     it('should create event handler', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
 
@@ -26,7 +26,7 @@ describe('event handler', () => {
     it('should return ok if event is valid', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const handlers = createEventHandlers(deps, [counterReactor])
@@ -49,7 +49,7 @@ describe('event handler', () => {
     it('should return an error if the initial projection fails when saving a view', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       deps.readDatabase.save = async _ => {
@@ -87,7 +87,7 @@ describe('event handler', () => {
         throw new Error('test')
       }
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: db
       }
       const handlers = createEventHandlers(deps, [counterReactor])
@@ -120,7 +120,7 @@ describe('event handler', () => {
         throw new Error('test')
       }
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: db
       }
       const handlers = createEventHandlers(deps, [counterReactor])
@@ -146,7 +146,7 @@ describe('event handler', () => {
     it('should return error if event dispatch failed', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: {
+        commandDispatcher: {
           dispatch: async _ => {
             throw new Error('test')
           }

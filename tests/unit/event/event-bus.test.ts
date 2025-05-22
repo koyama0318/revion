@@ -8,7 +8,7 @@ describe('event bus', () => {
     it('should return ok when event is received', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const receive = createEventBus({ deps, reactors: [counterReactor] })
@@ -30,7 +30,7 @@ describe('event bus', () => {
     it('should return error if handler is not found', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: { dispatch: async _ => Promise.resolve() },
+        commandDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
       const receive = createEventBus({ deps, reactors: [counterReactor] })
@@ -53,7 +53,7 @@ describe('event bus', () => {
     it('should return error if handler failed', async () => {
       // Arrange
       const deps = {
-        eventDispatcher: {
+        commandDispatcher: {
           dispatch: async _ => {
             throw new Error('test')
           }
