@@ -8,19 +8,24 @@ import {
 } from './command-handler'
 import type { AnyDomainService } from './domain-service'
 
-type CommandBus = CommandHandler
+export type CommandBus = CommandHandler
 
 export type CommandHandlerMiddleware = (
   command: Command,
   next: CommandHandler
 ) => AsyncResult<void, AppError>
 
-export function createCommandBus(
-  deps: CommandHandlerDeps,
-  aggregates: AnyAggregate[],
-  services: AnyDomainService[],
-  middleware: CommandHandlerMiddleware[] = []
-): CommandBus {
+export function createCommandBus({
+  deps,
+  aggregates = [],
+  services = [],
+  middleware = []
+}: {
+  deps: CommandHandlerDeps
+  aggregates?: AnyAggregate[]
+  services?: AnyDomainService[]
+  middleware?: CommandHandlerMiddleware[]
+}): CommandBus {
   const handlers = createCommandHandlers(deps, aggregates, services)
 
   const applyMiddleware = (handler: CommandHandler): CommandHandler => {

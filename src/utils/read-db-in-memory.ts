@@ -1,11 +1,11 @@
 import type { GetListOptions, ReadDatabase, View, ViewMap } from '../types'
 
 export class ReadDatabaseInMemory implements ReadDatabase {
-  private storage: Record<string, Record<string, View>> = {}
+  storage: Record<string, Record<string, View>> = {}
 
   async getList<K extends keyof ViewMap, F extends GetListOptions<ViewMap[K]>>(
     type: K,
-    filter: F
+    options: F
   ): Promise<ViewMap[K][]> {
     const dataMap = this.storage[type]
     if (!dataMap) return []
@@ -13,12 +13,12 @@ export class ReadDatabaseInMemory implements ReadDatabase {
     let items: ViewMap[K][] = Object.values(dataMap) as ViewMap[K][]
 
     // filter
-    for (const key in filter) {
+    for (const key in options) {
       if (['limit', 'offset', 'sortBy', 'sortOrder'].includes(key)) {
         continue
       }
 
-      const value = filter[key as keyof F]
+      const value = options[key as keyof F]
       if (value !== undefined) {
         items = items.filter(item => {
           return item[key as keyof ViewMap[K]] === value
@@ -27,8 +27,8 @@ export class ReadDatabaseInMemory implements ReadDatabase {
     }
 
     // sort
-    if (filter.sortBy) {
-      const { sortBy, sortOrder = 'asc' } = filter
+    if (options.sortBy) {
+      const { sortBy, sortOrder = 'asc' } = options
       items = [...items].sort((a, b) => {
         const aVal = a[sortBy]
         const bVal = b[sortBy]
@@ -41,8 +41,8 @@ export class ReadDatabaseInMemory implements ReadDatabase {
     }
 
     // pagination
-    const offset = filter.offset ?? 0
-    const limit = filter.limit ?? items.length
+    const offset = options.offset ?? 0
+    const limit = options.limit ?? items.length
     const paged = items.slice(offset, offset + limit)
 
     return paged

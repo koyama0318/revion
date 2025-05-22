@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { createEventBus } from '../../../src/event/event-bus'
-import { ReadDatabaseInMemory, err, ok } from '../../../src/utils'
-import { counterReactor } from '../../fixtures/command/counter'
+import { ReadDatabaseInMemory } from '../../../src/utils'
+import { counterReactor } from '../../data/command/counter'
 
 describe('event bus', () => {
   describe('event', () => {
@@ -11,7 +11,7 @@ describe('event bus', () => {
         eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
-      const receive = createEventBus(deps, [counterReactor])
+      const receive = createEventBus({ deps, reactors: [counterReactor] })
 
       // Act
       const res = await receive({
@@ -33,7 +33,7 @@ describe('event bus', () => {
         eventDispatcher: { dispatch: async _ => Promise.resolve() },
         readDatabase: new ReadDatabaseInMemory()
       }
-      const receive = createEventBus(deps, [counterReactor])
+      const receive = createEventBus({ deps, reactors: [counterReactor] })
 
       // Act
       const result = await receive({
@@ -60,7 +60,7 @@ describe('event bus', () => {
         },
         readDatabase: new ReadDatabaseInMemory()
       }
-      const receive = createEventBus(deps, [counterReactor])
+      const receive = createEventBus({ deps, reactors: [counterReactor] })
 
       // Act
       const result = await receive({

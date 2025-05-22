@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'bun:test'
 import { ReadDatabaseInMemory } from '../../../src'
 import { createQueryBus } from '../../../src/query/query-bus'
-import { counterResolver } from '../../fixtures/query/counter'
+import { counterResolver } from '../../data/query/counter'
 
 describe('query bus', () => {
   describe('query', () => {
     it('should return ok when query is dispatched', async () => {
       // Arrange
       const deps = { readDatabase: new ReadDatabaseInMemory() }
-      const query = createQueryBus(deps, [counterResolver])
+      const query = createQueryBus({ deps, resolvers: [counterResolver] })
 
       // Act
       const res = await query({ operation: 'counterList', options: { limit: 10 } })
@@ -28,14 +28,14 @@ describe('query bus', () => {
 
       // Act, Assert
       expect(() => {
-        createQueryBus(deps, [counterResolver, counterResolver])
+        createQueryBus({ deps, resolvers: [counterResolver, counterResolver] })
       }).toThrow('Duplicate query key: counter.counterList, already defined by counter.counterList')
     })
 
     it('should return error if operation is not found', async () => {
       // Arrange
       const deps = { readDatabase: new ReadDatabaseInMemory() }
-      const query = createQueryBus(deps, [counterResolver])
+      const query = createQueryBus({ deps, resolvers: [counterResolver] })
 
       // Act
       const res = await query({ operation: 'invalid', options: { limit: 10 } })

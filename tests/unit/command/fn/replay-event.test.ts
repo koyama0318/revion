@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test'
 import { EventStoreInMemory, err, ok } from '../../../../src'
 import { createReplayEventFnFactory } from '../../../../src/command/fn/replay-event'
 import type { ExtendedState } from '../../../../src/types'
-import type { CounterState } from '../../../fixtures/command/counter'
-import { counter } from '../../../fixtures/command/counter'
+import type { CounterState } from '../../../data/command/counter'
+import { counter } from '../../../data/command/counter'
 
 describe('replay event function', () => {
   it('should return ok when events are replayed', async () => {
@@ -146,7 +146,9 @@ describe('replay event function', () => {
   it('should return error when snapshot cannot be loaded', async () => {
     // Arrange
     const es = new EventStoreInMemory()
-    es.getSnapshot = async _ => err({ code: 'SNAPSHOT_CANNOT_BE_LOADED', message: '' })
+    es.getSnapshot = async _ => {
+      throw new Error('test')
+    }
     const deps = { eventStore: es }
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
@@ -166,7 +168,9 @@ describe('replay event function', () => {
   it('should return error when events cannot be loaded', async () => {
     // Arrange
     const es = new EventStoreInMemory()
-    es.getEvents = async () => err({ code: 'EVENTS_CANNOT_BE_LOADED', message: '' })
+    es.getEvents = async () => {
+      throw new Error('test')
+    }
     const deps = { eventStore: es }
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 

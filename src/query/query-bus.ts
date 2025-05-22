@@ -4,14 +4,19 @@ import { err } from '../utils'
 import { type QueryHandlerDeps, createQueryHandlers } from './query-handler'
 import type { AnyQueryResolver } from './query-resolver'
 
-type QueryBus = <Q extends Query, QM extends QueryMap>(
-  query: Q
-) => AsyncResult<QM[Q['operation']]['result'], AppError>
+export type QueryResultType<QM extends QueryMap, Q extends Query> = QM[Q['operation']]['result']
 
-export function createQueryBus<QM extends QueryMap>(
-  deps: QueryHandlerDeps,
+export type QueryBus = <Q extends Query, QM extends QueryMap>(
+  query: Q
+) => AsyncResult<QueryResultType<QM, Q>, AppError>
+
+export function createQueryBus<QM extends QueryMap>({
+  deps,
+  resolvers
+}: {
+  deps: QueryHandlerDeps
   resolvers: AnyQueryResolver[]
-): QueryBus {
+}): QueryBus {
   const handlers = createQueryHandlers(deps, resolvers)
 
   const opToType: Record<string, string> = {}

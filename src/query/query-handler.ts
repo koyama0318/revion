@@ -19,13 +19,13 @@ function createQueryHandlerFactory<
   D extends QueryHandlerDeps
 >(resolver: QueryResolver<T, Q, V>): QueryHandlerFactory<D> {
   return (deps: D) => {
-    const provideViewFn = createRetrieveViewFnFactory<Q, V, D>(resolver.resolver)(deps)
+    const retrieveViewFn = createRetrieveViewFnFactory<Q, V, D>(resolver.resolver)(deps)
 
     return async (query: Query): AsyncResult<QueryResult, AppError> => {
-      const provided = await provideViewFn(query)
-      if (!provided.ok) return provided
+      const retrieved = await retrieveViewFn(query)
+      if (!retrieved.ok) return retrieved
 
-      return ok(provided.value)
+      return ok(retrieved.value)
     }
   }
 }

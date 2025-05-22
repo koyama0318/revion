@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import { createRetrieveViewFnFactory } from '../../../../src/query/fn/retrieve-view'
-import { ReadDatabaseInMemory, err } from '../../../../src/utils'
-import type { CounterListQuery } from '../../../fixtures/query/counter'
-import { counterResolver } from '../../../fixtures/query/counter'
-import type { CounterView } from '../../../fixtures/view'
+import { ReadDatabaseInMemory } from '../../../../src/utils'
+import type { CounterListQuery } from '../../../data/query/counter'
+import { counterResolver } from '../../../data/query/counter'
+import type { CounterView } from '../../../data/view'
 
 describe('retrieve view function', () => {
   it('should return ok when view is retrieved', async () => {

@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test'
 import { createProjectEventFnFactory } from '../../../../src/event/fn/project-event'
 import type { ExtendedDomainEvent } from '../../../../src/types'
 import { ReadDatabaseInMemory } from '../../../../src/utils'
-import type { CounterEvent } from '../../../fixtures/command/counter'
-import { counterReactor } from '../../../fixtures/command/counter'
-import type { CounterView } from '../../../fixtures/view'
+import type { CounterEvent } from '../../../data/command/counter'
+import { counterReactor } from '../../../data/command/counter'
+import type { CounterView } from '../../../data/view'
 
 describe('project event function', () => {
   it('should return ok when created event is generated', async () => {

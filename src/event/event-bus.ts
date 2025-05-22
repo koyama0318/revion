@@ -3,9 +3,15 @@ import { err } from '../utils'
 import { type EventHandler, type EventHandlerDeps, createEventHandlers } from './event-handler'
 import type { AnyEventReactor } from './event-reactor'
 
-type EventBus = EventHandler
+export type EventBus = EventHandler
 
-export function createEventBus(deps: EventHandlerDeps, reactors: AnyEventReactor[]): EventBus {
+export function createEventBus({
+  deps,
+  reactors
+}: {
+  deps: EventHandlerDeps
+  reactors: AnyEventReactor[]
+}): EventBus {
   const handlers = createEventHandlers(deps, reactors)
 
   return async (event: ExtendedDomainEvent<DomainEvent>): AsyncResult<void, AppError> => {

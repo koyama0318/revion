@@ -8,8 +8,8 @@ import type {
 } from '../types'
 
 export class EventStoreInMemory implements EventStore {
-  readonly events: ExtendedDomainEvent<DomainEvent>[] = []
-  readonly snapshots: Snapshot<State>[] = []
+  events: ExtendedDomainEvent<DomainEvent>[] = []
+  snapshots: Snapshot<State>[] = []
 
   async getEvents<E extends DomainEvent>(
     aggregateId: AggregateId,

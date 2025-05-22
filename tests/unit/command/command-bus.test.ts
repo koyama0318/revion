@@ -2,15 +2,15 @@ import { describe, expect, it } from 'bun:test'
 import { createCommandBus } from '../../../src'
 import type { CommandHandlerMiddleware } from '../../../src/command/command-bus'
 import { EventStoreInMemory } from '../../../src/utils'
-import { counter } from '../../fixtures/command/counter'
-import { mergeCounter } from '../../fixtures/command/mergeCounter'
+import { counter } from '../../data/command/counter'
+import { mergeCounter } from '../../data/command/mergeCounter'
 
 describe('command bus', () => {
   describe('command', () => {
     it('should return ok when command is dispatched', async () => {
       // Arrange
       const deps = { eventStore: new EventStoreInMemory() }
-      const dispatch = createCommandBus(deps, [counter], [], [])
+      const dispatch = createCommandBus({ deps, aggregates: [counter] })
 
       // Act
       const res = await dispatch({
@@ -38,7 +38,7 @@ describe('command bus', () => {
         timestamp: new Date()
       })
       const deps = { eventStore: es }
-      const dispatch = createCommandBus(deps, [counter], [mergeCounter], [])
+      const dispatch = createCommandBus({ deps, aggregates: [counter], services: [mergeCounter] })
 
       // Act
       const result = await dispatch({
@@ -67,7 +67,11 @@ describe('command bus', () => {
       }
 
       const deps = { eventStore: new EventStoreInMemory() }
-      const bus = createCommandBus(deps, [counter], [], [middleware1, middleware2])
+      const bus = createCommandBus({
+        deps,
+        aggregates: [counter],
+        middleware: [middleware1, middleware2]
+      })
 
       // Act
       const result = await bus({
@@ -85,7 +89,7 @@ describe('command bus', () => {
     it('should return error if operation is invalid', async () => {
       // Arrange
       const deps = { eventStore: new EventStoreInMemory() }
-      const dispatch = createCommandBus(deps, [counter], [], [])
+      const dispatch = createCommandBus({ deps, aggregates: [counter] })
 
       // Act
       const result = await dispatch({
@@ -103,7 +107,7 @@ describe('command bus', () => {
     it('should return error if aggregate id is invalid', async () => {
       // Arrange
       const deps = { eventStore: new EventStoreInMemory() }
-      const dispatch = createCommandBus(deps, [counter], [], [])
+      const dispatch = createCommandBus({ deps, aggregates: [counter] })
 
       // Act
       const result = await dispatch({
@@ -121,7 +125,7 @@ describe('command bus', () => {
     it('should return error if handler is not found', async () => {
       // Arrange
       const deps = { eventStore: new EventStoreInMemory() }
-      const dispatch = createCommandBus(deps, [counter], [], [])
+      const dispatch = createCommandBus({ deps, aggregates: [counter] })
 
       // Act
       const result = await dispatch({

@@ -6,8 +6,8 @@ import {
   createCombinedSaveFn
 } from '../../../src/command/combined'
 import type { ExtendedDomainEvent, ExtendedState } from '../../../src/types'
-import type { CounterCommand, CounterEvent, CounterState } from '../../fixtures/command/counter'
-import { counter } from '../../fixtures/command/counter'
+import type { CounterCommand, CounterEvent, CounterState } from '../../data/command/counter'
+import { counter } from '../../data/command/counter'
 
 describe('combined', () => {
   let es: EventStoreInMemory

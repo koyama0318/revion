@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test'
 import { createEventHandlers } from '../../../src/event/event-handler'
 import type { ExtendedDomainEvent } from '../../../src/types'
 import { ReadDatabaseInMemory } from '../../../src/utils'
-import { type CounterEvent, counterReactor } from '../../fixtures/command/counter'
-import type { CounterView } from '../../fixtures/view'
+import { type CounterEvent, counterReactor } from '../../data/command/counter'
+import type { CounterView } from '../../data/view'
 
 describe('event handler', () => {
   describe('initialize', () => {
