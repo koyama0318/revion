@@ -3,7 +3,7 @@ import { createDispatchEventFnFactory } from '../event/fn/dispatch-event'
 import { createProjectEventFnFactory } from '../event/fn/project-event'
 import type { AppError, Command, DomainEvent, ExtendedDomainEvent, View, ViewMap } from '../types'
 import { CommandDispatcherMock } from '../utils/command-dispatcher-mock'
-import { ReadDatabaseInMemory } from '../utils/read-db-in-memory'
+import { ReadDatabaseInMemory } from '../utils/read-database-in-memory'
 
 type ReactorTestContext = {
   view: {

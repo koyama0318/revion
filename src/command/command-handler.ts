@@ -20,7 +20,11 @@ export type CommandHandlerDeps = {
   eventStore: EventStore
 }
 
-export type CommandHandler = (command: Command) => AsyncResult<void, AppError>
+export type CommandResult = {
+  id: AggregateId
+}
+
+export type CommandHandler = (command: Command) => AsyncResult<CommandResult, AppError>
 
 type CommandHandlerFactory<D extends CommandHandlerDeps = CommandHandlerDeps> = (
   deps: D
@@ -41,9 +45,11 @@ function createCommandHandlerFactory<
     const applyFn = createApplyEventFnFactory<S, C, E>(aggregate.eventDecider, aggregate.reducer)()
     const saveFn = createSaveEventFnFactory<S, E, D>()(deps)
 
-    return async (command: Command): AsyncResult<void, AppError> => {
+    return async (command: Command): AsyncResult<CommandResult, AppError> => {
       const replayed = await replayFn(command.id as AggregateId<T>)
       if (!replayed.ok) return replayed
+
+      const id = replayed.value.state.id
 
       const applied = await applyFn(replayed.value, command as C)
       if (!applied.ok) return applied
@@ -51,7 +57,7 @@ function createCommandHandlerFactory<
       const saved = await saveFn(applied.value.state, applied.value.events)
       if (!saved.ok) return saved
 
-      return ok(undefined)
+      return ok({ id: id })
     }
   }
 }
@@ -65,10 +71,10 @@ function createDomainServiceFactory<
   domainService: DomainService<T, C>
 ): CommandHandlerFactory<D> {
   return (deps: D): CommandHandler => {
-    return async (command: Command): AsyncResult<void, AppError> => {
+    return async (command: Command): AsyncResult<CommandResult, AppError> => {
       return await domainService
         .applyEvent(command as C, combinedFnFactory(deps))
-        .then(_ => ok(undefined))
+        .then(_ => ok({ id: command.id }))
         .catch(e => {
           return err({
             code: 'DOMAIN_SERVICE_ERROR',

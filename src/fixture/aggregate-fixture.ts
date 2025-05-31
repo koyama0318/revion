@@ -1,6 +1,7 @@
 import type { Aggregate } from '../command/aggregate'
 import type { CommandHandlerDeps } from '../command/command-handler'
 import { createReplayEventFnFactory } from '../command/fn/replay-event'
+import type { EventReactor } from '../event/event-reactor'
 import type {
   AggregateId,
   AppError,
@@ -9,7 +10,8 @@ import type {
   DomainEvent,
   ExtendedDomainEvent,
   ExtendedState,
-  State
+  State,
+  ViewMap
 } from '../types'
 import { zeroId } from '../utils/aggregate-id'
 import { FakeHandler } from './fake-handler'
@@ -37,18 +39,20 @@ class AggregateTestFixture<
   T extends string,
   S extends State,
   C extends Command,
-  E extends DomainEvent
+  E extends DomainEvent,
+  VM extends ViewMap
 > {
   private readonly aggregate: Aggregate<T, S, C, E>
   private readonly handler: FakeHandler
   private context: AggregateTestContext<S, E>
 
-  constructor(aggregate: Aggregate<T, S, C, E>) {
+  constructor(aggregate: Aggregate<T, S, C, E>, reactor: EventReactor<T, C, E, VM>) {
     this.aggregate = aggregate
     this.handler = new FakeHandler({
-      command: { aggregates: [aggregate] },
+      aggregates: [aggregate],
+      reactors: [reactor],
       config: {
-        shouldHandleAllEvents: false
+        ignoreViewProjection: true
       }
     })
 
@@ -95,9 +99,11 @@ class AggregateTestFixture<
     this.handler.setEventStore(this.context.events.before)
 
     const before = await this.replayEvents()
-    if (before.ok) {
-      this.context.state.before = before.value.state
+    if (!before.ok) {
+      this.context.error = before.error
+      return this
     }
+    this.context.state.before = before.value.state
 
     // execute command
     const res = await this.handler.command(command)
@@ -112,9 +118,11 @@ class AggregateTestFixture<
     this.context.version.diff = this.context.version.latest - this.context.events.before.length
 
     const after = await this.replayEvents()
-    if (after.ok) {
-      this.context.state.after = after.value.state
+    if (!after.ok) {
+      this.context.error = after.error
+      return this
     }
+    this.context.state.after = after.value.state
 
     return this
   }
@@ -142,7 +150,8 @@ export function aggregateFixture<
   T extends string,
   S extends State,
   C extends Command,
-  E extends DomainEvent
->(aggregate: Aggregate<T, S, C, E>) {
-  return new AggregateTestFixture(aggregate)
+  E extends DomainEvent,
+  VM extends ViewMap
+>(aggregate: Aggregate<T, S, C, E>, reactor: EventReactor<T, C, E, VM>) {
+  return new AggregateTestFixture(aggregate, reactor)
 }

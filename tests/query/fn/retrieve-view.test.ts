@@ -117,7 +117,7 @@ describe('retrieve view function', () => {
     }
   })
 
-  it('should return ok when view is not found by id', async () => {
+  it('should return error when view is not found by id', async () => {
     // Arrange
     const db = new ReadDatabaseInMemory()
     const retrieveFn = createRetrieveViewFnFactory(counterResolver.resolver)({ readDatabase: db })
@@ -127,9 +127,9 @@ describe('retrieve view function', () => {
     const res = await retrieveFn(query)
 
     // Assert
-    expect(res.ok).toBe(true)
-    if (res.ok) {
-      expect(res.value.counter).toBeNull()
+    expect(res.ok).toBe(false)
+    if (!res.ok) {
+      expect(res.error.code).toBe('VIEW_NOT_FOUND')
     }
   })
 

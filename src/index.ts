@@ -19,6 +19,7 @@ export type {
   ProjectionFn as Projection,
   QueryResolverFn as QueryResolver,
   ReadDatabase,
-  CaseReducerFn as Reducer
+  CaseReducerFn as Reducer,
+  GetListOptions
 } from './types'
 export * from './utils'

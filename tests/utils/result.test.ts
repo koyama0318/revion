@@ -51,5 +51,18 @@ describe('Result utilities', () => {
         expect(result.error.message).toBe('async fail')
       }
     })
+
+    it('should handle async error', async () => {
+      const error = new Error('test error')
+      const fn = async () => {
+        throw error
+      }
+
+      const result = await toAsyncResult(fn)
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.error).toBe(error)
+      }
+    })
   })
 })

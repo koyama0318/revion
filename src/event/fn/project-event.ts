@@ -35,14 +35,13 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
           if (!existing.ok) {
             return err({
               code: 'GET_VIEW_FAILED',
-              message: `Get view failed: ${viewType} with id ${view.id}`
+              message: `Get view failed: ${viewType}#${view.id} event: ${event.event.type} v${event.version}`
             })
           }
-
           if (existing.value) {
             return err({
               code: 'VIEW_ALREADY_EXISTS',
-              message: `View already exists: ${viewType} with id ${view.id}`
+              message: `View already exists: ${viewType}#${view.id} event: ${event.event.type} v${event.version}`
             })
           }
 
@@ -50,7 +49,7 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
           if (!saved.ok) {
             return err({
               code: 'SAVE_VIEW_FAILED',
-              message: `Save view failed: ${viewType}`
+              message: `Save view failed: ${viewType}#${view.id} event: ${event.event.type} v${event.version}`
             })
           }
 
@@ -63,13 +62,13 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
           if (!view.ok) {
             return err({
               code: 'GET_VIEW_FAILED',
-              message: `Get view failed: ${viewType} with id ${id}`
+              message: `Get view failed: ${viewType}#${id} event: ${event.event.type} v${event.version}`
             })
           }
           if (!view.value) {
             return err({
               code: 'VIEW_NOT_FOUND',
-              message: `View not found: ${viewType} with id ${id}`
+              message: `View not found: ${viewType}#${id} event: ${event.event.type} v${event.version}`
             })
           }
 
@@ -79,7 +78,7 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
           if (!saved.ok) {
             return err({
               code: 'SAVE_VIEW_FAILED',
-              message: `Save view failed: ${viewType}`
+              message: `Save view failed: ${viewType}#${id} event: ${event.event.type} v${event.version}`
             })
           }
 
@@ -92,7 +91,7 @@ export function createProjectEventFnFactory<E extends DomainEvent, VM extends Vi
           if (!deleted.ok) {
             return err({
               code: 'DELETE_VIEW_FAILED',
-              message: `Delete view failed: ${viewType} with id ${id}`
+              message: `Delete view failed: ${viewType}#${id} event: ${event.event.type} v${event.version}`
             })
           }
         }

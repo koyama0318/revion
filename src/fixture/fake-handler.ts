@@ -1,13 +1,13 @@
 import type { AnyAggregate } from '../command/aggregate'
-import {
-  type CommandBus,
-  type CommandHandlerMiddleware,
-  createCommandBus
-} from '../command/command-bus'
+import type { CommandBus, CommandHandlerMiddleware } from '../command/command-bus'
+import { createCommandBus } from '../command/command-bus'
+import type { CommandResult } from '../command/command-handler'
 import type { AnyDomainService } from '../command/domain-service'
-import { type EventBus, createEventBus } from '../event/event-bus'
+import type { EventBus } from '../event/event-bus'
+import { createEventBus } from '../event/event-bus'
 import type { AnyEventReactor } from '../event/event-reactor'
-import { type QueryBus, type QueryResultType, createQueryBus } from '../query/query-bus'
+import type { QueryBus, QueryResultType } from '../query/query-bus'
+import { createQueryBus } from '../query/query-bus'
 import type { AnyQueryResolver } from '../query/query-resolver'
 import type {
   AppError,
@@ -16,116 +16,106 @@ import type {
   DomainEvent,
   ExtendedDomainEvent,
   Query,
-  QueryMap
+  QueryMap,
+  View
 } from '../types'
-import { ok } from '../utils'
-import { CommandDispatcherMock } from '../utils/command-dispatcher-mock'
-import { EventStoreInMemory } from '../utils/event-store-in-memory'
-import { ReadDatabaseInMemory } from '../utils/read-db-in-memory'
+import { CommandDispatcherMock, EventStoreInMemory, ReadDatabaseInMemory, ok } from '../utils'
 
-type FakeHandlerConfig = {
-  shouldHandleAllEvents: boolean
-}
-
-const defaultConfig: FakeHandlerConfig = {
-  shouldHandleAllEvents: true
+const handlerConfig = {
+  // if true, the event bus ignores view projection error handling
+  ignoreViewProjection: false
 }
 
 export class FakeHandler {
   readonly eventStore: EventStoreInMemory
   readonly readDatabase: ReadDatabaseInMemory
   readonly commandDispatcher: CommandDispatcherMock
+  readonly config: typeof handlerConfig
 
   private readonly commandBus: CommandBus
   private readonly eventBus: EventBus
   private readonly queryBus: QueryBus
 
-  private readonly config: FakeHandlerConfig
-
   constructor({
-    command = { aggregates: [], services: [], middleware: [] },
-    event = { reactors: [] },
-    query = { resolvers: [] },
-    config = defaultConfig
+    aggregates = [],
+    services = [],
+    middleware = [],
+    reactors = [],
+    resolvers = [],
+    eventStore = new EventStoreInMemory(),
+    readDatabase = new ReadDatabaseInMemory(),
+    commandDispatcher = new CommandDispatcherMock(),
+    config = handlerConfig
   }: {
-    command?: {
-      aggregates?: AnyAggregate[]
-      services?: AnyDomainService[]
-      middleware?: CommandHandlerMiddleware[]
-    }
-    event?: {
-      reactors?: AnyEventReactor[]
-    }
-    query?: {
-      resolvers?: AnyQueryResolver[]
-    }
-    config?: FakeHandlerConfig
-  } = {}) {
-    this.eventStore = new EventStoreInMemory()
-    this.readDatabase = new ReadDatabaseInMemory()
-    this.commandDispatcher = new CommandDispatcherMock()
+    aggregates?: AnyAggregate[]
+    services?: AnyDomainService[]
+    middleware?: CommandHandlerMiddleware[]
+    reactors?: AnyEventReactor[]
+    resolvers?: AnyQueryResolver[]
+    eventStore?: EventStoreInMemory
+    readDatabase?: ReadDatabaseInMemory
+    commandDispatcher?: CommandDispatcherMock
+    config?: typeof handlerConfig
+  }) {
+    this.eventStore = eventStore
+    this.readDatabase = readDatabase
+    this.commandDispatcher = commandDispatcher
 
     this.commandBus = createCommandBus({
       deps: { eventStore: this.eventStore },
-      aggregates: command.aggregates ?? [],
-      services: command.services ?? [],
-      middleware: command.middleware ?? []
+      aggregates: aggregates ?? [],
+      services: services ?? [],
+      middleware: middleware ?? []
     })
 
     this.eventBus = createEventBus({
       deps: { commandDispatcher: this.commandDispatcher, readDatabase: this.readDatabase },
-      reactors: event.reactors ?? []
+      reactors: reactors ?? []
     })
 
     this.queryBus = createQueryBus({
       deps: { readDatabase: this.readDatabase },
-      resolvers: query.resolvers ?? []
+      resolvers: resolvers ?? []
     })
 
-    this.config = config
+    this.config = { ...handlerConfig, ...config }
   }
 
-  async command(command: Command): AsyncResult<void, AppError> {
-    const beforeEvents = this.eventStore.events
+  async command(command: Command): AsyncResult<CommandResult, AppError> {
+    const beforeEvents = this.eventStore.events.slice()
 
-    // Command
+    // command dispatch
     const dispatched = await this.commandBus(command)
-    if (!dispatched.ok) {
-      return dispatched
-    }
+    if (!dispatched.ok) return dispatched
 
-    const afterEvents = this.eventStore.events
+    const afterEvents = this.eventStore.events.slice()
 
     const diff = afterEvents
       .filter(e => !beforeEvents.includes(e))
       .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
-    // Event Handle
+    // event Handle
     for (const event of diff) {
-      // Project view and dispatch commands
+      // project view and dispatch commands
       const handled = await this.eventBus(event)
       if (!handled.ok) {
-        if (
-          !this.config.shouldHandleAllEvents &&
-          handled.error.code === 'EVENT_HANDLER_NOT_FOUND'
-        ) {
-          break
+        if (this.config.ignoreViewProjection && handled.error?.code === 'VIEW_NOT_FOUND') {
+          continue
         }
         return handled
       }
 
       // recursively dispatch commands
-      const commands = this.commandDispatcher.getCommands()
+      const commands = this.commandDispatcher.getCommands().slice()
+      this.commandDispatcher.reset()
+
       for (const command of commands) {
         const dispatched = await this.command(command)
-        if (!dispatched.ok) {
-          return dispatched
-        }
+        if (!dispatched.ok) return dispatched
       }
-      this.commandDispatcher.reset()
     }
 
-    return ok(undefined)
+    return ok(dispatched.value)
   }
 
   async query<Q extends Query, QM extends QueryMap>(
@@ -138,9 +128,11 @@ export class FakeHandler {
     this.eventStore.events = [...events]
   }
 
-  reset() {
-    this.eventStore.events = []
-    this.eventStore.snapshots = []
-    this.readDatabase.storage = {}
+  setReadDatabase(storage: Record<string, Record<string, View>>) {
+    this.readDatabase.storage = storage
+  }
+
+  log(): string {
+    return `event store: ${JSON.stringify(this.eventStore.events, null, 2)}\nevent queue: ${JSON.stringify(this.commandDispatcher.getCommands(), null, 2)}\nread database: ${JSON.stringify(this.readDatabase.storage, null, 2)}`
   }
 }

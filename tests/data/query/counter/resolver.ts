@@ -1,8 +1,8 @@
-import { createQueryResolver } from '../../../../src'
-import type { QueryResolverFn, ViewMap } from '../../../../src/types'
+import { type QueryResolver, createQueryResolver } from '../../../../src'
+import type { ViewMap } from '../../../../src/types'
 import type { CounterListQuery, CounterQuery, QueryMap } from './types'
 
-const resolver: QueryResolverFn<QueryMap, ViewMap> = {
+const resolver: QueryResolver<QueryMap, ViewMap> = {
   counterList: {
     counterList: {
       view: 'counter',
