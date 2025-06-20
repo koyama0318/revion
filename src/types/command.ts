@@ -12,6 +12,7 @@ export type ExtendedState<T extends State> = {
 export type Command = {
   readonly operation: string
   readonly id: AggregateId
+  readonly isNew?: boolean
   readonly payload?: unknown
 }
 

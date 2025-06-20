@@ -143,6 +143,27 @@ describe('replay event function', () => {
     }
   })
 
+  it('should initialize state when no events and create flag given', async () => {
+    // Arrange
+    const es = new EventStoreInMemory()
+    const deps = { eventStore: es }
+    const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
+
+    // Act
+    const res = await replayEventFn(
+      { type: 'counter', id: '00000000-0000-0000-0000-000000000010' },
+      { createWhenNotFound: true }
+    )
+
+    // Assert
+    const expected = ok({
+      state: { id: { type: 'counter', id: '00000000-0000-0000-0000-000000000010' }, count: 0 },
+      version: 0
+    } as ExtendedState<CounterState>)
+
+    expect(res).toEqual(expected)
+  })
+
   it('should return error when snapshot cannot be loaded', async () => {
     // Arrange
     const es = new EventStoreInMemory()

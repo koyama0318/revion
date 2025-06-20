@@ -39,6 +39,26 @@ describe('command handler', () => {
       expect(result.ok).toBe(true)
     })
 
+    it('should create state when id provided and isNew flag set', async () => {
+      // Arrange
+      const handlers = createCommandHandlers(
+        { eventStore: new EventStoreInMemory() },
+        [counter],
+        [mergeCounter]
+      )
+      const command: Command = {
+        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000010' },
+        operation: 'increment',
+        isNew: true
+      }
+
+      // Act
+      const result = await handlers[command.id.type](command)
+
+      // Assert
+      expect(result.ok).toBe(true)
+    })
+
     it('should return error if replay event failed', async () => {
       // Arrange
       const es = new EventStoreInMemory()

@@ -12,8 +12,13 @@ import type {
 import { err, ok, toAsyncResult } from '../../utils'
 import type { CommandHandlerDeps } from '../command-handler'
 
+export type ReplayEventOptions = {
+  createWhenNotFound?: boolean
+}
+
 export type ReplayEventFn<T extends string, S extends State> = (
-  id: AggregateId<T>
+  id: AggregateId<T>,
+  options?: ReplayEventOptions
 ) => AsyncResult<ExtendedState<S>, AppError>
 
 export function createReplayEventFnFactory<
@@ -23,7 +28,7 @@ export function createReplayEventFnFactory<
   D extends CommandHandlerDeps
 >(stateInit: StateInitFn<T, S>, reducer: ReducerFn<S, E>): (deps: D) => ReplayEventFn<T, S> {
   return (deps: D) => {
-    return async (id: AggregateId<T>) => {
+    return async (id: AggregateId<T>, options?: ReplayEventOptions) => {
       if (id.id === '00000000-0000-0000-0000-000000000000') {
         const uuid = v4()
         return ok({
@@ -59,6 +64,12 @@ export function createReplayEventFnFactory<
       currentVersion += events.value.length
 
       if (currentVersion === 0) {
+        if (options?.createWhenNotFound) {
+          return ok({
+            state: stateInit(id) as S,
+            version: 0
+          })
+        }
         return err({
           code: 'NO_EVENTS_STORED',
           message: 'No events stored'

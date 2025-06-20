@@ -42,7 +42,9 @@ function createCommandHandlerFactory<
     const saveFn = createSaveEventFnFactory<S, E, D>()(deps)
 
     return async (command: Command): AsyncResult<void, AppError> => {
-      const replayed = await replayFn(command.id as AggregateId<T>)
+      const replayed = await replayFn(command.id as AggregateId<T>, {
+        createWhenNotFound: command.isNew
+      })
       if (!replayed.ok) return replayed
 
       const applied = await applyFn(replayed.value, command as C)

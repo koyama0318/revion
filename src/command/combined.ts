@@ -13,7 +13,12 @@ import { createApplyEventFnFactory } from './fn/apply-event'
 import { createReplayEventFnFactory } from './fn/replay-event'
 import { createSaveEventFnFactory } from './fn/save-event'
 
-type CombinedReplayEventFn = <S extends State>(id: AggregateId) => Promise<ExtendedState<S> | null>
+import type { ReplayEventOptions } from './fn/replay-event'
+
+type CombinedReplayEventFn = <S extends State>(
+  id: AggregateId,
+  options?: ReplayEventOptions
+) => Promise<ExtendedState<S> | null>
 
 export type CombinedApplyEventFn = <S extends State, C extends Command, E extends DomainEvent>(
   state: ExtendedState<S>,
@@ -40,7 +45,10 @@ export function createCombinedReplayFn(
   deps: CommandHandlerDeps,
   aggregates: AnyAggregate[]
 ): CombinedReplayEventFn {
-  return async <S extends State>(id: AggregateId): Promise<ExtendedState<S> | null> => {
+  return async <S extends State>(
+    id: AggregateId,
+    options?: ReplayEventOptions
+  ): Promise<ExtendedState<S> | null> => {
     let aggregate: AnyAggregate | undefined
     for (const agg of aggregates) {
       if (agg.type === id.type) {
@@ -53,7 +61,8 @@ export function createCombinedReplayFn(
     }
 
     const result = await createReplayEventFnFactory(aggregate.stateInit, aggregate.reducer)(deps)(
-      id
+      id,
+      options
     )
     if (!result.ok) return null
 
