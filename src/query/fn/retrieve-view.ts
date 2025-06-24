@@ -40,6 +40,7 @@ export function createRetrieveViewFnFactory<
 
       const result: QueryResult = {}
       for (const [resultKey, def] of Object.entries(queryFn)) {
+        // getList
         if ('view' in def && 'options' in def && 'options' in query) {
           const options = def.options(query as unknown as QueryParam<QM>)
           const view = await toAsyncResult(() =>
@@ -56,6 +57,7 @@ export function createRetrieveViewFnFactory<
           continue
         }
 
+        // getById
         if ('view' in def && 'id' in def && 'id' in query) {
           const id = def.id(query as unknown as QueryParam<QM>)
           const view = await toAsyncResult(() => deps.readDatabase.getById(def.view, id))
@@ -64,6 +66,12 @@ export function createRetrieveViewFnFactory<
               code: 'READ_DATABASE_ERROR',
               message: 'Failed to retrieve view by id',
               cause: view.error
+            })
+          }
+          if (!view.value) {
+            return err({
+              code: 'VIEW_NOT_FOUND',
+              message: `View not found: ${def.view}#${id}`
             })
           }
           result[resultKey] = view.value
