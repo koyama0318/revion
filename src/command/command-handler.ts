@@ -3,6 +3,7 @@ import type {
   AppError,
   AsyncResult,
   Command,
+  CommandResult,
   DomainEvent,
   EventStore,
   State
@@ -18,10 +19,6 @@ import { createSaveEventFnFactory } from './fn/save-event'
 
 export type CommandHandlerDeps = {
   eventStore: EventStore
-}
-
-export type CommandResult = {
-  id: AggregateId
 }
 
 export type CommandHandler = (command: Command) => AsyncResult<CommandResult, AppError>

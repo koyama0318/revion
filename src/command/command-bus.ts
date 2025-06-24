@@ -1,12 +1,8 @@
-import type { AppError, AsyncResult, Command } from '../types'
+import type { AppError, AsyncResult, Command, CommandResult } from '../types'
 import { err, validateAggregateId } from '../utils'
 import type { AnyAggregate } from './aggregate'
-import {
-  type CommandHandler,
-  type CommandHandlerDeps,
-  type CommandResult,
-  createCommandHandlers
-} from './command-handler'
+import type { CommandHandler, CommandHandlerDeps } from './command-handler'
+import { createCommandHandlers } from './command-handler'
 import type { AnyDomainService } from './domain-service'
 
 export type CommandBus = CommandHandler

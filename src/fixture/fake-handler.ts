@@ -1,7 +1,6 @@
 import type { AnyAggregate } from '../command/aggregate'
 import type { CommandBus, CommandHandlerMiddleware } from '../command/command-bus'
 import { createCommandBus } from '../command/command-bus'
-import type { CommandResult } from '../command/command-handler'
 import type { AnyDomainService } from '../command/domain-service'
 import type { EventBus } from '../event/event-bus'
 import { createEventBus } from '../event/event-bus'
@@ -13,6 +12,7 @@ import type {
   AppError,
   AsyncResult,
   Command,
+  CommandResult,
   DomainEvent,
   ExtendedDomainEvent,
   Query,
