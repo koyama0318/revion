@@ -9,6 +9,10 @@ export { FakeHandler } from './fixture/fake-handler'
 export { createQueryBus } from './query/query-bus'
 export { createQueryResolver } from './query/query-resolver'
 export type {
+  Command,
+  Query,
+  QueryResult,
+  CommandResult,
   AggregateId,
   AppError,
   CommandDispatcher,
