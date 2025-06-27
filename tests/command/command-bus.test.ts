@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { EventStoreInMemory, createCommandBus } from '../../src'
+import { EventStoreInMemory, createCommandBus, id, zeroId } from '../../src'
 import type { CommandHandlerMiddleware } from '../../src/command/command-bus'
 import { counter } from '../data/command/counter'
 import { mergeCounter } from '../data/command/mergeCounter'
@@ -14,7 +14,7 @@ describe('command bus', () => {
       // Act
       const res = await dispatch({
         operation: 'increment',
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' }
+        id: zeroId('counter')
       })
 
       // Assert
@@ -25,13 +25,13 @@ describe('command bus', () => {
       // Arrange
       const es = new EventStoreInMemory()
       es.events.push({
-        aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         event: { type: 'incremented' },
         timestamp: new Date()
       })
       es.events.push({
-        aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000002' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000002'),
         version: 1,
         event: { type: 'incremented' },
         timestamp: new Date()
@@ -42,10 +42,10 @@ describe('command bus', () => {
       // Act
       const result = await dispatch({
         operation: 'mergeCounter',
-        id: { type: 'mergeCounter', id: '00000000-0000-0000-0000-000000000000' },
+        id: zeroId('mergeCounter'),
         payload: {
-          fromCounterId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
-          toCounterId: { type: 'counter', id: '00000000-0000-0000-0000-000000000002' }
+          fromCounterId: id('counter', '00000000-0000-0000-0000-000000000001'),
+          toCounterId: id('counter', '00000000-0000-0000-0000-000000000002')
         }
       })
 
@@ -75,7 +75,7 @@ describe('command bus', () => {
       // Act
       const result = await bus({
         operation: 'increment',
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' }
+        id: zeroId('counter')
       })
 
       // Assert
@@ -93,7 +93,7 @@ describe('command bus', () => {
       // Act
       const result = await dispatch({
         operation: '',
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+        id: id('counter', '00000000-0000-0000-0000-000000000001')
       })
 
       // Assert
@@ -111,7 +111,7 @@ describe('command bus', () => {
       // Act
       const result = await dispatch({
         operation: 'increment',
-        id: { type: 'counter', id: '' }
+        id: id('counter', '')
       })
 
       // Assert
@@ -129,7 +129,7 @@ describe('command bus', () => {
       // Act
       const result = await dispatch({
         operation: 'increment',
-        id: { type: 'unknown', id: '00000000-0000-0000-0000-000000000001' }
+        id: id('unknown', '00000000-0000-0000-0000-000000000001')
       })
 
       // Assert

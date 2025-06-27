@@ -1,18 +1,14 @@
 import { describe, expect, test } from 'bun:test'
-import { aggregateFixture } from '../../../../src'
+import { aggregateFixture, id, zeroId } from '../../../../src'
 import { counter } from './aggregate'
 import { counterReactor } from './event-reactor'
 
-const zeroId = '00000000-0000-0000-0000-000000000000'
 const uuid1 = '00000000-0000-0000-0000-000000000001'
 
 describe('counter aggregate tests', () => {
   test('create', () => {
     aggregateFixture(counter, counterReactor)
-      .when({
-        operation: 'create',
-        id: { type: 'counter', id: zeroId }
-      })
+      .when({ operation: 'create', id: zeroId('counter') })
       .then(fixture => {
         fixture.assert(ctx => {
           expect(ctx.error).toBeNull()
@@ -25,14 +21,11 @@ describe('counter aggregate tests', () => {
 
   test('increment and decrement', () => {
     aggregateFixture(counter, counterReactor)
-      .givenId({ type: 'counter', id: uuid1 })
+      .givenId(id('counter', uuid1))
       .given({ type: 'created' })
       .given({ type: 'incremented' })
       .given({ type: 'decremented' })
-      .when({
-        operation: 'increment',
-        id: { type: 'counter', id: uuid1 }
-      })
+      .when({ operation: 'increment', id: id('counter', uuid1) })
       .then(fixture => {
         fixture.assert(ctx => {
           expect(ctx.error).toBeNull()
@@ -43,12 +36,9 @@ describe('counter aggregate tests', () => {
       })
 
     aggregateFixture(counter, counterReactor)
-      .givenId({ type: 'counter', id: uuid1 })
+      .givenId(id('counter', uuid1))
       .givenMany([{ type: 'created' }, { type: 'incremented' }, { type: 'decremented' }])
-      .when({
-        operation: 'increment',
-        id: { type: 'counter', id: uuid1 }
-      })
+      .when({ operation: 'increment', id: id('counter', uuid1) })
       .then(fixture => {
         fixture.assert(ctx => {
           expect(ctx.error).toBeNull()
@@ -61,9 +51,9 @@ describe('counter aggregate tests', () => {
 
   test('create and delete', () => {
     aggregateFixture(counter, counterReactor)
-      .givenId({ type: 'counter', id: uuid1 })
+      .givenId(id('counter', uuid1))
       .given({ type: 'created' })
-      .when({ operation: 'delete', id: { type: 'counter', id: uuid1 } })
+      .when({ operation: 'delete', id: id('counter', uuid1) })
       .then(fixture => {
         fixture.assert(ctx => {
           expect(ctx.error).toBeNull()
