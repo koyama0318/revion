@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { EventStoreInMemory, ok } from '../../../src'
+import { EventStoreInMemory, id, ok } from '../../../src'
 import { createReplayEventFnFactory } from '../../../src/command/fn/replay-event'
 import type { ExtendedState } from '../../../src/types'
 import type { CounterState } from '../../data/command/counter'
@@ -9,14 +9,15 @@ describe('replay event function', () => {
   it('should return ok when events are replayed', async () => {
     // Arrange
     const es = new EventStoreInMemory()
+    const newId = id('counter', '00000000-0000-0000-0000-000000000001')
     es.events.push({
-      aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+      aggregateId: newId,
       version: 1,
       event: { type: 'created' },
       timestamp: new Date()
     })
     es.events.push({
-      aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+      aggregateId: newId,
       version: 2,
       event: { type: 'incremented' },
       timestamp: new Date()
@@ -25,10 +26,7 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(newId)
 
     // Assert
     const expected = ok({
@@ -45,27 +43,28 @@ describe('replay event function', () => {
   it('should return ok when events and snapshot are replayed', async () => {
     // Arrange
     const es = new EventStoreInMemory()
+    const newId = id('counter', '00000000-0000-0000-0000-000000000001')
     es.events.push({
-      aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+      aggregateId: newId,
       version: 1,
       event: { type: 'created' },
       timestamp: new Date()
     })
     es.events.push({
-      aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+      aggregateId: newId,
       version: 2,
       event: { type: 'incremented' },
       timestamp: new Date()
     })
     es.events.push({
-      aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+      aggregateId: newId,
       version: 3,
       event: { type: 'incremented' },
       timestamp: new Date()
     })
     es.snapshots.push({
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: newId,
         count: 1
       } as CounterState,
       version: 2,
@@ -75,10 +74,7 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(newId)
 
     // Assert
     const expected = ok({
@@ -95,9 +91,10 @@ describe('replay event function', () => {
   it('should return ok if only snapshot was found', async () => {
     // Arrange
     const es = new EventStoreInMemory()
+    const newId = id('counter', '00000000-0000-0000-0000-000000000001')
     es.snapshots.push({
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: newId,
         count: 10
       } as CounterState,
       version: 20,
@@ -107,15 +104,12 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(newId)
 
     // Assert
     const expected = ok({
       state: {
-        id: { type: 'counter' as const, id: '00000000-0000-0000-0000-000000000001' },
+        id: newId,
         count: 10
       },
       version: 20
@@ -131,10 +125,7 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(id('counter', '00000000-0000-0000-0000-000000000001'))
 
     // Assert
     expect(res.ok).toBe(false)
@@ -153,10 +144,7 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(id('counter', '00000000-0000-0000-0000-000000000001'))
 
     // Assert
     expect(res.ok).toBe(false)
@@ -175,10 +163,7 @@ describe('replay event function', () => {
     const replayEventFn = createReplayEventFnFactory(counter.stateInit, counter.reducer)(deps)
 
     // Act
-    const res = await replayEventFn({
-      type: 'counter',
-      id: '00000000-0000-0000-0000-000000000001'
-    })
+    const res = await replayEventFn(id('counter', '00000000-0000-0000-0000-000000000001'))
 
     // Assert
     expect(res.ok).toBe(false)

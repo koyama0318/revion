@@ -36,11 +36,11 @@ export class EventStoreInMemory implements EventStore {
   }
 
   async getSnapshot<S extends State>(aggregateId: AggregateId): Promise<Snapshot<S> | null> {
-    const snapshot = this.snapshots.find(
-      snapshot =>
-        snapshot.state.id.type === aggregateId.type && snapshot.state.id.id === aggregateId.id
-    )
-    return snapshot as Snapshot<S> | null
+    const snapshot = this.snapshots
+      .filter(s => s.state.id.type === aggregateId.type && s.state.id.id === aggregateId.id)
+      .sort((a, b) => b.version - a.version)[0]
+
+    return (snapshot ?? null) as Snapshot<S> | null
   }
 
   async saveSnapshot<S extends State>(snapshot: Snapshot<S>): Promise<void> {

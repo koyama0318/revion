@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { FakeHandler } from '../../src/fixture/fake-handler'
 import { id, zeroId } from '../../src'
+import { FakeHandler } from '../../src/fixture/fake-handler'
 import { counterReactor } from '../data/command/counter'
 import { counter } from '../data/command/counter'
 import { type CounterQuery, type QueryMap, counterResolver } from '../data/query/counter'

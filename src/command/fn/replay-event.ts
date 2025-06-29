@@ -1,3 +1,4 @@
+import { v4 } from 'uuid'
 import type {
   AggregateId,
   AppError,
@@ -8,7 +9,6 @@ import type {
   State,
   StateInitFn
 } from '../../types'
-import { v4 } from 'uuid'
 import { isZero } from '../../types'
 import { err, ok, toAsyncResult } from '../../utils'
 import type { CommandHandlerDeps } from '../command-handler'
