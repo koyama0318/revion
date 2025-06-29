@@ -13,7 +13,7 @@ import type {
   State,
   ViewMap
 } from '../types'
-import { zeroId } from '../utils/aggregate-id'
+import { zeroId } from '../types'
 import { FakeHandler } from './fake-handler'
 
 type AggregateTestContext<S extends State, E extends DomainEvent> = {

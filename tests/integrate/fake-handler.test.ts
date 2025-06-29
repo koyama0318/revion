@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { FakeHandler } from '../../src/fixture/fake-handler'
-import { zeroId } from '../../src/utils/aggregate-id'
+import { id, zeroId } from '../../src'
 import { counterReactor } from '../data/command/counter'
 import { counter } from '../data/command/counter'
 import { type CounterQuery, type QueryMap, counterResolver } from '../data/query/counter'
@@ -18,7 +18,7 @@ describe('fake handler', () => {
     })
     const command = {
       operation: 'create',
-      id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' }
+      id: zeroId('counter')
     }
     const query = {
       operation: 'counterList',
@@ -32,25 +32,25 @@ describe('fake handler', () => {
     // Assert
     expect(commandResult.ok).toBe(true)
     expect(queryResult.ok).toBe(true)
-    expect(fakeHandler.eventStore.events).toEqual([
-      {
-        event: { type: 'created' },
-        aggregateId: { type: 'counter', id: expect.any(String) },
-        version: 1,
-        timestamp: expect.any(Date)
-      },
-      {
-        event: { type: 'incremented' },
-        aggregateId: { type: 'counter', id: expect.any(String) },
-        version: 2,
-        timestamp: expect.any(Date)
-      }
-    ])
-    expect(fakeHandler.readDatabase.storage.counter).toBeDefined()
-    if (queryResult.ok) {
-      expect(queryResult.value.counterList).toEqual([
-        { count: 1, id: expect.any(String), type: 'counter' }
+    if (commandResult.ok && queryResult.ok) {
+      const genId = commandResult.value.id
+
+      expect(fakeHandler.eventStore.events).toEqual([
+        {
+          event: { type: 'created' },
+          aggregateId: genId,
+          version: 1,
+          timestamp: expect.any(Date)
+        },
+        {
+          event: { type: 'incremented' },
+          aggregateId: genId,
+          version: 2,
+          timestamp: expect.any(Date)
+        }
       ])
+      expect(fakeHandler.readDatabase.storage.counter).toBeDefined()
+      expect(queryResult.value.counterList).toEqual([{ count: 1, id: genId.id, type: 'counter' }])
     }
   })
 
@@ -67,28 +67,28 @@ describe('fake handler', () => {
       operation: 'create',
       id: zeroId('counter')
     })
-    const id = commandResult1.ok ? commandResult1.value.id.id : ''
+    const commandId = commandResult1.ok ? commandResult1.value.id.id : ''
     const queryResult1 = await fakeHandler.query<CounterQuery, QueryMap>({
       operation: 'counter',
-      id: id
+      id: commandId
     })
 
     const commandResult2 = await fakeHandler.command({
       operation: 'delete',
-      id: { type: 'counter', id }
+      id: id('counter', commandId)
     })
     const queryResult2 = await fakeHandler.query<CounterQuery, QueryMap>({
       operation: 'counter',
-      id
+      id: commandId
     })
 
     const commandResult3 = await fakeHandler.command({
       operation: 'increment',
-      id: { type: 'counter', id }
+      id: id('counter', commandId)
     })
     const queryResult3 = await fakeHandler.query<CounterQuery, QueryMap>({
       operation: 'counter',
-      id
+      id: commandId
     })
 
     // Assert

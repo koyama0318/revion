@@ -26,4 +26,5 @@ export type {
   CaseReducerFn as Reducer,
   GetListOptions
 } from './types'
+export { id, zeroId } from './types'
 export * from './utils'

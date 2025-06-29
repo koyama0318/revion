@@ -26,10 +26,3 @@ export function validateAggregateId(id: AggregateId): Result<void, AppError> {
 export function isEqualId(id1: AggregateId, id2: AggregateId): boolean {
   return id1.type === id2.type && id1.id === id2.id
 }
-
-export function zeroId(type: string): AggregateId {
-  return {
-    type: type,
-    id: '00000000-0000-0000-0000-000000000000'
-  }
-}
