@@ -1,3 +1,3 @@
 export * from './aggregate'
-export * from './reactor'
+export * from './event-reactor'
 export * from './types'

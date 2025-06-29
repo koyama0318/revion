@@ -16,7 +16,7 @@ export function validateAggregateId(id: AggregateId): Result<void, AppError> {
   if (!isUuid) {
     return err({
       code: 'INVALID_AGGREGATE_ID',
-      message: 'Aggregate ID is not valid'
+      message: 'Aggregate ID is not valid uuid'
     })
   }
 

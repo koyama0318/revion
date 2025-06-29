@@ -1,11 +1,8 @@
-import type { AppError, AsyncResult, Command } from '../types'
+import type { AppError, AsyncResult, Command, CommandResult } from '../types'
 import { err, validateAggregateId } from '../utils'
 import type { AnyAggregate } from './aggregate'
-import {
-  type CommandHandler,
-  type CommandHandlerDeps,
-  createCommandHandlers
-} from './command-handler'
+import type { CommandHandler, CommandHandlerDeps } from './command-handler'
+import { createCommandHandlers } from './command-handler'
 import type { AnyDomainService } from './domain-service'
 
 export type CommandBus = CommandHandler
@@ -13,7 +10,7 @@ export type CommandBus = CommandHandler
 export type CommandHandlerMiddleware = (
   command: Command,
   next: CommandHandler
-) => AsyncResult<void, AppError>
+) => AsyncResult<CommandResult, AppError>
 
 export function createCommandBus({
   deps,
@@ -34,7 +31,7 @@ export function createCommandBus({
     }, handler)
   }
 
-  return async (command: Command): AsyncResult<void, AppError> => {
+  return async (command: Command) => {
     if (command.operation === '') {
       return err({
         code: 'INVALID_OPERATION',

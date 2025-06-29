@@ -12,7 +12,7 @@ import { createDispatchEventFnFactory } from './fn/dispatch-event'
 import { createProjectEventFnFactory } from './fn/project-event'
 
 export type EventHandlerDeps = {
-  eventDispatcher: CommandDispatcher
+  commandDispatcher: CommandDispatcher
   readDatabase: ReadDatabase
 }
 
@@ -24,7 +24,7 @@ function createEventHandlerFactory<D extends EventHandlerDeps>(
   reactor: AnyEventReactor
 ): EventHandlerFactory<D> {
   return (deps: D) => {
-    const dispatch = createDispatchEventFnFactory(reactor.policy)(deps.eventDispatcher)
+    const dispatch = createDispatchEventFnFactory(reactor.policy)(deps.commandDispatcher)
     const projection = createProjectEventFnFactory(reactor.projection)(deps.readDatabase)
 
     return async (event: ExtendedDomainEvent<DomainEvent>) => {

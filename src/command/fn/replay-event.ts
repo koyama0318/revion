@@ -9,6 +9,7 @@ import type {
   State,
   StateInitFn
 } from '../../types'
+import { isZero } from '../../types'
 import { err, ok, toAsyncResult } from '../../utils'
 import type { CommandHandlerDeps } from '../command-handler'
 
@@ -24,10 +25,10 @@ export function createReplayEventFnFactory<
 >(stateInit: StateInitFn<T, S>, reducer: ReducerFn<S, E>): (deps: D) => ReplayEventFn<T, S> {
   return (deps: D) => {
     return async (id: AggregateId<T>) => {
-      if (id.id === '00000000-0000-0000-0000-000000000000') {
-        const uuid = v4()
+      if (isZero(id)) {
+        const newId = v4()
         return ok({
-          state: stateInit({ type: id.type, id: uuid }) as S,
+          state: stateInit({ ...id, id: newId }) as S,
           version: 0
         })
       }

@@ -42,7 +42,7 @@
   "javascript": {
     "formatter": {
       "arrowParentheses": "asNeeded",
-      "bracketSameLine": false,
+      "bracketSameLine": true,
       "bracketSpacing": true,
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",

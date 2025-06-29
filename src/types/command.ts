@@ -15,6 +15,10 @@ export type Command = {
   readonly payload?: unknown
 }
 
+export type CommandResult = {
+  id: AggregateId
+}
+
 export type DomainEvent = {
   type: string
   payload?: unknown

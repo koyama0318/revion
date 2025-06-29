@@ -1,5 +1,6 @@
 export * from './aggregate-id'
 export * from './apply-and-save'
 export * from './event-store-in-memory'
-export * from './read-db-in-memory'
+export * from './read-database-in-memory'
 export * from './result'
+export * from './command-dispatcher-mock'
