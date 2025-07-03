@@ -57,8 +57,8 @@ export function createReplayEventFnFactory<
           cause: events.error
         })
       }
-      currentVersion += events.value.length
 
+      currentVersion += events.value.length
       if (currentVersion === 0) {
         return err({
           code: 'NO_EVENTS_STORED',

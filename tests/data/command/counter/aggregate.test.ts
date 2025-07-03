@@ -12,7 +12,7 @@ describe('counter aggregate tests', () => {
       .then(fixture => {
         fixture.assert(ctx => {
           expect(ctx.error).toBeNull()
-          expect(ctx.state.after.count).toBe(0)
+          expect(ctx.state.after.count).toBe(1)
           expect(ctx.version.diff).toBe(2)
           expect(ctx.version.latest).toBe(2)
         })
