@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import { id } from '../../src'
 import { CommandDispatcherMock } from '../../src/utils/command-dispatcher-mock'
 
 describe('command dispatcher mock', () => {
@@ -7,7 +8,7 @@ describe('command dispatcher mock', () => {
       const dispatcher = new CommandDispatcherMock()
       const command = {
         operation: 'create',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
       await dispatcher.dispatch(command)
       expect(dispatcher.getCommands()).toEqual([command])

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { createEventBus } from '../../src/event/event-bus'
+import { createEventBus, id } from '../../src'
 import { ReadDatabaseInMemory } from '../../src/utils'
 import { counterReactor } from '../data/command/counter'
 
@@ -16,7 +16,7 @@ describe('event bus', () => {
       // Act
       const res = await receive({
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '1'),
         version: 1,
         timestamp: new Date()
       })
@@ -38,7 +38,7 @@ describe('event bus', () => {
       // Act
       const result = await receive({
         event: { type: 'counter' },
-        aggregateId: { type: 'unknown', id: '1' },
+        aggregateId: id('unknown', '1'),
         version: 1,
         timestamp: new Date()
       })
@@ -65,7 +65,7 @@ describe('event bus', () => {
       // Act
       const result = await receive({
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '1'),
         version: 1,
         timestamp: new Date()
       })

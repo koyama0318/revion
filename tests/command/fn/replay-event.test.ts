@@ -31,7 +31,7 @@ describe('replay event function', () => {
     // Assert
     const expected = ok({
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         count: 1
       },
       version: 2

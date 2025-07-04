@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { createProjectEventFnFactory } from '../../../src/event/fn/project-event'
 import type { ExtendedDomainEvent } from '../../../src/types'
 import { ReadDatabaseInMemory } from '../../../src/utils'
+import { id } from '../../../src/types'
 import type { CounterEvent } from '../../data/command/counter'
 import { counterReactor } from '../../data/command/counter'
 import type { CounterView } from '../../data/query/view'
@@ -13,18 +14,22 @@ describe('project event function', () => {
     const eventFn = createProjectEventFnFactory(counterReactor.projection)(db)
     const event = {
       event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>
 
     // Act
     const res = await eventFn(event)
-    const view = await db.getById('counter', '1')
+    const view = await db.getById('counter', '00000000-0000-0000-0000-000000000001')
 
     // Assert
     expect(res.ok).toBe(true)
-    expect(view).toEqual({ type: 'counter', id: '1', count: 0 } as CounterView)
+    expect(view).toEqual({
+      type: 'counter',
+      id: '00000000-0000-0000-0000-000000000001',
+      count: 0
+    } as CounterView)
   })
 
   it('should return error when event type is not found', async () => {
@@ -33,7 +38,7 @@ describe('project event function', () => {
     const eventFn = createProjectEventFnFactory(counterReactor.projection)(db)
     const event = {
       event: { type: 'unknown' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as unknown as ExtendedDomainEvent<CounterEvent>
@@ -54,7 +59,7 @@ describe('project event function', () => {
     const eventFn = createProjectEventFnFactory(counterReactor.projection)(db)
     const event1 = {
       event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>
@@ -62,18 +67,23 @@ describe('project event function', () => {
 
     const event = {
       event: { type: 'incremented' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 2,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>
 
     // Act
     const res = await eventFn(event)
-    const view = await db.getById('counter', '1')
+    const view = await db.getById('counter', '00000000-0000-0000-0000-000000000001')
 
     // Assert
+    console.log(res)
     expect(res.ok).toBe(true)
-    expect(view).toEqual({ count: 1, type: 'counter', id: '1' } as CounterView)
+    expect(view).toEqual({
+      count: 1,
+      type: 'counter',
+      id: '00000000-0000-0000-0000-000000000001'
+    } as CounterView)
   })
 
   it('should return ok when deleted event is generated', async () => {
@@ -82,7 +92,7 @@ describe('project event function', () => {
     const projectFn = createProjectEventFnFactory(counterReactor.projection)(db)
     const event1 = {
       event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>
@@ -90,7 +100,7 @@ describe('project event function', () => {
 
     const event = {
       event: { type: 'deleted' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 2,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>

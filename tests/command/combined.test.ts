@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import { EventStoreInMemory } from '../../src'
+import { EventStoreInMemory, id } from '../../src'
 import {
   createCombinedApplyFn,
   createCombinedReplayFn,
@@ -20,7 +20,7 @@ describe('combined', () => {
     it('should return ok if aggregate is found', async () => {
       // Arrange
       es.events.push({
-        aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         event: { type: 'created' },
         timestamp: new Date()
@@ -28,7 +28,7 @@ describe('combined', () => {
       const replayFn = createCombinedReplayFn({ eventStore: es }, [counter])
 
       // Act
-      const res = await replayFn({ type: 'counter', id: '00000000-0000-0000-0000-000000000001' })
+      const res = await replayFn(id('counter', '00000000-0000-0000-0000-000000000001'))
 
       // Assert
       expect(res).toBeDefined()
@@ -51,7 +51,7 @@ describe('combined', () => {
       const replayFn = createCombinedReplayFn({ eventStore: es }, [counter])
 
       // Act
-      const res = await replayFn({ type: 'counter', id: '00000000-0000-0000-0000-000000000001' })
+      const res = await replayFn(id('counter', '00000000-0000-0000-0000-000000000001'))
 
       // Assert
       expect(res).toBeNull()
@@ -64,14 +64,14 @@ describe('combined', () => {
       const applyFn = createCombinedApplyFn([counter])
       const state: ExtendedState<CounterState> = {
         state: {
-          id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('counter', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1
       }
       const command: CounterCommand = {
         operation: 'increment',
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+        id: id('counter', '00000000-0000-0000-0000-000000000001')
       }
 
       // Act
@@ -87,14 +87,14 @@ describe('combined', () => {
       const applyFn = createCombinedApplyFn([counter])
       const state: ExtendedState<CounterState> = {
         state: {
-          id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('counter', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1
       }
       const command = {
         operation: 'increment',
-        id: { type: 'unknown', id: '00000000-0000-0000-0000-000000000002' }
+        id: id('unknown', '00000000-0000-0000-0000-000000000002')
       }
 
       // Assert
@@ -106,14 +106,14 @@ describe('combined', () => {
       const applyFn = createCombinedApplyFn([counter])
       const state = {
         state: {
-          id: { type: 'unknown', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('unknown', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1
       }
       const command = {
         operation: 'increment',
-        id: { type: 'unknown', id: '00000000-0000-0000-0000-000000000001' }
+        id: id('unknown', '00000000-0000-0000-0000-000000000001')
       }
 
       // Assert
@@ -131,14 +131,14 @@ describe('combined', () => {
       const applyFn = createCombinedApplyFn([errAggregate])
       const state: ExtendedState<CounterState> = {
         state: {
-          id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('counter', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1
       }
       const command = {
         operation: 'increment',
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+        id: id('counter', '00000000-0000-0000-0000-000000000001')
       }
 
       // Assert
@@ -154,7 +154,7 @@ describe('combined', () => {
       const saveFn = createCombinedSaveFn({ eventStore: es })
       const state: ExtendedState<CounterState> = {
         state: {
-          id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('counter', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1
@@ -162,7 +162,7 @@ describe('combined', () => {
       const events: ExtendedDomainEvent<CounterEvent>[] = [
         {
           event: { type: 'incremented' },
-          aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
           version: 1,
           timestamp: new Date()
         }
@@ -176,7 +176,7 @@ describe('combined', () => {
       const saveFn = createCombinedSaveFn({ eventStore: es })
       const state: ExtendedState<CounterState> = {
         state: {
-          id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          id: id('counter', '00000000-0000-0000-0000-000000000001'),
           count: 0
         },
         version: 1

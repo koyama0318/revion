@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { createEventHandlers } from '../../src/event/event-handler'
 import type { ExtendedDomainEvent } from '../../src/types'
 import { ReadDatabaseInMemory } from '../../src/utils'
+import { id } from '../../src'
 import { type CounterEvent, counterReactor } from '../data/command/counter'
 import type { CounterView } from '../data/query/view'
 
@@ -32,7 +33,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -57,7 +58,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -77,7 +78,7 @@ describe('event handler', () => {
       const db = new ReadDatabaseInMemory()
       db.save('counter', {
         type: 'counter',
-        id: '1',
+        id: '00000000-0000-0000-0000-000000000001',
         count: 0
       } as CounterView)
       const deps = {
@@ -87,7 +88,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -114,7 +115,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -140,13 +141,13 @@ describe('event handler', () => {
       }
       db.save('counter', {
         type: 'counter',
-        id: '1',
+        id: '00000000-0000-0000-0000-000000000001',
         count: 0
       } as CounterView)
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'incremented' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -176,7 +177,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'incremented' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -196,7 +197,7 @@ describe('event handler', () => {
       const db = new ReadDatabaseInMemory()
       db.save('counter', {
         type: 'counter',
-        id: '1',
+        id: '00000000-0000-0000-0000-000000000001',
         count: 0
       } as CounterView)
       db.save = async _ => {
@@ -209,7 +210,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'incremented' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -241,7 +242,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'deleted' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -271,7 +272,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'deleted' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
@@ -301,7 +302,7 @@ describe('event handler', () => {
       const handlers = createEventHandlers(deps, [counterReactor])
       const event = {
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: '1' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: new Date()
       } as ExtendedDomainEvent<CounterEvent>
