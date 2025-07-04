@@ -115,6 +115,7 @@ class AggregateTestFixture<
     } else {
       // set issued command id
       this.context.id = res.value.id
+      this.context.state.before = { ...beforeState.value.state, id: res.value.id }
     }
 
     // set after events & after state
