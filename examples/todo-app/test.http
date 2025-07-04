@@ -1,0 +1,60 @@
+### Create Todo
+POST http://localhost:3000/command
+Content-Type: application/json
+
+{
+  "operation": "create",
+  "id": {
+    "type": "todo",
+    "id": "00000000-0000-0000-0000-000000000000"
+  },
+  "title": "Test Todo"
+}
+
+### Edit Todo
+POST http://localhost:3000/command
+Content-Type: application/json
+
+{
+  "operation": "edit",
+  "id": {
+    "type": "todo",
+    "id": "3b88c9da-b474-494b-a04b-6bf920ed6ea1"
+  },
+  "title": "Updated Todo Title",
+  "priority": "high"
+}
+
+### Update Todo Status
+POST http://localhost:3000/command
+Content-Type: application/json
+
+{
+  "operation": "updateStatus",
+  "id": {
+    "type": "todo",
+    "id": "00000000-0000-0000-0000-000000000000"
+  },
+  "status": "completed"
+}
+
+### Delete Todo
+POST http://localhost:3000/command
+Content-Type: application/json
+
+{
+  "operation": "delete",
+  "id": {
+    "type": "todo",
+    "id": "00000000-0000-0000-0000-000000000000"
+  }
+}
+
+### Query Todo (requires resolver implementation)
+POST http://localhost:3000/query
+Content-Type: application/json
+
+{
+  "operation": "todoList",
+  "options": {}
+}
