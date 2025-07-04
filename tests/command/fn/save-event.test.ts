@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { EventStoreInMemory } from '../../../src'
 import { createSaveEventFnFactory } from '../../../src/command/fn/save-event'
-import { EventStoreInMemory } from '../../../src/utils'
 
 describe('save event function', () => {
   it('should return ok when events are saved', async () => {

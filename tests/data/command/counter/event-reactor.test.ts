@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { reactorFixture } from '../../../../src'
+import { id, reactorFixture } from '../../../../src'
 import type { CounterView } from '../../query/view'
 import { counterReactor } from './event-reactor'
 
@@ -11,7 +11,7 @@ describe('counter reactor tests', () => {
     reactorFixture(counterReactor)
       .when({
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: uuid1 },
+        aggregateId: id('counter', uuid1),
         version: 0,
         timestamp: date1
       })
@@ -32,7 +32,7 @@ describe('counter reactor tests', () => {
       .given({ type: 'counter', id: uuid1, count: 10 })
       .when({
         event: { type: 'created' },
-        aggregateId: { type: 'counter', id: uuid1 },
+        aggregateId: id('counter', uuid1),
         version: 1,
         timestamp: date1
       })
@@ -48,7 +48,7 @@ describe('counter reactor tests', () => {
       .given({ type: 'counter', id: uuid1, count: 10 })
       .when({
         event: { type: 'incremented' },
-        aggregateId: { type: 'counter', id: uuid1 },
+        aggregateId: id('counter', uuid1),
         version: 1,
         timestamp: date1
       })
@@ -69,7 +69,7 @@ describe('counter reactor tests', () => {
       .given({ type: 'counter', id: uuid1, count: 10 })
       .when({
         event: { type: 'decremented' },
-        aggregateId: { type: 'counter', id: uuid1 },
+        aggregateId: id('counter', uuid1),
         version: 1,
         timestamp: date1
       })
@@ -90,7 +90,7 @@ describe('counter reactor tests', () => {
       .given({ type: 'counter', id: uuid1, count: 10 })
       .when({
         event: { type: 'deleted' },
-        aggregateId: { type: 'counter', id: uuid1 },
+        aggregateId: id('counter', uuid1),
         version: 1,
         timestamp: date1
       })

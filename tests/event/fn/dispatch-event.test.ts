@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+import type { ExtendedDomainEvent } from '../../../src'
+import { id } from '../../../src'
 import { createDispatchEventFnFactory } from '../../../src/event/fn/dispatch-event'
-import type { ExtendedDomainEvent } from '../../../src/types'
 import type { CounterEvent } from '../../data/command/counter'
 import { counterReactor } from '../../data/command/counter'
 
@@ -11,7 +12,7 @@ describe('dispatch event function', () => {
     const eventFn = createDispatchEventFnFactory(counterReactor.policy)({ dispatch })
     const event = {
       event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>
@@ -31,7 +32,7 @@ describe('dispatch event function', () => {
     const eventFn = createDispatchEventFnFactory(counterReactor.policy)({ dispatch })
     const event = {
       event: { type: 'created' },
-      aggregateId: { type: 'counter', id: '1' },
+      aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
       version: 1,
       timestamp: new Date()
     } as ExtendedDomainEvent<CounterEvent>

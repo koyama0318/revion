@@ -99,9 +99,9 @@ export class FakeHandler {
       // project view and dispatch commands
       const handled = await this.eventBus(event)
       if (!handled.ok) {
-        if (this.config.ignoreViewProjection && handled.error?.code === 'VIEW_NOT_FOUND') {
+        const acceptedCodes = ['VIEW_NOT_FOUND', 'EVENT_HANDLER_NOT_FOUND']
+        if (this.config.ignoreViewProjection && acceptedCodes.includes(handled.error?.code))
           continue
-        }
         return handled
       }
 

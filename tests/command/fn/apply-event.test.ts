@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { err } from '../../../src'
+import { err, id } from '../../../src'
+import type { ExtendedDomainEvent, ExtendedState } from '../../../src'
 import { createApplyEventFnFactory } from '../../../src/command/fn/apply-event'
-import type { ExtendedDomainEvent, ExtendedState } from '../../../src/types'
 import type { CounterCommand, CounterEvent, CounterState } from '../../data/command/counter'
 import { counter } from '../../data/command/counter'
 
@@ -12,7 +12,7 @@ describe('apply event function', () => {
 
     const state: ExtendedState<CounterState> = {
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         count: 0
       },
       version: 0
@@ -20,7 +20,7 @@ describe('apply event function', () => {
 
     const command: CounterCommand = {
       operation: 'create',
-      id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+      id: id('counter', '00000000-0000-0000-0000-000000000001')
     }
 
     // Act
@@ -29,7 +29,7 @@ describe('apply event function', () => {
     // Assert
     const expectedState: ExtendedState<CounterState> = {
       state: {
-        id: { type: 'counter' as const, id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         count: 0
       },
       version: 1
@@ -38,7 +38,7 @@ describe('apply event function', () => {
     const expectedEvents: ExtendedDomainEvent<CounterEvent>[] = [
       {
         event: { type: 'created' as const },
-        aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
         version: 1,
         timestamp: expect.any(Date)
       }
@@ -58,7 +58,7 @@ describe('apply event function', () => {
 
     const state: ExtendedState<CounterState> = {
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         count: 0
       },
       version: 0
@@ -66,7 +66,7 @@ describe('apply event function', () => {
 
     const command: CounterCommand = {
       operation: 'increment',
-      id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+      id: id('counter', '00000000-0000-0000-0000-000000000001')
     }
 
     // Act
@@ -90,7 +90,7 @@ describe('apply event function', () => {
 
     const state: ExtendedState<CounterState> = {
       state: {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         count: 0
       },
       version: 0
@@ -98,7 +98,7 @@ describe('apply event function', () => {
 
     const command: CounterCommand = {
       operation: 'increment',
-      id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' }
+      id: id('counter', '00000000-0000-0000-0000-000000000001')
     }
 
     // Act

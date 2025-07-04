@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { CommandDispatcherMock } from '../../src/utils/command-dispatcher-mock'
+import { CommandDispatcherMock, id } from '../../src'
 
 describe('command dispatcher mock', () => {
   describe('dispatch', () => {
@@ -7,7 +7,7 @@ describe('command dispatcher mock', () => {
       const dispatcher = new CommandDispatcherMock()
       const command = {
         operation: 'create',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
       await dispatcher.dispatch(command)
       expect(dispatcher.getCommands()).toEqual([command])
@@ -18,7 +18,7 @@ describe('command dispatcher mock', () => {
       const command = {
         type: 'counter',
         operation: 'increment',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
 
       await dispatcher.dispatch(command)
@@ -38,11 +38,11 @@ describe('command dispatcher mock', () => {
       const dispatcher = new CommandDispatcherMock()
       const command1 = {
         operation: 'create',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
       const command2 = {
         operation: 'increment',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
       await dispatcher.dispatch(command1)
       await dispatcher.dispatch(command2)
@@ -55,7 +55,7 @@ describe('command dispatcher mock', () => {
       const dispatcher = new CommandDispatcherMock()
       const command = {
         operation: 'create',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
       await dispatcher.dispatch(command)
       dispatcher.reset()
@@ -67,7 +67,7 @@ describe('command dispatcher mock', () => {
       const command = {
         type: 'counter',
         operation: 'increment',
-        id: { type: 'counter', id: '1' }
+        id: id('counter', '1')
       }
 
       await dispatcher.dispatch(command)

@@ -1,4 +1,4 @@
-import type { AggregateId } from '../../../../src/types'
+import type { AggregateId } from '../../../../src'
 
 export type CounterId = AggregateId<'counter'>
 

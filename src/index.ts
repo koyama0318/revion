@@ -18,13 +18,17 @@ export type {
   CommandDispatcher,
   DomainServiceFn as DomainService,
   CaseEventDeciderFn as EventDecider,
+  EventFor,
   EventStore,
   CasePolicyFn as Policy,
   ProjectionFn as Projection,
   QueryResolverFn as QueryResolver,
   ReadDatabase,
   CaseReducerFn as Reducer,
-  GetListOptions
+  GetListOptions,
+  ExtendedDomainEvent,
+  ExtendedState,
+  View
 } from './types'
 export { id, zeroId } from './types'
 export * from './utils'

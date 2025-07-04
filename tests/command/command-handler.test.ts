@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+import type { Command } from '../../src'
+import { EventStoreInMemory, id, zeroId } from '../../src'
 import { createCommandHandlers } from '../../src/command/command-handler'
-import type { Command } from '../../src/types'
-import { EventStoreInMemory } from '../../src/utils'
 import { counter } from '../data/command/counter'
 import { mergeCounter } from '../data/command/mergeCounter'
 
@@ -28,7 +28,7 @@ describe('command handler', () => {
         [mergeCounter]
       )
       const command: Command = {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' },
+        id: zeroId('counter'),
         operation: 'increment'
       }
 
@@ -47,7 +47,7 @@ describe('command handler', () => {
       }
       const handlers = createCommandHandlers({ eventStore: es }, [counter], [mergeCounter])
       const command: Command = {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' },
+        id: zeroId('counter'),
         operation: 'invalid-operation'
       }
 
@@ -69,7 +69,7 @@ describe('command handler', () => {
         [mergeCounter]
       )
       const command: Command = {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000000' },
+        id: zeroId('counter'),
         operation: 'invalid-operation'
       }
 
@@ -91,7 +91,7 @@ describe('command handler', () => {
       }
       const handlers = createCommandHandlers({ eventStore: es }, [counter], [mergeCounter])
       const command: Command = {
-        id: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('counter', '00000000-0000-0000-0000-000000000001'),
         operation: 'increment'
       }
 
@@ -113,24 +113,24 @@ describe('command handler', () => {
       es.saveEvents([
         {
           event: { type: 'created' },
-          aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
+          aggregateId: id('counter', '00000000-0000-0000-0000-000000000001'),
           version: 1,
           timestamp: new Date()
         },
         {
           event: { type: 'created' },
-          aggregateId: { type: 'counter', id: '00000000-0000-0000-0000-000000000002' },
+          aggregateId: id('counter', '00000000-0000-0000-0000-000000000002'),
           version: 1,
           timestamp: new Date()
         }
       ])
       const handlers = createCommandHandlers({ eventStore: es }, [counter], [mergeCounter])
       const command = {
-        id: { type: 'mergeCounter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('mergeCounter', '00000000-0000-0000-0000-000000000001'),
         operation: 'mergeCounter',
         payload: {
-          fromCounterId: { type: 'counter', id: '00000000-0000-0000-0000-000000000001' },
-          toCounterId: { type: 'counter', id: '00000000-0000-0000-0000-000000000002' }
+          fromCounterId: id('counter', '00000000-0000-0000-0000-000000000001'),
+          toCounterId: id('counter', '00000000-0000-0000-0000-000000000002')
         }
       }
 
@@ -149,11 +149,11 @@ describe('command handler', () => {
         [mergeCounter]
       )
       const command = {
-        id: { type: 'mergeCounter', id: '00000000-0000-0000-0000-000000000001' },
+        id: id('mergeCounter', '00000000-0000-0000-0000-000000000001'),
         operation: 'mergeCounter',
         payload: {
-          fromCounterId: { type: 'hoge', id: '00000000-0000-0000-0000-000000000001' },
-          toCounterId: { type: 'hoge', id: '00000000-0000-0000-0000-000000000002' }
+          fromCounterId: id('counter', '00000000-0000-0000-0000-000000000001'),
+          toCounterId: id('hoge', '00000000-0000-0000-0000-000000000002')
         }
       }
 

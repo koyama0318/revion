@@ -24,6 +24,8 @@ export type DomainEvent = {
   payload?: unknown
 }
 
+export type EventFor<T extends string, E extends DomainEvent> = Extract<E, { type: T }>
+
 export type ExtendedDomainEvent<T extends DomainEvent> = {
   readonly event: Readonly<T>
   readonly aggregateId: AggregateId
