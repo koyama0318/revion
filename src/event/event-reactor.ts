@@ -26,7 +26,11 @@ function fromCasePolicy<C extends Command, E extends DomainEvent>(
   casePolicy: CasePolicyFn<C, E>
 ): PolicyFn<C, E> {
   return (event: ExtendedDomainEvent<E>): C | null => {
-    return casePolicy[event.event.type as keyof CasePolicyFn<C, E>]?.(event) ?? null
+    const handler = casePolicy[event.event.type as keyof CasePolicyFn<C, E>]
+    if (!handler) return null
+    return (
+      handler(event as ExtendedDomainEvent<Extract<E, { type: typeof event.event.type }>>) ?? null
+    )
   }
 }
 

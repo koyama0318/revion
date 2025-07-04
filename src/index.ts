@@ -18,6 +18,7 @@ export type {
   CommandDispatcher,
   DomainServiceFn as DomainService,
   CaseEventDeciderFn as EventDecider,
+  EventFor,
   EventStore,
   CasePolicyFn as Policy,
   ProjectionFn as Projection,
