@@ -46,11 +46,11 @@ class AggregateTestFixture<
   private readonly handler: FakeHandler
   private context: AggregateTestContext<S, E>
 
-  constructor(aggregate: Aggregate<T, S, C, E>, reactor: EventReactor<T, C, E, VM>) {
+  constructor(aggregate: Aggregate<T, S, C, E>, reactor?: EventReactor<T, C, E, VM>) {
     this.aggregate = aggregate
     this.handler = new FakeHandler({
       aggregates: [aggregate],
-      reactors: [reactor],
+      reactors: reactor ? [reactor] : [],
       config: {
         ignoreViewProjection: true
       }
@@ -159,6 +159,6 @@ export function aggregateFixture<
   C extends Command,
   E extends DomainEvent,
   VM extends ViewMap
->(aggregate: Aggregate<T, S, C, E>, reactor: EventReactor<T, C, E, VM>) {
+>(aggregate: Aggregate<T, S, C, E>, reactor?: EventReactor<T, C, E, VM>) {
   return new AggregateTestFixture(aggregate, reactor)
 }
