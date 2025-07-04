@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { GetListOptions } from '../../src'
-import type { View } from '../../src/types'
-import { ReadDatabaseInMemory } from '../../src/utils/read-database-in-memory'
+import type { GetListOptions, View } from '../../src'
+import { ReadDatabaseInMemory } from '../../src'
 import type { CounterView } from '../data/query/view'
 
 describe('read database in memory', () => {

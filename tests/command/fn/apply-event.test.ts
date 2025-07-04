@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { err, id } from '../../../src'
+import type { ExtendedDomainEvent, ExtendedState } from '../../../src'
 import { createApplyEventFnFactory } from '../../../src/command/fn/apply-event'
-import type { ExtendedDomainEvent, ExtendedState } from '../../../src/types'
 import type { CounterCommand, CounterEvent, CounterState } from '../../data/command/counter'
 import { counter } from '../../data/command/counter'
 

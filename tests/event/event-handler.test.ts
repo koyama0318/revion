@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+import type { ExtendedDomainEvent } from '../../src'
+import { ReadDatabaseInMemory, id } from '../../src'
 import { createEventHandlers } from '../../src/event/event-handler'
-import type { ExtendedDomainEvent } from '../../src/types'
-import { ReadDatabaseInMemory } from '../../src/utils'
-import { id } from '../../src'
 import { type CounterEvent, counterReactor } from '../data/command/counter'
 import type { CounterView } from '../data/query/view'
 

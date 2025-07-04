@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+import type { Command } from '../../src'
+import { EventStoreInMemory, id, zeroId } from '../../src'
 import { createCommandHandlers } from '../../src/command/command-handler'
-import type { Command } from '../../src/types'
-import { id, zeroId } from '../../src/types'
-import { EventStoreInMemory } from '../../src/utils'
 import { counter } from '../data/command/counter'
 import { mergeCounter } from '../data/command/mergeCounter'
 

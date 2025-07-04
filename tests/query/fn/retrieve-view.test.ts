@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { ReadDatabaseInMemory } from '../../../src'
 import { createRetrieveViewFnFactory } from '../../../src/query/fn/retrieve-view'
-import { ReadDatabaseInMemory } from '../../../src/utils'
 import type { CounterListQuery } from '../../data/query/counter'
 import { counterResolver } from '../../data/query/counter'
 import type { CounterView } from '../../data/query/view'

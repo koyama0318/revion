@@ -24,7 +24,10 @@ export type {
   QueryResolverFn as QueryResolver,
   ReadDatabase,
   CaseReducerFn as Reducer,
-  GetListOptions
+  GetListOptions,
+  ExtendedDomainEvent,
+  ExtendedState,
+  View
 } from './types'
 export { id, zeroId } from './types'
 export * from './utils'

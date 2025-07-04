@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { createDispatchEventFnFactory } from '../../../src/event/fn/dispatch-event'
-import type { ExtendedDomainEvent } from '../../../src/types'
+import type { ExtendedDomainEvent } from '../../../src'
 import { id } from '../../../src'
+import { createDispatchEventFnFactory } from '../../../src/event/fn/dispatch-event'
 import type { CounterEvent } from '../../data/command/counter'
 import { counterReactor } from '../../data/command/counter'
 

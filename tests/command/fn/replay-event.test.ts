@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { EventStoreInMemory, id, ok } from '../../../src'
+import type { ExtendedState } from '../../../src'
 import { createReplayEventFnFactory } from '../../../src/command/fn/replay-event'
-import type { ExtendedState } from '../../../src/types'
 import type { CounterState } from '../../data/command/counter'
 import { counter } from '../../data/command/counter'
 

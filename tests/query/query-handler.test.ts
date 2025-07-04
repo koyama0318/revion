@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { ReadDatabaseInMemory } from '../../src'
 import { createQueryHandlers } from '../../src/query/query-handler'
-import { ReadDatabaseInMemory } from '../../src/utils'
 import { type CounterListQuery, counterResolver } from '../data/query/counter'
 import type { CounterView } from '../data/query/view'
 

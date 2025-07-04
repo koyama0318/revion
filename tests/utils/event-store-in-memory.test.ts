@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { id } from '../../src'
-import { EventStoreInMemory } from '../../src/utils/event-store-in-memory'
+import { EventStoreInMemory, id } from '../../src'
 
 const newId = id('counter', '1')
 
